@@ -19,6 +19,8 @@ import AdminRoute from "./components/admin/AdminRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import LandingPage from "./components/LandingPage";
+import TerminosCondiciones from "./components/common/TerminosCondiciones";
+import PoliticaPrivacidad from "./components/common/PoliticaPrivacidad";
 
 import { AuthProvider } from "./context/AuthContext";
 
@@ -35,6 +37,8 @@ function App() {
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/crear-trabajo" element={<CrearTrabajo />} />
             <Route path="/notificaciones" element={<Notificaciones />} />
+            <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
+            <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
 
             {/* Admin Routes Protected */}
             <Route element={<AdminRoute />}>

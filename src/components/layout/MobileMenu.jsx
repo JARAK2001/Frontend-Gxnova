@@ -5,13 +5,9 @@ import { useNavigate } from "react-router-dom";
 function MobileMenu({
     mostrarMenuMovil,
     setMostrarMenuMovil,
-    busqueda,
-    setBusqueda,
-    handleBuscar,
     estaLogueado,
     cantidadNotificaciones,
-    handleLogout,
-    inputClasses
+    handleLogout
 }) {
     const navigate = useNavigate();
 
@@ -19,19 +15,6 @@ function MobileMenu({
 
     return (
         <div className="md:hidden pb-3 border-t border-gray-200 mt-2 pt-3">
-            <form onSubmit={handleBuscar}>
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                        type="text"
-                        placeholder="Buscar proyectos o freelancers..."
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
-                        className={`pl-10 pr-4 bg-gray-100 border-gray-300 focus:bg-white focus:border-primary/30 transition-all duration-200 ${inputClasses}`}
-                    />
-                </div>
-            </form>
-
             {/* Menú móvil expandido */}
             <div className="mt-3 space-y-2">
                 <button

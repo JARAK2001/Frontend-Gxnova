@@ -30,6 +30,7 @@ function Auth() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [telefono, setTelefono] = useState("");
     const [rolNombre, setRolNombre] = useState("Trabajador");
+    const [terminosAceptados, setTerminosAceptados] = useState(false);
     const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
     const handleToggleView = (nextView) => {
@@ -97,6 +98,11 @@ function Auth() {
             return;
         }
 
+        if (!terminosAceptados) {
+            showMessage('error', "Debes aceptar los Términos y Condiciones y la Política de Privacidad para registrarte.");
+            return;
+        }
+
         if (passwordRegister !== confirmPassword) {
             showMessage('error', "Las contraseñas no coinciden. Por favor, verifícalas.");
             return;
@@ -120,6 +126,7 @@ function Auth() {
             formData.append('password', passwordRegister);
             formData.append('telefono', telefono);
             formData.append('rolNombre', rolNombre);
+            formData.append('terminosAceptados', terminosAceptados);
 
             // Agregar imágenes obligatorias
             formData.append('foto_cedula', fotoCedula);
@@ -142,7 +149,7 @@ function Auth() {
             const data = await respuesta.json();
 
             if (respuesta.ok) {
-                showMessage('success', "✅ Registro exitoso. Tu identidad ha sido verificada. Ahora puedes iniciar sesión.");
+                showMessage('success', " Registro exitoso. Tu identidad ha sido verificada. Ahora puedes iniciar sesión.");
                 setNombre('');
                 setApellido('');
                 setEmailRegister('');
@@ -150,6 +157,7 @@ function Auth() {
                 setConfirmPassword('');
                 setTelefono('');
                 setRolNombre('Trabajador');
+                setTerminosAceptados(false);
 
                 // Limpiar inputs de archivos
                 document.getElementById('foto_cedula').value = '';
@@ -162,11 +170,11 @@ function Auth() {
                 setTimeout(() => handleToggleView("login"), 3000);
 
             } else {
-                showMessage('error', `❌ ${data.message || 'Error desconocido'}`);
+                showMessage('error', `${data.message || 'Error desconocido'}`);
             }
         } catch (error) {
             console.error("Error de Registro:", error);
-            showMessage('error', "❌ Error de conexión con el servidor.");
+            showMessage('error', "Error de conexión con el servidor.");
         }
     };
 
@@ -252,6 +260,8 @@ function Auth() {
                             setTelefono={setTelefono}
                             rolNombre={rolNombre}
                             setRolNombre={setRolNombre}
+                            terminosAceptados={terminosAceptados}
+                            setTerminosAceptados={setTerminosAceptados}
                             showRegisterPassword={showRegisterPassword}
                             setShowRegisterPassword={setShowRegisterPassword}
                             PRIMARY_COLOR={PRIMARY_COLOR}

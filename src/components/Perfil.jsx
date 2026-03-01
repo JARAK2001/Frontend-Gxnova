@@ -7,6 +7,7 @@ import DatosPersonales from "./perfil/DatosPersonales";
 import FormularioPerfil from "./perfil/FormularioPerfil";
 import SeccionHabilidades from "./perfil/SeccionHabilidades";
 import MisPublicaciones from "./perfil/MisPublicaciones";
+import MisPostulaciones from "./perfil/MisPostulaciones";
 
 function Perfil() {
     const navigate = useNavigate();
@@ -94,9 +95,12 @@ function Perfil() {
                                 onRefresh={cargarPerfil}
                             />
 
-                            {/* SECCIÓN DE HABILIDADES (Solo si tiene rol Trabajador) */}
+                            {/* SECCIÓN DE HABILIDADES Y POSTULACIONES (Solo si tiene rol Trabajador) */}
                             {usuario.rolesAsignados?.some(r => r.rol.nombre === "Trabajador") && (
-                                <SeccionHabilidades usuarioId={usuario.id_usuario} />
+                                <>
+                                    <SeccionHabilidades usuarioId={usuario.id_usuario} />
+                                    <MisPostulaciones usuarioId={usuario.id_usuario} />
+                                </>
                             )}
 
                             {/* SECCIÓN DE MIS PUBLICACIONES (Solo si tiene rol Empleador) */}

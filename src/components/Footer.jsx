@@ -41,8 +41,8 @@ function Footer() {
                         <ul className="space-y-3 text-sm text-slate-400">
                             <li><button className="hover:text-orange-500 transition-colors cursor-not-allowed opacity-70">Centro de Ayuda</button></li>
                             <li><button className="hover:text-orange-500 transition-colors cursor-not-allowed opacity-70">Normas de la Comunidad</button></li>
-                            <li><button className="hover:text-orange-500 transition-colors cursor-not-allowed opacity-70">Política de Privacidad</button></li>
-                            <li><button className="hover:text-orange-500 transition-colors cursor-not-allowed opacity-70">Términos y Condiciones</button></li>
+                            <li><button onClick={() => navigate("/politica-de-privacidad")} className="hover:text-orange-500 transition-colors">Política de Privacidad</button></li>
+                            <li><button onClick={() => navigate("/terminos-y-condiciones")} className="hover:text-orange-500 transition-colors">Términos y Condiciones</button></li>
                         </ul>
                     </div>
 

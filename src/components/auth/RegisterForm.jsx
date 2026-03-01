@@ -1,5 +1,6 @@
 import React from "react";
 import { Eye, EyeOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function RegisterForm({
     handleRegister,
@@ -17,6 +18,8 @@ function RegisterForm({
     setTelefono,
     rolNombre,
     setRolNombre,
+    terminosAceptados,
+    setTerminosAceptados,
     showRegisterPassword,
     setShowRegisterPassword,
     PRIMARY_COLOR,
@@ -238,6 +241,28 @@ function RegisterForm({
                         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-600 file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                     />
                     <img id="preview_perfil" className="hidden mt-2 w-32 h-32 object-cover rounded-md border border-gray-300" alt="Preview perfil" />
+                </div>
+            </div>
+
+            {/* Checkbox de Términos y Condiciones */}
+            <div className="flex items-start pt-3 border-t border-gray-200">
+                <div className="flex h-5 items-center">
+                    <input
+                        id="terminos"
+                        name="terminos"
+                        type="checkbox"
+                        checked={terminosAceptados}
+                        onChange={(e) => setTerminosAceptados(e.target.checked)}
+                        className={`h-4 w-4 rounded border-gray-300 text-${PRIMARY_COLOR} focus:ring-${PRIMARY_COLOR}`}
+                    />
+                </div>
+                <div className="ml-3 text-sm">
+                    <label htmlFor="terminos" className="font-medium text-gray-700">
+                        Acepto los términos y condiciones
+                    </label>
+                    <p className="text-gray-500">
+                        He leído y acepto los <Link to="/terminos-y-condiciones" target="_blank" className={`text-${PRIMARY_COLOR} hover:underline`}>Términos y Condiciones</Link> y la <Link to="/politica-de-privacidad" target="_blank" className={`text-${PRIMARY_COLOR} hover:underline`}>Política de Privacidad</Link>.
+                    </p>
                 </div>
             </div>
 

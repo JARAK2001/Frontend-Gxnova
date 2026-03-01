@@ -15,7 +15,11 @@ function Servicios() {
     const [filtroEstado, setFiltroEstado] = useState("publicado");
     const [filtroBusqueda, setFiltroBusqueda] = useState("");
     const [filtroUbicacion, setFiltroUbicacion] = useState("");
-    const [vistaMapa, setVistaMapa] = useState(false); // Nuevo estado
+    const [vistaMapa, setVistaMapa] = useState(false);
+    const [filtroRecomendados, setFiltroRecomendados] = useState(false);
+
+    const token = localStorage.getItem('token');
+    const isAutenticado = !!token;
 
     useEffect(() => {
         cargarCategorias();
@@ -33,7 +37,7 @@ function Servicios() {
             cargarTrabajos();
         }, 500); // Debounce de 500ms para no saturar con cada tecla
         return () => clearTimeout(timer);
-    }, [filtroCategoria, filtroEstado, filtroBusqueda, filtroUbicacion]);
+    }, [filtroCategoria, filtroEstado, filtroBusqueda, filtroUbicacion, filtroRecomendados]);
 
     const cargarCategorias = async () => {
         try {
@@ -51,17 +55,26 @@ function Servicios() {
         setLoading(true);
         try {
             let url = `${API_URL}/api/trabajos?estado=${filtroEstado}`;
-            if (filtroCategoria) {
-                url += `&id_categoria=${filtroCategoria}`;
-            }
-            if (filtroBusqueda) {
-                url += `&busqueda=${encodeURIComponent(filtroBusqueda)}`;
-            }
-            if (filtroUbicacion) {
-                url += `&ubicacion=${encodeURIComponent(filtroUbicacion)}`;
+            let headers = {};
+
+            if (filtroRecomendados && isAutenticado) {
+                url = `${API_URL}/api/trabajos/recomendados`;
+                headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+            } else {
+                if (filtroCategoria) {
+                    url += `&id_categoria=${filtroCategoria}`;
+                }
+                if (filtroBusqueda) {
+                    url += `&busqueda=${encodeURIComponent(filtroBusqueda)}`;
+                }
+                if (filtroUbicacion) {
+                    url += `&ubicacion=${encodeURIComponent(filtroUbicacion)}`;
+                }
             }
 
-            const respuesta = await fetch(url);
+            const respuesta = await fetch(url, { headers });
             const data = await respuesta.json();
             if (data.trabajos) {
                 setTrabajos(data.trabajos);
@@ -97,22 +110,35 @@ function Servicios() {
                         <p className="text-gray-600">Encuentra el trabajo perfecto para ti</p>
                     </div>
 
-                    {/* Botón Toggle Mapa/Lista */}
-                    <div className="flex bg-white rounded-xl shadow-md border border-gray-200 p-1.5">
-                        <button
-                            onClick={() => setVistaMapa(false)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all font-medium ${!vistaMapa ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-                                }`}
-                        >
-                            <List size={20} /> Lista
-                        </button>
-                        <button
-                            onClick={() => setVistaMapa(true)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all font-medium ${vistaMapa ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-                                }`}
-                        >
-                            <Map size={20} /> Mapa
-                        </button>
+                    {/* Botón Toggle Mapa/Lista y Recomendados */}
+                    <div className="flex flex-wrap gap-3 items-center">
+                        {isAutenticado && (
+                            <button
+                                onClick={() => setFiltroRecomendados(!filtroRecomendados)}
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all font-medium border ${filtroRecomendados
+                                    ? 'bg-orange-100 text-orange-700 border-orange-300 shadow-sm'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <Tag size={20} /> {filtroRecomendados ? 'Viendo Recomendados' : 'Para Mí'}
+                            </button>
+                        )}
+                        <div className="flex bg-white rounded-xl shadow-md border border-gray-200 p-1.5">
+                            <button
+                                onClick={() => setVistaMapa(false)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${!vistaMapa ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                            >
+                                <List size={20} /> Lista
+                            </button>
+                            <button
+                                onClick={() => setVistaMapa(true)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium ${vistaMapa ? 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                            >
+                                <Map size={20} /> Mapa
+                            </button>
+                        </div>
                     </div>
                 </div>
 

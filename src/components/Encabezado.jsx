@@ -4,7 +4,6 @@ import { Search, Bell, MessageSquare, Plus, Menu } from "lucide-react";
 import logoGxnova from "../assets/gxnova-logo.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./layout/Navbar";
-import SearchBar from "./layout/SearchBar";
 import UserMenu from "./layout/UserMenu";
 import MobileMenu from "./layout/MobileMenu";
 import API_URL from '../config/api';
@@ -15,7 +14,6 @@ function Encabezado() {
     const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
     const [mostrarMenuUsuario, setMostrarMenuUsuario] = useState(false);
     const [mostrarMenuMovil, setMostrarMenuMovil] = useState(false);
-    const [busqueda, setBusqueda] = useState("");
 
     // Sincronizar notificaciones cuando hay usuario
     useEffect(() => {
@@ -50,77 +48,59 @@ function Encabezado() {
         navigate("/");
     };
 
-    const handleBuscar = (e) => {
-        e.preventDefault();
-        if (busqueda.trim()) {
-            navigate(`/servicios?busqueda=${encodeURIComponent(busqueda.trim())}`);
-            setBusqueda("");
-        }
-    };
-
-    const ghostButtonClasses = "p-2 rounded-md transition-colors duration-200 text-gray-700 hover:bg-gray-100 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50";
-    const defaultButtonClasses = "h-9 px-4 py-2 bg-orange-600 text-white rounded-md text-sm font-medium shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500/50";
-    const inputClasses = "flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50";
-    const badgeClasses = "absolute -top-1 -right-1 w-5 h-5 rounded-full text-white text-xs p-0 flex items-center justify-center font-bold";
+    const ghostButtonClasses = "p-2 rounded-full transition-all duration-300 text-gray-700 hover:bg-orange-50 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500/50";
+    const defaultButtonClasses = "h-10 px-6 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-full text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 flex items-center justify-center";
+    const badgeClasses = "absolute -top-1 -right-1 w-5 h-5 rounded-full text-white text-xs p-0 flex items-center justify-center font-bold shadow-sm border-2 border-white";
 
     const estaLogueado = !!user;
 
     return (
-        <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100 shadow-sm transition-all duration-300">
             <div className="container mx-auto px-4 max-w-7xl">
-                <div className="flex h-16 items-center justify-between gap-4">
+                <div className="flex h-20 items-center justify-between gap-6">
 
                     {/* Logo y marca */}
-                    <div className="flex items-center gap-8">
-                        <div
-                            className="flex items-center gap-3 cursor-pointer"
-                            onClick={() => navigate("/")}
-                        >
-                            <img
-                                src={logoGxnova}
-                                alt="GXNOVA"
-                                className="h-16 w-auto object-contain"
-                            />
-                            <div className="flex flex-col">
-                                <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
-                                    GXNOVA
-                                </span>
-                            </div>
+                    <div
+                        className="flex items-center gap-3 cursor-pointer group"
+                        onClick={() => navigate("/")}
+                    >
+                        <img
+                            src={logoGxnova}
+                            alt="GXNOVA"
+                            className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="flex flex-col hidden sm:block">
+                            <span className="text-2xl font-black bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 bg-clip-text text-transparent transform transition-all duration-300 group-hover:scale-105">
+                                GXNOVA
+                            </span>
                         </div>
+                    </div>
 
+                    {/* Navegación Principal (Centrada) */}
+                    <div className="hidden md:flex flex-1 justify-center">
                         <Navbar estaLogueado={!!user} ghostButtonClasses={ghostButtonClasses} />
                     </div>
 
-                    <SearchBar
-                        busqueda={busqueda}
-                        setBusqueda={setBusqueda}
-                        handleBuscar={handleBuscar}
-                        inputClasses={inputClasses}
-                    />
-
                     {/* Acciones del usuario */}
-                    <div className="flex items-center gap-2">
-
-                        {/* Botón de búsqueda móvil */}
-                        <button
-                            className={`md:hidden ${ghostButtonClasses}`}
-                            aria-label="Buscar"
-                            onClick={() => setMostrarMenuMovil(!mostrarMenuMovil)}
-                        >
-                            <Search className="w-4 h-4" />
-                        </button>
+                    <div className="flex items-center gap-3 sm:gap-4">
 
                         {estaLogueado ? (
                             <>
                                 {/* Publicar proyecto */}
                                 <button
-                                    className={`gap-2 ${defaultButtonClasses} hidden sm:flex`}
+                                    className={`gap-2 ${defaultButtonClasses} hidden lg:flex`}
                                     id="boton-publicar-proyecto"
                                     onClick={() => navigate("/crear-trabajo")}
                                 >
-                                    <Plus className="w-4 h-4" />
-                                    <span className="hidden lg:inline">Publicar Proyecto</span>
-                                    <span className="lg:hidden">Publicar</span>
+                                    <Plus className="w-5 h-5" />
+                                    <span>Publicar Proyecto</span>
+                                </button>
+                                <button
+                                    className={`p-2 rounded-full lg:hidden bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors`}
+                                    onClick={() => navigate("/crear-trabajo")}
+                                    aria-label="Publicar Proyecto"
+                                >
+                                    <Plus className="w-5 h-5" />
                                 </button>
 
                                 {/* Notificaciones */}
@@ -129,7 +109,7 @@ function Encabezado() {
                                     aria-label="Notificaciones"
                                     onClick={() => navigate("/notificaciones")}
                                 >
-                                    <Bell className="w-5 h-5" />
+                                    <Bell className="w-6 h-6" />
                                     {cantidadNotificaciones > 0 && (
                                         <span
                                             className={`${badgeClasses} bg-red-600 animate-pulse`}
@@ -145,37 +125,46 @@ function Encabezado() {
                                     className={`relative ${ghostButtonClasses}`}
                                     aria-label="Mensajes"
                                 >
-                                    <MessageSquare className="w-5 h-5" />
+                                    <MessageSquare className="w-6 h-6" />
                                 </button>
 
-                                <UserMenu
-                                    usuario={user}
-                                    cantidadNotificaciones={cantidadNotificaciones}
-                                    mostrarMenuUsuario={mostrarMenuUsuario}
-                                    setMostrarMenuUsuario={setMostrarMenuUsuario}
-                                    handleLogout={handleLogout}
-                                    ghostButtonClasses={ghostButtonClasses}
-                                />
+                                {/* Perfil */}
+                                <div className="pl-2 border-l border-gray-200 ml-1">
+                                    <UserMenu
+                                        usuario={user}
+                                        cantidadNotificaciones={cantidadNotificaciones}
+                                        mostrarMenuUsuario={mostrarMenuUsuario}
+                                        setMostrarMenuUsuario={setMostrarMenuUsuario}
+                                        handleLogout={handleLogout}
+                                        ghostButtonClasses={ghostButtonClasses}
+                                    />
+                                </div>
                             </>
                         ) : (
                             <>
-                                {/* Botón Login cuando no está autenticado */}
+                                {/* Botones Iniciar Sesión y Registrarse */}
+                                <button
+                                    className={`${ghostButtonClasses} hidden sm:flex font-semibold`}
+                                    onClick={() => navigate("/auth")}
+                                >
+                                    Iniciar Sesión
+                                </button>
                                 <button
                                     className={`${defaultButtonClasses} hidden sm:flex`}
                                     onClick={() => navigate("/auth")}
                                 >
-                                    Iniciar Sesión
+                                    Regístrate Gratis
                                 </button>
                             </>
                         )}
 
                         {/* Menú móvil */}
                         <button
-                            className={`lg:hidden ${ghostButtonClasses}`}
+                            className={`md:hidden ${ghostButtonClasses} p-2 bg-gray-50 rounded-lg hover:bg-gray-100`}
                             aria-label="Menú de navegación"
                             onClick={() => setMostrarMenuMovil(!mostrarMenuMovil)}
                         >
-                            <Menu className="w-5 h-5" />
+                            <Menu className="w-6 h-6 text-gray-800" />
                         </button>
                     </div>
                 </div>
@@ -183,13 +172,9 @@ function Encabezado() {
                 <MobileMenu
                     mostrarMenuMovil={mostrarMenuMovil}
                     setMostrarMenuMovil={setMostrarMenuMovil}
-                    busqueda={busqueda}
-                    setBusqueda={setBusqueda}
-                    handleBuscar={handleBuscar}
                     estaLogueado={estaLogueado}
                     cantidadNotificaciones={cantidadNotificaciones}
                     handleLogout={handleLogout}
-                    inputClasses={inputClasses}
                 />
             </div>
 
