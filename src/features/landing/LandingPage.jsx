@@ -1,13 +1,13 @@
 import React from 'react';
-import LandingHeader from './landing/LandingHeader';
-import HeroSection from './landing/HeroSection';
-import StatsSection from './landing/StatsSection';
-import FeaturesSection from './landing/FeaturesSection';
-import HowItWorksSection from './landing/HowItWorksSection';
-import TestimonialsSection from './landing/TestimonialsSection';
-import FAQSection from './landing/FAQSection';
-import DownloadSection from './landing/DownloadSection';
-import Footer from './Footer';
+import LandingHeader from './LandingHeader';
+import HeroSection from './HeroSection';
+import StatsSection from './StatsSection';
+import FeaturesSection from './FeaturesSection';
+import HowItWorksSection from './HowItWorksSection';
+import TestimonialsSection from './TestimonialsSection';
+import FAQSection from './FAQSection';
+import DownloadSection from './DownloadSection';
+import Footer from '../../layouts/Footer';
 
 const LandingPage = () => {
     return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_URL from '../config/api';
-import Encabezado from "./Encabezado";
+import API_URL from '../../config/api';
+import Encabezado from "../../layouts/Encabezado";
 
 function Notificaciones() {
     const navigate = useNavigate();

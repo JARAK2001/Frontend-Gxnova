@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import API_URL from '../config/api';
+import API_URL from '../../config/api';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Encabezado from "./Encabezado";
-import DatosPersonales from "./perfil/DatosPersonales";
-import FormularioPerfil from "./perfil/FormularioPerfil";
-import SeccionHabilidades from "./perfil/SeccionHabilidades";
-import MisPublicaciones from "./perfil/MisPublicaciones";
-import MisPostulaciones from "./perfil/MisPostulaciones";
+import { useAuth } from "../../context/AuthContext";
+import Encabezado from "../../layouts/Encabezado";
+import DatosPersonales from "./DatosPersonales";
+import FormularioPerfil from "./FormularioPerfil";
+import SeccionHabilidades from "./SeccionHabilidades";
+import MisPublicaciones from "./MisPublicaciones";
+import MisPostulaciones from "./MisPostulaciones";
 
 function Perfil() {
     const navigate = useNavigate();

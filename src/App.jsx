@@ -1,60 +1,63 @@
 import React from "react";
-import Home from "./components/Home";
-import Auth from "./components/Auth";
-import Servicios from "./components/Servicios";
-import Detalles from "./components/Detalles";
-import Perfil from "./components/Perfil";
-import CrearTrabajo from "./components/CrearTrabajo";
-import Notificaciones from "./components/Notificaciones";
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminUsuarios from "./components/admin/AdminUsuarios";
-import AdminTrabajos from "./components/admin/AdminTrabajos";
-import AdminCategorias from "./components/admin/AdminCategorias";
-import AdminReportes from "./components/admin/AdminReportes";
-import AdminAnalytics from "./components/admin/AdminAnalytics";
-import AdminRoles from "./components/admin/AdminRoles";
-import AdminVerificacion from "./components/admin/AdminVerificacion";
-import AdminRoute from "./components/admin/AdminRoute";
+import LandingPage from "./features/landing/LandingPage";
+import Home from "./features/landing/Home";
+import Auth from "./features/auth/Auth";
+import Servicios from "./features/jobs/Servicios";
+import Detalles from "./features/jobs/Detalles";
+import Perfil from "./features/profile/Perfil";
+import CrearTrabajo from "./features/jobs/CrearTrabajo";
+import Notificaciones from "./features/dashboard/Notificaciones";
+import AdminLayout from "./features/dashboard/AdminLayout";
+import AdminDashboard from "./features/dashboard/AdminDashboard";
+import AdminUsuarios from "./features/dashboard/AdminUsuarios";
+import AdminTrabajos from "./features/dashboard/AdminTrabajos";
+import AdminCategorias from "./features/dashboard/AdminCategorias";
+import AdminReportes from "./features/dashboard/AdminReportes";
+import AdminAnalytics from "./features/dashboard/AdminAnalytics";
+import AdminRoles from "./features/dashboard/AdminRoles";
+import AdminVerificacion from "./features/dashboard/AdminVerificacion";
+import AdminRoute from "./features/dashboard/AdminRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import LandingPage from "./components/LandingPage";
-import TerminosCondiciones from "./components/common/TerminosCondiciones";
-import PoliticaPrivacidad from "./components/common/PoliticaPrivacidad";
+import TerminosCondiciones from "./ui/TerminosCondiciones";
+import PoliticaPrivacidad from "./ui/PoliticaPrivacidad";
 
 import { AuthProvider } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 
 function App() {
   return (
     <div className="App">
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/servicios" element={<Servicios />} />
-            <Route path="/detalles/:id" element={<Detalles />} />
-            <Route path="/perfil" element={<Perfil />} />
-            <Route path="/crear-trabajo" element={<CrearTrabajo />} />
-            <Route path="/notificaciones" element={<Notificaciones />} />
-            <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
-            <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
+        <ChatProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/servicios" element={<Servicios />} />
+              <Route path="/detalles/:id" element={<Detalles />} />
+              <Route path="/perfil" element={<Perfil />} />
+              <Route path="/crear-trabajo" element={<CrearTrabajo />} />
+              <Route path="/notificaciones" element={<Notificaciones />} />
+              <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
+              <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
 
-            {/* Admin Routes Protected */}
-            <Route element={<AdminRoute />}>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="usuarios" element={<AdminUsuarios />} />
-                <Route path="verificaciones" element={<AdminVerificacion />} />
-                <Route path="trabajos" element={<AdminTrabajos />} />
-                <Route path="categorias" element={<AdminCategorias />} />
-                <Route path="reportes" element={<AdminReportes />} />
-                <Route path="analytics" element={<AdminAnalytics />} />
-                <Route path="roles" element={<AdminRoles />} />
+              {/* Admin Routes Protected */}
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="usuarios" element={<AdminUsuarios />} />
+                  <Route path="verificaciones" element={<AdminVerificacion />} />
+                  <Route path="trabajos" element={<AdminTrabajos />} />
+                  <Route path="categorias" element={<AdminCategorias />} />
+                  <Route path="reportes" element={<AdminReportes />} />
+                  <Route path="analytics" element={<AdminAnalytics />} />
+                  <Route path="roles" element={<AdminRoles />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </Router>
+            </Routes>
+          </Router>
+        </ChatProvider>
       </AuthProvider>
     </div>
   );

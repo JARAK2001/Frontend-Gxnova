@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Encabezado from "./Encabezado";
-import Footer from "./Footer";
-import Hero from "./home/Hero";
-import CategoriasSection from "./home/CategoriasSection";
-import TrabajosDestacados from "./home/TrabajosDestacados";
-import ComoFunciona from "./home/ComoFunciona";
-import Beneficios from "./home/Beneficios";
-import CallToAction from "./home/CallToAction";
-import API_URL from '../config/api';
+import Encabezado from "../../layouts/Encabezado";
+import Footer from "../../layouts/Footer";
+import Hero from "../jobs/Hero";
+import CategoriasSection from "../jobs/CategoriasSection";
+import TrabajosDestacados from "../jobs/TrabajosDestacados";
+import ComoFunciona from "../jobs/ComoFunciona";
+import Beneficios from "../jobs/Beneficios";
+import CallToAction from "../jobs/CallToAction";
+import API_URL from '../../config/api';
 import { AlertCircle } from 'lucide-react';
 
 function Home() {

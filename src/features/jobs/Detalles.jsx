@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import API_URL from '../config/api';
-import Encabezado from "./Encabezado";
-import ModalCalificar from "./calificaciones/ModalCalificar";
-import ModalPerfilTrabajador from "./perfil/ModalPerfilTrabajador";
-import Estrellas from "./common/Estrellas";
-import ConfirmacionTransaccion from "./transaccion/ConfirmacionTransaccion";
+import API_URL from '../../config/api';
+import Encabezado from "../../layouts/Encabezado";
+import ModalCalificar from "../profile/ModalCalificar";
+import ModalPerfilTrabajador from "../profile/ModalPerfilTrabajador";
+import Estrellas from "../../ui/Estrellas";
+import ConfirmacionTransaccion from "./ConfirmacionTransaccion";
 import { FileText, DollarSign, MapPin, Calendar, User, ClipboardList, MessageSquare, Rocket, Check, X, Clock } from 'lucide-react';
+import { useChat } from "../../context/ChatContext";
 
 
 function Detalles() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { abrirChat } = useChat();
     const [trabajo, setTrabajo] = useState(null);
     const [postulaciones, setPostulaciones] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -658,10 +660,26 @@ function Detalles() {
                                                                 setTrabajadorSeleccionado(post.trabajador);
                                                                 setModalPerfilOpen(true);
                                                             }}
-                                                            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                                                            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs font-semibold rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-1"
                                                         >
                                                             <User className="w-4 h-4" /> Ver Perfil
                                                         </button>
+
+                                                        {/* Botón de Chat para el Empleador */}
+                                                        {usuario && trabajo && usuario.id_usuario === trabajo.id_empleador && (
+                                                            <button
+                                                                onClick={() => abrirChat({
+                                                                    id_trabajador: post.trabajador.id_usuario,
+                                                                    id_empleador: usuario.id_usuario,
+                                                                    id_trabajo: trabajo.id_trabajo,
+                                                                    trabajador: post.trabajador,
+                                                                    empleador: usuario
+                                                                })}
+                                                                className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-xs font-semibold rounded-lg hover:from-indigo-700 hover:to-indigo-600 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-1"
+                                                            >
+                                                                <MessageSquare className="w-4 h-4" /> Chatear
+                                                            </button>
+                                                        )}
                                                     </div>
                                                     <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                                                         <Calendar className="w-4 h-4" />

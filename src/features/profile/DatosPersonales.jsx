@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API_URL from '../../config/api';
-import Estrellas from "../common/Estrellas";
+import Estrellas from "../../ui/Estrellas";
 import { Mail, Phone, CheckCircle, Users, Calendar, Briefcase, Wrench, Rocket, Edit } from 'lucide-react';
 
 function DatosPersonales({ usuario, onEdit, onRefresh }) {

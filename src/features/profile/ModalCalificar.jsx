@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Estrellas from '../common/Estrellas';
+import Estrellas from '../../ui/Estrellas';
 
 function ModalCalificar({ isOpen, onClose, onSubmit, usuarioReceptor }) {
     const [puntuacion, setPuntuacion] = useState(0);

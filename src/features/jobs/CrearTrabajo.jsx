@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import API_URL from '../config/api';
+import API_URL from '../../config/api';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Encabezado from "./Encabezado";
+import { useAuth } from "../../context/AuthContext";
+import Encabezado from "../../layouts/Encabezado";
 import { MapPin } from 'lucide-react';
 
 function CrearTrabajo() {

@@ -1,6 +1,6 @@
 import React from "react";
-import Encabezado from "../Encabezado";
-import Footer from "../Footer";
+import Encabezado from "../layouts/Encabezado";
+import Footer from "../layouts/Footer";
 
 function TerminosCondiciones() {
     return (

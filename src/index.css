@@ -1,43 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-/* TÍTULO CON DEGRADADO */
-.text-gradient {
-  background: linear-gradient(90deg, #f97316, #ef4444);
-  -webkit-background-clip: text;
-  color: transparent;
+/* ─────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────── */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --orange-50:  #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --orange-700: #c2410c;
+  --shadow-sm:  0 1px 3px 0 rgb(0 0 0 / .08), 0 1px 2px -1px rgb(0 0 0 / .08);
+  --shadow-md:  0 4px 16px -2px rgb(0 0 0 / .10), 0 2px 6px -2px rgb(0 0 0 / .08);
+  --shadow-lg:  0 16px 40px -4px rgb(0 0 0 / .12), 0 6px 16px -4px rgb(0 0 0 / .08);
+  --shadow-xl:  0 24px 60px -8px rgb(0 0 0 / .16), 0 8px 24px -4px rgb(0 0 0 / .10);
+  --shadow-orange: 0 8px 24px -4px rgb(249 115 22 / .35);
+  --radius-card: 20px;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* TARJETAS */
+/* ─────────────────────────────────────────
+   BASE
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11', 'ss01';
+  font-variation-settings: 'opsz' 32;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #111827;
+  background: #fff;
+}
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -30px) scale(1.08); }
+  66%       { transform: translate(-20px, 20px) scale(0.94); }
+}
+
+@keyframes gradientFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseOrange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+}
+
+/* ─────────────────────────────────────────
+   UTILITY ANIMATION CLASSES
+───────────────────────────────────────── */
+.animate-fade-in-up  { animation: fadeInUp 0.55s ease-out both; }
+.animate-fade-in     { animation: fadeIn 0.4s ease-out both; }
+.animate-scale-in    { animation: scaleIn 0.35s ease-out both; }
+.animate-slide-right { animation: slideInRight 0.4s ease-out both; }
+.animate-blob        { animation: blob 7s infinite ease-in-out; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* Stagger utility (use CSS variable --delay on the element) */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.30s; }
+
+/* ─────────────────────────────────────────
+   SKELETON LOADING
+───────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+/* ─────────────────────────────────────────
+   CARDS
+───────────────────────────────────────── */
+.card-hover {
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
 .service-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 18px !important;
+  border-radius: var(--radius-card) !important;
   background: #ffffff;
 }
-
 .service-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl) !important;
 }
-
-/* IMAGEN */
 .service-image-wrapper {
-  height: 230px;
+  height: 220px;
   overflow: hidden;
   position: relative;
 }
-
 .service-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.5s ease;
 }
-
 .service-card:hover .service-img {
-  transform: scale(1.12);
+  transform: scale(1.08);
 }
 
-/* BOTÓN */
+/* ─────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border: none;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-orange);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -4px rgba(249, 115, 22, 0.45);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
 .btn-service {
   background: linear-gradient(135deg, #f97316, #ea580c);
   border: none;
@@ -47,47 +187,119 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
-
 .btn-service:hover {
   background: linear-gradient(135deg, #ea580c, #c2410c);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* DESCRIPCIÓN CON ESTILO */
-.card-text {
+/* ─────────────────────────────────────────
+   TEXT UTILITIES
+───────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(90deg, #f97316, #ef4444);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ─────────────────────────────────────────
+   INPUT / FORM
+───────────────────────────────────────── */
+.input-modern {
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
   font-size: 0.95rem;
-  line-height: 1.5;
+  color: #111827;
+  width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  font-family: var(--font-sans);
+}
+.input-modern:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  background: #fff;
+}
+.input-modern::placeholder {
+  color: #9ca3af;
 }
 
-/* MÁS SUAVIDAD GLOBAL */
-.card {
-  border-radius: 20px !important;
+/* ─────────────────────────────────────────
+   GLASS
+───────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* CUSTOM SCROLLBAR FOR ADMIN SIDERBAR (Dark Theme) */
+.glass-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ─────────────────────────────────────────
+   CUSTOM SCROLLBAR — GLOBAL
+───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: #f97316; }
+
+/* ─────────────────────────────────────────
+   CUSTOM SCROLLBAR — DARK SIDEBAR
+───────────────────────────────────────── */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) rgba(15, 23, 42, 1);
-  /* Thumb | Track (slate-900) */
 }
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 1);
-  /* slate-900 matching sidebar */
-}
-
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 1); }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   border: 1px solid rgba(15, 23, 42, 1);
-  /* Padding effect */
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ─────────────────────────────────────────
+   CARD — GENERAL (bootstrap compat)
+───────────────────────────────────────── */
+.card { border-radius: var(--radius-card) !important; }
+.card-text { font-size: 0.95rem; line-height: 1.6; }
+
+/* ─────────────────────────────────────────
+   SECTION PILL BADGE
+───────────────────────────────────────── */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #c2410c;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
