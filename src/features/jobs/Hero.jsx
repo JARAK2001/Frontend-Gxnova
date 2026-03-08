@@ -51,7 +51,7 @@ function Hero() {
                 <div className="animate-fade-in" style={{ animationDelay: '0.05s' }}>
                     <span className="section-badge mb-5 inline-flex">
                         <Sparkles style={{ width: 13, height: 13 }} />
-                        Plataforma freelance #1 en Colombia
+                        Conecta con profesionales en Colombia
                     </span>
                 </div>
 

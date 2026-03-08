@@ -76,176 +76,142 @@ const AdminReportes = () => {
         return badges[tipo] || 'bg-gray-100 text-gray-800';
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Cargando reportes...</div>;
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+                <div className="w-10 h-10 rounded-full mx-auto mb-3 animate-spin" style={{ borderColor: '#f97316', borderTopColor: 'transparent', borderWidth: 3, borderStyle: 'solid' }} />
+                <p className="text-sm text-slate-500 font-medium">Cargando reportes…</p>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Gestión de Reportes</h1>
-                    <p className="text-gray-500 mt-1">Moderación de contenido y denuncias</p>
+                    <h1 className="text-2xl font-black text-slate-800">Gestión de Reportes</h1>
+                    <p className="text-sm text-slate-500 mt-0.5">Moderación de contenido y denuncias</p>
                 </div>
                 <div className="flex gap-2">
-                    <button
-                        onClick={() => setFiltro('pendiente')}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${filtro === 'pendiente'
-                            ? 'bg-yellow-500 text-white'
-                            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                            }`}
-                    >
-                        Pendientes
-                    </button>
-                    <button
-                        onClick={() => setFiltro('resuelto')}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${filtro === 'resuelto'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                            }`}
-                    >
-                        Resueltos
-                    </button>
-                    <button
-                        onClick={() => setFiltro('todos')}
-                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${filtro === 'todos'
-                            ? 'bg-indigo-500 text-white'
-                            : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                            }`}
-                    >
-                        Todos
-                    </button>
+                    {[
+                        { key: 'pendiente', label: 'Pendientes' },
+                        { key: 'resuelto', label: 'Resueltos' },
+                        { key: 'todos', label: 'Todos' },
+                    ].map(btn => (
+                        <button
+                            key={btn.key}
+                            onClick={() => setFiltro(btn.key)}
+                            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+                            style={filtro === btn.key
+                                ? { background: 'linear-gradient(135deg,#f97316,#ea580c)', color: '#fff', boxShadow: '0 4px 12px -2px rgba(249,115,22,0.45)' }
+                                : { background: '#fff', color: '#475569', border: '1.5px solid #e2e8f0' }
+                            }
+                        >
+                            {btn.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-yellow-100 rounded-lg">
-                            <AlertTriangle size={24} className="text-yellow-600" />
-                        </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                    { icon: <AlertTriangle size={20} />, label: 'Pendientes', value: reportes.filter(r => r.estado === 'pendiente').length, gradient: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
+                    { icon: <CheckCircle size={20} />, label: 'Resueltos', value: reportes.filter(r => r.estado === 'resuelto').length, gradient: 'linear-gradient(135deg,#34d399,#059669)' },
+                    { icon: <FileText size={20} />, label: 'Total', value: reportes.length, gradient: 'linear-gradient(135deg,#f97316,#ea580c)' },
+                ].map((s, i) => (
+                    <div key={i} className="admin-card p-5 flex items-center gap-4">
+                        <div className="p-3 rounded-xl text-white flex-shrink-0" style={{ background: s.gradient }}>{s.icon}</div>
                         <div>
-                            <p className="text-sm text-gray-500">Pendientes</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                                {reportes.filter(r => r.estado === 'pendiente').length}
-                            </p>
+                            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">{s.label}</p>
+                            <p className="text-2xl font-black text-slate-800">{s.value}</p>
                         </div>
                     </div>
-                </div>
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-100 rounded-lg">
-                            <CheckCircle size={24} className="text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Resueltos</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                                {reportes.filter(r => r.estado === 'resuelto').length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                            <FileText size={24} className="text-blue-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Total</p>
-                            <p className="text-2xl font-bold text-gray-800">{reportes.length}</p>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* Lista de Reportes */}
             {reportes.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
-                    <AlertTriangle size={48} className="mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500">No hay reportes {filtro !== 'todos' ? filtro + 's' : ''}</p>
+                <div className="admin-card p-12 text-center">
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: '#fff7ed' }}>
+                        <AlertTriangle size={22} className="text-orange-400" />
+                    </div>
+                    <p className="text-slate-500 font-medium">No hay reportes {filtro !== 'todos' ? filtro + 's' : ''}</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="admin-card overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-200">
+                            <thead className="admin-table-header">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tipo
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Reportante
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Reportado
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Fecha
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Estado
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Acciones
-                                    </th>
+                                    <th className="px-5 py-3">Tipo</th>
+                                    <th className="px-5 py-3">Reportante</th>
+                                    <th className="px-5 py-3">Reportado</th>
+                                    <th className="px-5 py-3">Fecha</th>
+                                    <th className="px-5 py-3">Estado</th>
+                                    <th className="px-5 py-3">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="divide-y divide-slate-100 text-sm">
                                 {reportes.map((reporte) => (
-                                    <tr key={reporte.id_reporte} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTipoBadge(reporte.tipo)}`}>
+                                    <tr key={reporte.id_reporte} className="admin-row-hover transition-colors">
+                                        <td className="px-5 py-3.5">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getTipoBadge(reporte.tipo)}`}>
                                                 {reporte.tipo.replace('_', ' ')}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <User size={16} className="text-gray-400" />
-                                                <span className="text-sm text-gray-900">
-                                                    {reporte.reportante?.nombre} {reporte.reportante?.apellido}
-                                                </span>
+                                                <User size={14} className="text-slate-400" />
+                                                <span className="text-slate-700 text-sm">{reporte.reportante?.nombre} {reporte.reportante?.apellido}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <User size={16} className="text-gray-400" />
-                                                <span className="text-sm text-gray-900">
-                                                    {reporte.reportado?.nombre} {reporte.reportado?.apellido}
-                                                </span>
+                                                <User size={14} className="text-slate-400" />
+                                                <span className="text-slate-700 text-sm">{reporte.reportado?.nombre} {reporte.reportado?.apellido}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td className="px-5 py-3.5 text-xs text-slate-400">
                                             {new Date(reporte.fecha).toLocaleDateString('es-CO')}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getEstadoBadge(reporte.estado)}`}>
+                                        <td className="px-5 py-3.5">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getEstadoBadge(reporte.estado)}`}>
                                                 {reporte.estado}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <td className="px-5 py-3.5">
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => setReporteSeleccionado(reporte)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-1.5 rounded-lg transition-colors"
                                                     title="Ver detalles"
+                                                    style={{ color: '#ea580c' }}
+                                                    onMouseEnter={e => e.currentTarget.style.background = '#fff7ed'}
+                                                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                                 >
-                                                    <Eye size={18} />
+                                                    <Eye size={17} />
                                                 </button>
                                                 {reporte.estado === 'pendiente' && (
                                                     <>
                                                         <button
                                                             onClick={() => resolverReporte(reporte.id_reporte, 'resolver')}
-                                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            className="p-1.5 text-green-600 rounded-lg transition-colors"
                                                             title="Resolver"
+                                                            onMouseEnter={e => e.currentTarget.style.background = '#f0fdf4'}
+                                                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                                         >
-                                                            <CheckCircle size={18} />
+                                                            <CheckCircle size={17} />
                                                         </button>
                                                         <button
                                                             onClick={() => resolverReporte(reporte.id_reporte, 'rechazar')}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            className="p-1.5 text-red-600 rounded-lg transition-colors"
                                                             title="Rechazar"
+                                                            onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                                                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                                         >
-                                                            <XCircle size={18} />
+                                                            <XCircle size={17} />
                                                         </button>
                                                     </>
                                                 )}

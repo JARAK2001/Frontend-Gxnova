@@ -6,6 +6,7 @@ function MobileMenu({
     mostrarMenuMovil,
     setMostrarMenuMovil,
     estaLogueado,
+    esEmpleador,
     cantidadNotificaciones,
     handleLogout
 }) {
@@ -26,17 +27,30 @@ function MobileMenu({
                 >
                     Servicios
                 </button>
+                {esEmpleador && (
+                    <button
+                        onClick={() => {
+                            navigate("/trabajadores");
+                            setMostrarMenuMovil(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                    >
+                        Directorio Trabajadores
+                    </button>
+                )}
                 {estaLogueado ? (
                     <>
-                        <button
-                            onClick={() => {
-                                navigate("/crear-trabajo");
-                                setMostrarMenuMovil(false);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
-                        >
-                            Publicar Trabajo
-                        </button>
+                        {esEmpleador && (
+                            <button
+                                onClick={() => {
+                                    navigate("/crear-trabajo");
+                                    setMostrarMenuMovil(false);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                            >
+                                Publicar Trabajo
+                            </button>
+                        )}
                         <button
                             onClick={() => {
                                 navigate("/perfil");

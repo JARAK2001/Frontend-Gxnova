@@ -14,6 +14,7 @@ function Home() {
     const [categorias, setCategorias] = useState([]);
     const [trabajosDestacados, setTrabajosDestacados] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [mostrarUrgentes, setMostrarUrgentes] = useState(true);
 
     useEffect(() => {
         cargarCategorias();
@@ -43,17 +44,29 @@ function Home() {
     const cargarTrabajosUrgentes = async () => {
         setLoading(true);
         try {
-            // Se puede intentar filtrar desde backend, pero por seguridad filtramos aquí también
             const respuesta = await fetch(`${API_URL}/api/trabajos?estado=publicado&urgente=true&limit=10`);
             const data = await respuesta.json();
             if (data.trabajos) {
-                // Filtro adicional en frontend para asegurar que solo se muestren urgentes
-                // (útil si el backend no se reinició o si el filtro backend falla)
                 const soloUrgentes = data.trabajos.filter(t => esUrgente(t.fecha_estimada)).slice(0, 6);
-                setTrabajosDestacados(soloUrgentes);
+                if (soloUrgentes.length > 0) {
+                    setTrabajosDestacados(soloUrgentes);
+                    setMostrarUrgentes(true);
+                    return;
+                }
             }
+            // Si no hay urgentes, cargar trabajos recientes (sin filtro de urgencia)
+            const resRecientes = await fetch(`${API_URL}/api/trabajos?estado=publicado&limit=6`);
+            const dataRecientes = await resRecientes.json();
+            if (dataRecientes.trabajos && dataRecientes.trabajos.length > 0) {
+                setTrabajosDestacados(dataRecientes.trabajos.slice(0, 6));
+            } else {
+                setTrabajosDestacados([]);
+            }
+            setMostrarUrgentes(false);
         } catch (error) {
             console.error("Error al cargar trabajos:", error);
+            setTrabajosDestacados([]);
+            setMostrarUrgentes(false);
         } finally {
             setLoading(false);
         }
@@ -64,8 +77,13 @@ function Home() {
             <Encabezado />
             <Hero />
             <CategoriasSection categorias={categorias} />
+            <TrabajosDestacados
+                trabajos={trabajosDestacados}
+                loading={loading}
+                titulo={mostrarUrgentes ? <><AlertCircle className="w-6 h-6 inline mr-2" /> Trabajos Urgentes (Cierran en 24h)</> : null}
+                esRecientes={!mostrarUrgentes}
+            />
             <ComoFunciona />
-            <TrabajosDestacados trabajos={trabajosDestacados} loading={loading} titulo={<><AlertCircle className="w-6 h-6 inline mr-2" /> Trabajos Urgentes (Cierran en 24h)</>} />
             <Beneficios />
             <CallToAction />
             <Footer />

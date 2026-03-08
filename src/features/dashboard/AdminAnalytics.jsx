@@ -50,64 +50,66 @@ const AdminAnalytics = () => {
     }));
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center mb-2">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Analíticas Avanzadas</h1>
-                    <p className="text-gray-500 text-sm mt-1">Métricas detalladas de rendimiento y crecimiento</p>
-                </div>
+        <div className="space-y-5">
+            <div>
+                <h1 className="text-2xl font-black text-slate-800">Analíticas Avanzadas</h1>
+                <p className="text-sm text-slate-500 mt-0.5">Métricas detalladas de rendimiento y crecimiento</p>
             </div>
 
             {/* Crecimiento de Usuarios */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center gap-2 mb-6">
-                    <TrendingUp size={20} className="text-blue-600" />
-                    <h3 className="text-lg font-bold text-gray-800">Crecimiento de Usuarios</h3>
+            <div className="admin-card p-5">
+                <div className="flex items-center gap-2 mb-5">
+                    <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
+                        <TrendingUp size={14} className="text-white" />
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-700">Crecimiento de Usuarios</h3>
                 </div>
-                <div className="h-80">
+                <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data.crecimiento}>
                             <defs>
                                 <linearGradient id="colorCrecimiento" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.25} />
+                                    <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                            <XAxis dataKey="fecha" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 12 }} />
-                            <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }} />
-                            <Area type="monotone" dataKey="cantidad" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCrecimiento)" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                            <XAxis dataKey="fecha" tick={{ fontSize: 11, fill: '#64748b' }} />
+                            <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
+                            <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px', boxShadow: '0 4px 16px -2px rgba(0,0,0,0.08)' }} />
+                            <Area type="monotone" dataKey="cantidad" stroke="#f97316" strokeWidth={2} fillOpacity={1} fill="url(#colorCrecimiento)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Top Usuarios */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div className="flex items-center gap-2 mb-6">
-                        <Award size={20} className="text-yellow-600" />
-                        <h3 className="text-lg font-bold text-gray-800">Usuarios Mejor Calificados</h3>
+                <div className="admin-card p-5">
+                    <div className="flex items-center gap-2 mb-5">
+                        <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#fbbf24,#f59e0b)' }}>
+                            <Award size={14} className="text-white" />
+                        </span>
+                        <h3 className="text-sm font-bold text-slate-700">Usuarios Mejor Calificados</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-2.5">
                         {data.topUsuarios.map((usuario, index) => (
-                            <div key={usuario.id_usuario} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-yellow-50 transition-colors">
+                            <div key={usuario.id_usuario} className="flex items-center justify-between p-3 rounded-xl admin-row-hover transition-colors cursor-default">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs
                                         ${index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                                            index === 1 ? 'bg-gray-200 text-gray-700' :
-                                                index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-white border border-gray-200 text-gray-500'}`}>
+                                            index === 1 ? 'bg-slate-200 text-slate-600' :
+                                                index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-500'}`}>
                                         {index + 1}
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-gray-900">{usuario.nombre} {usuario.apellido}</p>
-                                        <p className="text-xs text-gray-500">{usuario.total_calificaciones} reseñas</p>
+                                        <p className="font-semibold text-slate-800 text-sm">{usuario.nombre} {usuario.apellido}</p>
+                                        <p className="text-xs text-slate-400">{usuario.total_calificaciones} reseñas</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1 bg-white px-2 py-1 rounded border border-gray-200">
-                                    <span className="text-yellow-500">★</span>
-                                    <span className="font-bold text-gray-700">{usuario.promedio}</span>
+                                <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}>
+                                    <span className="text-orange-400 text-xs">★</span>
+                                    <span className="font-bold text-orange-700 text-xs">{usuario.promedio}</span>
                                 </div>
                             </div>
                         ))}
@@ -115,19 +117,21 @@ const AdminAnalytics = () => {
                 </div>
 
                 {/* Distribución de Categorías */}
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div className="flex items-center gap-2 mb-6">
-                        <MapPin size={20} className="text-purple-600" />
-                        <h3 className="text-lg font-bold text-gray-800">Popularidad de Categorías</h3>
+                <div className="admin-card p-5">
+                    <div className="flex items-center gap-2 mb-5">
+                        <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#ea580c,#c2410c)' }}>
+                            <MapPin size={14} className="text-white" />
+                        </span>
+                        <h3 className="text-sm font-bold text-slate-700">Popularidad de Categorías</h3>
                     </div>
-                    <div className="h-80">
+                    <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={distribucionCategorias} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" horizontal={true} stroke="#f0f0f0" />
-                                <XAxis type="number" tick={{ fontSize: 12 }} />
-                                <YAxis dataKey="id" type="category" width={50} tick={{ fontSize: 12 }} />
-                                <Tooltip cursor={{ fill: '#f9fafb' }} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }} />
-                                <Bar dataKey="count" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
+                                <CartesianGrid strokeDasharray="3 3" horizontal={true} stroke="#f1f5f9" />
+                                <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
+                                <YAxis dataKey="id" type="category" width={50} tick={{ fontSize: 11, fill: '#64748b' }} />
+                                <Tooltip cursor={{ fill: 'rgba(249,115,22,0.06)' }} contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px' }} />
+                                <Bar dataKey="count" fill="#ea580c" radius={[0, 6, 6, 0]} barSize={18} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

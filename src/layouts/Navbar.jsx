@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Navbar({ estaLogueado, ghostButtonClasses }) {
+function Navbar({ estaLogueado, esEmpleador, ghostButtonClasses }) {
     const navigate = useNavigate();
 
     return (
@@ -19,6 +19,15 @@ function Navbar({ estaLogueado, ghostButtonClasses }) {
             >
                 Servicios
             </button>
+
+            {esEmpleador && (
+                <button
+                    className={`py-2 px-3 text-sm font-medium ${ghostButtonClasses}`}
+                    onClick={() => navigate("/trabajadores")}
+                >
+                    Directorio
+                </button>
+            )}
 
             {estaLogueado && (
                 <button

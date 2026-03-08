@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import API_URL from '../../config/api';
-import { Wrench, Plus, Folder, FileText, DollarSign, Save, Trash2, Loader2 } from 'lucide-react';
+import { Wrench, Plus, Folder, FileText, DollarSign, Save, Trash2, Loader2, Star, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 function SeccionHabilidades({ usuarioId }) {
     const [habilidades, setHabilidades] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [loading, setLoading] = useState(false);
     const [mostrarFormHabilidad, setMostrarFormHabilidad] = useState(false);
+    const [creandoHabilidad, setCreandoHabilidad] = useState(false);
+    const [archivoCertificado, setArchivoCertificado] = useState(null);
     const [nuevaHabilidad, setNuevaHabilidad] = useState({
         id_categoria: "",
         descripcion: "",
@@ -53,27 +55,50 @@ function SeccionHabilidades({ usuarioId }) {
             alert("Por favor completa todos los campos de la habilidad.");
             return;
         }
+        if (!archivoCertificado) {
+            alert("Por favor sube un certificado o diploma para validar tu habilidad.");
+            return;
+        }
+
+        setCreandoHabilidad(true);
 
         try {
+            const formData = new FormData();
+            formData.append('id_categoria', nuevaHabilidad.id_categoria);
+            formData.append('descripcion', nuevaHabilidad.descripcion);
+            formData.append('tarifa_hora', nuevaHabilidad.tarifa_hora);
+            formData.append('certificado', archivoCertificado);
+
             const res = await fetch(`${API_URL}/api/habilidades`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(nuevaHabilidad),
+                body: formData,
             });
             const data = await res.json();
-            if (res.ok) {
-                alert("✅ Habilidad agregada");
+            if (res.status === 200 || res.status === 202) {
                 setNuevaHabilidad({ id_categoria: "", descripcion: "", tarifa_hora: "" });
+                setArchivoCertificado(null);
                 setMostrarFormHabilidad(false);
                 cargarHabilidades();
+                if (res.status === 202) {
+                    alert("Habilidad enviada. Debido a que el sistema IA tiene dudas, un administrador revisará tu certificado manualmente.");
+                } else {
+                    alert("Habilidad comprobada y agregada exitosamente.");
+                }
             } else {
-                alert(`❌ Error: ${data.message || "No se pudo agregar"}`);
+                let errorMsg = data.error || "No se pudo agregar";
+                if (data.detalles && Array.isArray(data.detalles)) {
+                    errorMsg += `\nFalta: ${data.detalles.join(", ")}`;
+                }
+                alert(`Error: ${errorMsg}`);
             }
         } catch (error) {
             console.error("Error creando habilidad:", error);
+            alert("Hubo un error de conexión al intentar validar el certificado.");
+        } finally {
+            setCreandoHabilidad(false);
         }
     };
 
@@ -89,94 +114,154 @@ function SeccionHabilidades({ usuarioId }) {
             if (res.ok) {
                 cargarHabilidades();
             } else {
-                alert("❌ Error al eliminar");
+                alert("Error al eliminar");
             }
         } catch (error) {
             console.error("Error eliminando habilidad:", error);
         }
     };
 
+    const StatusBadge = ({ estado }) => {
+        const config = {
+            aprobada: { icon: CheckCircle, text: "Aprobada", bg: "#ecfdf5", color: "#059669", border: "#a7f3d0" },
+            pendiente_revision: { icon: Clock, text: "En Revisión", bg: "#fefce8", color: "#ca8a04", border: "#fef08a" },
+            rechazada: { icon: XCircle, text: "Rechazada", bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
+        };
+        const item = config[estado] || config.pendiente_revision;
+        const Icon = item.icon;
+        return (
+            <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '999px',
+                fontSize: '0.75rem', fontWeight: 800, background: item.bg, color: item.color, border: `1px solid ${item.border}`
+            }}>
+                <Icon size={12} /> {item.text}
+            </span>
+        );
+    };
+
+    const statsAprobadas = habilidades.filter(h => h.estado === 'aprobada').length;
+    const statsPendientes = habilidades.filter(h => h.estado === 'pendiente_revision').length;
+
     return (
-        <div className="mt-8 pt-8 border-t-2 border-gray-200">
-            {/* Header de la sección */}
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Wrench className="w-7 h-7 text-green-600" /> Mis Habilidades
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                        Agrega tus habilidades y tarifas para que los empleadores te encuentren
-                    </p>
+        <div style={{ marginTop: '0.5rem' }}>
+            {/* Stats rápidas */}
+            {habilidades.length > 0 && (
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '1.75rem' }}>
+                    {[
+                        { label: 'Total', value: habilidades.length, bg: '#f8fafc', color: '#475569', border: '#e2e8f0' },
+                        { label: 'Aprobadas', value: statsAprobadas, bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' },
+                        { label: 'En revisión', value: statsPendientes, bg: '#fefce8', color: '#ca8a04', border: '#fde047' },
+                    ].map(stat => (
+                        <div key={stat.label} style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            padding: '10px 18px', borderRadius: '14px',
+                            background: stat.bg, border: `1px solid ${stat.border}`,
+                        }}>
+                            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: stat.color, lineHeight: 1 }}>{stat.value}</span>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: stat.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{stat.label}</span>
+                        </div>
+                    ))}
                 </div>
+            )}
+
+            {/* Toolbar row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '420px', margin: 0, lineHeight: 1.5 }}>
+                    Añade tus especialidades para que los empleadores sepan en qué destacas y cuál es tu tarifa base.
+                </p>
                 <button
                     onClick={() => setMostrarFormHabilidad(!mostrarFormHabilidad)}
-                    className={`px-5 py-2.5 font-bold rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2 ${mostrarFormHabilidad
-                        ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                        : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700"
-                        }`}
+                    style={{
+                        padding: '10px 20px', fontWeight: 700, borderRadius: '12px', transition: 'all 0.2s',
+                        border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
+                        background: mostrarFormHabilidad ? '#f1f5f9' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                        color: mostrarFormHabilidad ? '#475569' : '#fff',
+                        boxShadow: mostrarFormHabilidad ? 'none' : '0 4px 12px rgba(249,115,22,0.3)',
+                    }}
                 >
-                    <span className="flex items-center gap-2">
-                        {mostrarFormHabilidad ? "Cancelar" : "Agregar Habilidad"}
-                    </span>
+                    {mostrarFormHabilidad ? "Cerrar" : <><Plus size={18} /> Nueva Habilidad</>}
                 </button>
             </div>
 
-            {/* Formulario para agregar habilidad */}
+            {/* Formulario */}
             {mostrarFormHabilidad && (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl mb-6 border-2 border-green-200 shadow-lg">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                        <Plus className="w-6 h-6 text-green-600" /> Nueva Habilidad
+                <div style={{
+                    background: 'rgba(255,255,255,0.6)', padding: '2rem', borderRadius: '20px', marginBottom: '2.5rem',
+                    border: '1px solid rgba(249,115,22,0.25)', boxShadow: '0 10px 25px -5px rgba(249,115,22,0.1)',
+                    backdropFilter: 'blur(10px)',
+                }}>
+                    <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Star size={22} color="#f97316" /> Agregar nueva especialidad
                     </h4>
-                    <form onSubmit={handleCrearHabilidad} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                                    <Folder className="w-4 h-4" /> Categoría
-                                </label>
+                    <form onSubmit={handleCrearHabilidad} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Categoría</label>
                                 <select
                                     value={nuevaHabilidad.id_categoria}
                                     onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, id_categoria: e.target.value })}
-                                    className="w-full rounded-xl border-2 border-gray-200 py-3 px-4 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                                    style={{ width: '100%', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem', background: '#fff' }}
                                     required
                                 >
-                                    <option value="">Selecciona una categoría...</option>
+                                    <option value="" disabled>Selecciona un rubro...</option>
                                     {categorias.map(cat => (
                                         <option key={cat.id_categoria} value={cat.id_categoria}>{cat.nombre}</option>
                                     ))}
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                                    <FileText className="w-4 h-4" /> Descripción
-                                </label>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Descripción breve (Ej: Pintor profesional)</label>
                                 <input
                                     type="text"
                                     value={nuevaHabilidad.descripcion}
                                     onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, descripcion: e.target.value })}
-                                    className="w-full rounded-xl border-2 border-gray-200 py-3 px-4 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
-                                    placeholder="Ej: Instalación de cableado eléctrico"
+                                    style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem' }}
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                                    <DollarSign className="w-4 h-4" /> Tarifa por Hora
-                                </label>
-                                <input
-                                    type="number"
-                                    value={nuevaHabilidad.tarifa_hora}
-                                    onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tarifa_hora: e.target.value })}
-                                    className="w-full rounded-xl border-2 border-gray-200 py-3 px-4 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
-                                    placeholder="Ej: 50000"
-                                    required
-                                />
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Tarifa / hora (COP)</label>
+                                <div style={{ position: 'relative' }}>
+                                    <DollarSign size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+                                    <input
+                                        type="number"
+                                        value={nuevaHabilidad.tarifa_hora}
+                                        onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tarifa_hora: e.target.value })}
+                                        style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px 12px 38px', fontSize: '0.95rem' }}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Diploma o Certificado (Imagen)</label>
+                                <div style={{ border: '2px dashed #cbd5e1', borderRadius: '16px', padding: '20px', background: '#f8fafc', textAlign: 'center' }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setArchivoCertificado(e.target.files[0])}
+                                        style={{ fontSize: '0.9rem', color: '#475569' }}
+                                        required
+                                    />
+                                    <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '10px', margin: 0 }}>Sube un documento válido para certificar tu conocimiento.</p>
+                                </div>
                             </div>
                         </div>
+
                         <button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                            disabled={creandoHabilidad}
+                            style={{
+                                padding: '14px', borderRadius: '14px', background: creandoHabilidad ? '#94a3b8' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                color: '#fff', fontWeight: 800, border: 'none', cursor: creandoHabilidad ? 'not-allowed' : 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px -4px rgba(249,115,22,0.4)',
+                                transition: 'all 0.2s',
+                            }}
                         >
-                            <Save className="w-5 h-5" /> Guardar Habilidad
+                            {creandoHabilidad ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            {creandoHabilidad ? "Certificando con IA..." : "Someter para Verificación"}
                         </button>
                     </form>
                 </div>
@@ -184,62 +269,66 @@ function SeccionHabilidades({ usuarioId }) {
 
             {/* Lista de Habilidades */}
             {loading ? (
-                <div className="text-center py-12">
-                    <Loader2 className="inline-block animate-spin h-12 w-12 text-green-600" />
-                    <p className="text-gray-500 mt-4">Cargando habilidades...</p>
+                <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+                    <Loader2 className="animate-spin" size={40} color="#ea580c" />
                 </div>
             ) : habilidades.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
                     {habilidades.map((hab) => (
                         <div
                             key={hab.id_habilidad}
-                            className="bg-white border-2 border-gray-100 rounded-xl p-5 hover:shadow-xl hover:border-green-200 transition-all duration-300 group relative overflow-hidden"
+                            style={{
+                                background: '#fff', borderRadius: '22px', padding: '24px', position: 'relative',
+                                border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '1rem',
+                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', cursor: 'default',
+                                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.transform = 'scale(1.02)';
+                                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(249,115,22,0.08)';
+                                e.currentTarget.style.borderColor = '#fed7aa';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.02)';
+                                e.currentTarget.style.borderColor = '#f1f5f9';
+                            }}
                         >
-                            {/* Decoración de fondo */}
-                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity"></div>
-
-                            <div className="relative">
-                                {/* Badge de categoría */}
-                                <span className="inline-block px-3 py-1.5 mb-3 text-xs font-bold text-green-800 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full border border-green-200">
-                                    {hab.categoria.nombre}
-                                </span>
-
-                                {/* Descripción */}
-                                <p className="text-base font-bold text-gray-900 mb-3 line-clamp-2">
-                                    {hab.descripcion}
-                                </p>
-
-                                {/* Tarifa */}
-                                <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <DollarSign className="w-6 h-6 text-green-600" />
-                                        <div>
-                                            <p className="text-xs text-gray-500">Tarifa por hora</p>
-                                            <p className="text-lg font-bold text-green-600">
-                                                ${parseInt(hab.tarifa_hora).toLocaleString('es-CO')}
-                                            </p>
-                                        </div>
-                                    </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#f97316', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{hab.categoria.nombre}</span>
+                                    <h4 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{hab.descripcion}</h4>
                                 </div>
-
-                                {/* Botón eliminar */}
-                                <button
-                                    onClick={() => handleEliminarHabilidad(hab.id_habilidad)}
-                                    className="w-full mt-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-semibold text-sm transition-all border border-red-200 hover:border-red-300 flex items-center justify-center gap-2"
-                                >
-                                    <Trash2 className="w-4 h-4" /> Eliminar
-                                </button>
+                                <StatusBadge estado={hab.estado} />
                             </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: '#f8fafc', borderRadius: '16px' }}>
+                                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>TARIFA HORA</span>
+                                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ea580c' }}>${parseInt(hab.tarifa_hora).toLocaleString('es-CO')}</span>
+                            </div>
+
+                            <button
+                                onClick={() => handleEliminarHabilidad(hab.id_habilidad)}
+                                style={{
+                                    width: '100%', padding: '10px', borderRadius: '12px', background: '#fff1f2', color: '#e11d48',
+                                    fontWeight: 800, fontSize: '0.85rem', border: 'none', cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s',
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = '#ffe4e6'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#fff1f2'}
+                            >
+                                <Trash2 size={16} /> Eliminar
+                            </button>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
-                    <Wrench className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-600 font-medium mb-2">No tienes habilidades registradas aún</p>
-                    <p className="text-sm text-gray-500">
-                        Agrega tus habilidades para que los empleadores puedan encontrarte
-                    </p>
+                <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #e2e8f0' }}>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1', margin: '0 auto 1.5rem' }}>
+                        <Star size={32} />
+                    </div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Tu catálogo de servicios está vacío</h4>
+                    <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '350px', margin: '0 auto' }}>Publica tu primera habilidad certificada para empezar a recibir ofertas de trabajo.</p>
                 </div>
             )}
         </div>

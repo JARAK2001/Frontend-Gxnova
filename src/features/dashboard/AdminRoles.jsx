@@ -111,69 +111,77 @@ const AdminRoles = () => {
     );
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
+        <div className="space-y-5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Gestión de Roles</h1>
-                    <p className="text-gray-500 text-sm mt-1">Define los perfiles de acceso al sistema</p>
+                    <h1 className="text-2xl font-black text-slate-800">Gestión de Roles</h1>
+                    <p className="text-sm text-slate-500 mt-0.5">Define los perfiles de acceso al sistema</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
                             type="text"
-                            placeholder="Buscar rol..."
-                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 w-64 bg-white"
+                            placeholder="Buscar rol…"
+                            className="admin-input pl-9"
+                            style={{ width: 220 }}
                             value={filtro}
                             onChange={(e) => setFiltro(e.target.value)}
                         />
                     </div>
-                    <button
-                        onClick={abrirCreacion}
-                        className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-medium shadow-sm"
-                    >
-                        <Plus size={20} /> Nuevo Rol
+                    <button onClick={abrirCreacion} className="admin-btn-primary">
+                        <Plus size={16} /> Nuevo Rol
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {rolesFiltrados.map((rol) => {
                     const esCritico = rolesCriticos.includes(rol.nombre);
                     return (
-                        <div key={rol.id_rol} className={`bg-white rounded-xl shadow-sm p-6 border transition-all hover:shadow-md ${esCritico ? 'border-orange-100 bg-orange-50/30' : 'border-gray-100'}`}>
+                        <div key={rol.id_rol} className={`admin-card p-5 transition-all ${esCritico ? 'border-orange-200' : ''}`}
+                            style={esCritico ? { background: 'linear-gradient(135deg, #fff7ed 0%, #fff 100%)' } : {}}
+                        >
                             <div className="flex justify-between items-start mb-4">
-                                <div className={`p-3 rounded-lg ${esCritico ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}>
-                                    <Shield size={24} />
+                                <div
+                                    className="p-3 rounded-xl"
+                                    style={esCritico
+                                        ? { background: 'linear-gradient(135deg,#f97316,#ea580c)', color: '#fff' }
+                                        : { background: '#f1f5f9', color: '#64748b' }}
+                                >
+                                    <Shield size={20} />
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-1.5">
                                     <button
                                         onClick={() => abrirEdicion(rol)}
-                                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        className="p-1.5 rounded-lg transition-colors"
                                         title="Editar"
+                                        style={{ color: '#ea580c' }}
+                                        onMouseEnter={e => e.currentTarget.style.background = '#fff7ed'}
+                                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                     >
-                                        <Edit2 size={18} />
+                                        <Edit2 size={16} />
                                     </button>
                                     {!esCritico && (
                                         <button
                                             onClick={() => handleEliminar(rol.id_rol)}
-                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="p-1.5 text-red-500 rounded-lg transition-colors"
                                             title="Eliminar"
+                                            onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                         >
-                                            <Trash2 size={18} />
+                                            <Trash2 size={16} />
                                         </button>
                                     )}
                                 </div>
                             </div>
 
-                            <h3 className="text-lg font-bold text-gray-900 mb-1">{rol.nombre}</h3>
-                            <p className="text-gray-600 text-sm mb-4 h-10 line-clamp-2">
-                                {rol.descripcion || 'Sin descripción'}
-                            </p>
+                            <h3 className="text-base font-bold text-slate-800 mb-1">{rol.nombre}</h3>
+                            <p className="text-slate-500 text-sm mb-4 line-clamp-2">{rol.descripcion || 'Sin descripción'}</p>
 
-                            <div className="flex items-center gap-2 text-sm text-gray-500 pt-4 border-t border-gray-100">
-                                <Users size={16} />
-                                <span>{rol._count?.usuarios || 0} Usuarios asignados</span>
+                            <div className="flex items-center gap-2 text-xs text-slate-400 pt-3" style={{ borderTop: '1px solid #f1f5f9' }}>
+                                <Users size={14} />
+                                <span>{rol._count?.usuarios || 0} usuarios asignados</span>
                             </div>
                         </div>
                     );

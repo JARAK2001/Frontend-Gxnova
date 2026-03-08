@@ -44,7 +44,7 @@ const ComoFunciona = () => {
     }, []);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: '#f8fafc' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: '#fff' }} ref={sectionRef}>
             <div className="container mx-auto px-6" style={{ maxWidth: '1100px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '4rem' }}>

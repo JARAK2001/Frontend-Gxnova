@@ -50,6 +50,7 @@ function Encabezado() {
     };
 
     const estaLogueado = !!user;
+    const esEmpleador = user?.rolesAsignados?.some(r => r.rol?.nombre === 'Empleador') || false;
 
     /* ── style helpers ── */
     const headerStyle = {
@@ -91,7 +92,7 @@ function Encabezado() {
 
                     {/* ── Navegación centrada ── */}
                     <div className="hidden md:flex flex-1 justify-center">
-                        <Navbar estaLogueado={!!user} ghostButtonClasses={ghostBtn} />
+                        <Navbar estaLogueado={estaLogueado} esEmpleador={esEmpleador} ghostButtonClasses={ghostBtn} />
                     </div>
 
                     {/* ── Acciones ── */}
@@ -150,6 +151,7 @@ function Encabezado() {
                                         mostrarMenuUsuario={mostrarMenuUsuario}
                                         setMostrarMenuUsuario={setMostrarMenuUsuario}
                                         handleLogout={handleLogout}
+                                        esEmpleador={esEmpleador}
                                         ghostButtonClasses={ghostBtn}
                                     />
                                 </div>
@@ -191,6 +193,7 @@ function Encabezado() {
                 mostrarMenuMovil={mostrarMenuMovil}
                 setMostrarMenuMovil={setMostrarMenuMovil}
                 estaLogueado={estaLogueado}
+                esEmpleador={esEmpleador}
                 cantidadNotificaciones={cantidadNotificaciones}
                 handleLogout={handleLogout}
             />

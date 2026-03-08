@@ -53,16 +53,16 @@ const Beneficios = () => {
     }, []);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: '#fff' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: 'var(--slate-50)' }} ref={sectionRef}>
             <div className="container mx-auto px-6" style={{ maxWidth: '1200px' }}>
                 {/* Header */}
-                <div style={{ marginBottom: '3.5rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                     <span className="section-badge">Ventajas Exclusivas</span>
                     <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: '#0f172a', marginTop: '14px', letterSpacing: '-0.02em' }}>
                         ¿Por qué elegir{' '}
                         <span style={{ color: '#f97316' }}>Gxnova</span>?
                     </h2>
-                    <p style={{ marginTop: '10px', color: '#6b7280', fontSize: '1.05rem', maxWidth: '520px', lineHeight: 1.7 }}>
+                    <p style={{ marginTop: '10px', color: '#6b7280', fontSize: '1.05rem', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7 }}>
                         Más que una app de servicios, somos una comunidad diseñada para conectar talento con oportunidades reales.
                     </p>
                 </div>

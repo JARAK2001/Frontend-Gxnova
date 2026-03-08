@@ -90,17 +90,15 @@ function Footer() {
                             {[
                                 { label: 'Inicio', action: () => navigate('/') },
                                 { label: 'Explorar Servicios', action: () => navigate('/servicios') },
-                                { label: 'Sobre Nosotros', action: null },
-                                { label: 'Carreras', action: null },
                             ].map(item => (
                                 <li key={item.label}>
                                     <button
-                                        onClick={item.action || undefined}
-                                        style={{ ...linkStyle, opacity: item.action ? 1 : 0.5, cursor: item.action ? 'pointer' : 'not-allowed' }}
-                                        onMouseEnter={e => { if (item.action) e.currentTarget.style.color = '#f97316'; }}
+                                        onClick={item.action}
+                                        style={{ ...linkStyle }}
+                                        onMouseEnter={e => { e.currentTarget.style.color = '#f97316'; }}
                                         onMouseLeave={e => { e.currentTarget.style.color = '#94a3b8'; }}
                                     >
-                                        {item.label}{!item.action && ' (Pronto)'}
+                                        {item.label}
                                     </button>
                                 </li>
                             ))}
@@ -137,7 +135,7 @@ function Footer() {
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                             {[
                                 { Icon: Mail, label: 'Email', value: 'soporte@gxnova.com', href: 'mailto:soporte@gxnova.com' },
-                                { Icon: Phone, label: 'WhatsApp', value: '+57 300 598 1738', href: 'https://wa.me/573000000000' },
+                                { Icon: Phone, label: 'WhatsApp', value: '+57 300 598 1738', href: 'https://wa.me/573005981738' },
                                 { Icon: MapPin, label: 'Ubicación', value: 'Popayan, Cauca, Colombia', href: null },
                             ].map(({ Icon, label, value, href }) => (
                                 <li key={label} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>

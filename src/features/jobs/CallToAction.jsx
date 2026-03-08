@@ -61,16 +61,17 @@ function CallToAction() {
                 </p>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px' }}>
+                    {/* Botón principal: conversión a registro */}
                     <button
                         onClick={() => navigate("/auth")}
                         style={{
-                            padding: '14px 30px',
+                            padding: '16px 32px',
                             background: '#fff',
                             color: '#ea580c',
                             border: 'none',
                             borderRadius: '14px',
                             fontWeight: 800,
-                            fontSize: '0.95rem',
+                            fontSize: '1rem',
                             cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: '8px',
                             boxShadow: '0 8px 24px -4px rgba(0,0,0,0.2)',
@@ -80,13 +81,14 @@ function CallToAction() {
                         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 36px -6px rgba(0,0,0,0.25)'; }}
                         onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 8px 24px -4px rgba(0,0,0,0.2)'; }}
                     >
-                        Crear Cuenta Gratis <ArrowRight size={16} />
+                        Crear cuenta gratis <ArrowRight size={16} />
                     </button>
 
+                    {/* Botón secundario */}
                     <button
                         onClick={() => navigate("/servicios")}
                         style={{
-                            padding: '14px 30px',
+                            padding: '14px 28px',
                             background: 'rgba(255,255,255,0.15)',
                             color: '#fff',
                             border: '2px solid rgba(255,255,255,0.5)',
@@ -101,7 +103,7 @@ function CallToAction() {
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.25)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.7)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; }}
                     >
-                        Explorar Servicios
+                        Explorar servicios
                     </button>
                 </div>
             </div>

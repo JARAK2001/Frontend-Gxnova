@@ -38,7 +38,7 @@ function CategoriasSection({ categorias }) {
     ];
 
     return (
-        <section style={{ padding: '5rem 0', background: '#fff' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: '#fff' }} ref={sectionRef}>
             <div className="container mx-auto px-4" style={{ maxWidth: '1280px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>

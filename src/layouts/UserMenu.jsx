@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Bell, Plus, LogOut } from "lucide-react";
+import { User, Bell, Plus, LogOut, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function UserMenu({
@@ -8,6 +8,7 @@ function UserMenu({
     mostrarMenuUsuario,
     setMostrarMenuUsuario,
     handleLogout,
+    esEmpleador,
     ghostButtonClasses
 }) {
     const navigate = useNavigate();
@@ -51,16 +52,30 @@ function UserMenu({
                             </span>
                         )}
                     </button>
-                    <button
-                        onClick={() => {
-                            navigate("/crear-trabajo");
-                            setMostrarMenuUsuario(false);
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Publicar Trabajo
-                    </button>
+                    {esEmpleador && (
+                        <>
+                            <button
+                                onClick={() => {
+                                    navigate("/dashboard");
+                                    setMostrarMenuUsuario(false);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                            >
+                                <LayoutDashboard className="w-4 h-4 text-orange-500" />
+                                Mi Dashboard
+                            </button>
+                            <button
+                                onClick={() => {
+                                    navigate("/crear-trabajo");
+                                    setMostrarMenuUsuario(false);
+                                }}
+                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Publicar Trabajo
+                            </button>
+                        </>
+                    )}
                     <hr className="my-1" />
                     <button
                         onClick={handleLogout}
