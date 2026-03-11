@@ -58,11 +58,11 @@ const Beneficios = () => {
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                     <span className="section-badge">Ventajas Exclusivas</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: '#0f172a', marginTop: '14px', letterSpacing: '-0.02em' }}>
+                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '14px', letterSpacing: '-0.02em' }}>
                         ¿Por qué elegir{' '}
-                        <span style={{ color: '#f97316' }}>Gxnova</span>?
+                        <span style={{ color: 'var(--orange-600)' }}>Gxnova</span>?
                     </h2>
-                    <p style={{ marginTop: '10px', color: '#6b7280', fontSize: '1.05rem', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7 }}>
+                    <p style={{ marginTop: '10px', color: 'var(--slate-600)', fontSize: '1.05rem', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7 }}>
                         Más que una app de servicios, somos una comunidad diseñada para conectar talento con oportunidades reales.
                     </p>
                 </div>
@@ -83,33 +83,33 @@ const Beneficios = () => {
                                     background: '#fff',
                                     borderRadius: '20px',
                                     padding: '32px 28px',
-                                    border: `1.5px solid ${b.borderColor}`,
+                                    border: `1.5px solid var(--slate-100)`,
                                     borderLeft: `4px solid ${b.accent}`,
-                                    boxShadow: '0 2px 12px -4px rgba(0,0,0,0.06)',
+                                    boxShadow: 'var(--shadow-md)',
                                     opacity: 0,
                                     transform: 'translateY(24px)',
                                     transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s, box-shadow 0.22s ease`,
                                     cursor: 'default',
                                 }}
-                                onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 16px 40px -8px ${b.accent}25, 0 2px 12px -4px rgba(0,0,0,0.06)`; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 12px -4px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 16px 40px -8px ${b.accent}25, 0 2px 12px -4px rgba(0,0,0,0.06)`; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--slate-200)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--slate-100)'; }}
                             >
                                 {/* Icon */}
                                 <div style={{
                                     width: '52px', height: '52px',
-                                    background: b.bg,
+                                    background: `${b.accent}18`,
                                     borderRadius: '14px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     marginBottom: '20px',
-                                    border: `1px solid ${b.borderColor}`,
+                                    border: `1px solid ${b.accent}30`,
                                 }}>
                                     <Icon size={24} color={b.accent} />
                                 </div>
 
-                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '10px' }}>
+                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '10px' }}>
                                     {b.titulo}
                                 </h3>
-                                <p style={{ fontSize: '0.875rem', color: '#6b7280', lineHeight: 1.7, margin: 0 }}>
+                                <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', lineHeight: 1.7, margin: 0 }}>
                                     {b.descripcion}
                                 </p>
                             </div>

@@ -15,7 +15,7 @@ function MobileMenu({
     if (!mostrarMenuMovil) return null;
 
     return (
-        <div className="md:hidden pb-3 border-t border-gray-200 mt-2 pt-3">
+        <div className="md:hidden pb-3 border-t border-gray-100 mt-2 pt-3">
             {/* Menú móvil expandido */}
             <div className="mt-3 space-y-2">
                 <button
@@ -33,7 +33,7 @@ function MobileMenu({
                             navigate("/trabajadores");
                             setMostrarMenuMovil(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                        className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-orange-600 rounded-md transition-colors"
                     >
                         Directorio Trabajadores
                     </button>
@@ -46,7 +46,7 @@ function MobileMenu({
                                     navigate("/crear-trabajo");
                                     setMostrarMenuMovil(false);
                                 }}
-                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                                className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-orange-600 rounded-md transition-colors"
                             >
                                 Publicar Trabajo
                             </button>
@@ -56,7 +56,7 @@ function MobileMenu({
                                 navigate("/perfil");
                                 setMostrarMenuMovil(false);
                             }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                            className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-orange-600 rounded-md transition-colors"
                         >
                             Mi Perfil
                         </button>
@@ -79,7 +79,7 @@ function MobileMenu({
                                 handleLogout();
                                 setMostrarMenuMovil(false);
                             }}
-                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
                         >
                             Cerrar Sesión
                         </button>
@@ -90,7 +90,7 @@ function MobileMenu({
                             navigate("/auth");
                             setMostrarMenuMovil(false);
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                        className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-orange-600 rounded-md transition-colors"
                     >
                         Iniciar Sesión
                     </button>

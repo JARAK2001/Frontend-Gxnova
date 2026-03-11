@@ -43,10 +43,10 @@ function CategoriasSection({ categorias }) {
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                     <span className="section-badge" style={{ marginBottom: '12px' }}>Explora por área</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: '#0f172a', marginTop: '12px', letterSpacing: '-0.02em' }}>
+                    <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '12px', letterSpacing: '-0.02em' }}>
                         Categorías Disponibles
                     </h2>
-                    <p style={{ color: '#6b7280', marginTop: '8px', fontSize: '1rem' }}>
+                    <p style={{ color: 'var(--slate-600)', marginTop: '8px', fontSize: '1rem' }}>
                         Encuentra trabajos en las áreas que más te interesan
                     </p>
                 </div>
@@ -62,7 +62,7 @@ function CategoriasSection({ categorias }) {
                                 onClick={() => navigate(`/servicios?id_categoria=${cat.id_categoria}`)}
                                 style={{
                                     background: '#fff',
-                                    border: '1.5px solid #f3f4f6',
+                                    border: '1.5px solid var(--slate-100)',
                                     borderRadius: '16px',
                                     padding: '24px 16px',
                                     textAlign: 'center',
@@ -72,11 +72,11 @@ function CategoriasSection({ categorias }) {
                                     transform: 'translateY(20px)',
                                     transitionDelay: `${i * 50}ms`,
                                     fontFamily: 'inherit',
-                                    boxShadow: 'none',
+                                    boxShadow: 'var(--shadow-sm)',
                                 }}
                                 onMouseEnter={e => {
                                     e.currentTarget.style.transform = 'translateY(-5px)';
-                                    e.currentTarget.style.boxShadow = `0 16px 40px -8px ${c.ring}, 0 0 0 2px ${c.accent}30`;
+                                    e.currentTarget.style.boxShadow = `0 16px 40px -8px ${c.ring}, 0 0 0 1px ${c.accent}40`;
                                     e.currentTarget.style.borderColor = c.accent + '60';
                                     e.currentTarget.querySelector('.cat-icon').style.background = c.bg;
                                     e.currentTarget.querySelector('.cat-icon').style.boxShadow = `0 4px 16px -4px ${c.ring}`;
@@ -85,25 +85,25 @@ function CategoriasSection({ categorias }) {
                                 }}
                                 onMouseLeave={e => {
                                     e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                    e.currentTarget.style.borderColor = '#f3f4f6';
-                                    e.currentTarget.querySelector('.cat-icon').style.background = '#f9fafb';
+                                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                                    e.currentTarget.style.borderColor = 'var(--slate-100)';
+                                    e.currentTarget.querySelector('.cat-icon').style.background = 'var(--slate-50)';
                                     e.currentTarget.querySelector('.cat-icon').style.boxShadow = 'none';
-                                    e.currentTarget.querySelector('.cat-initial').style.color = '#6b7280';
-                                    e.currentTarget.querySelector('.cat-label').style.color = '#111827';
+                                    e.currentTarget.querySelector('.cat-initial').style.color = 'var(--slate-400)';
+                                    e.currentTarget.querySelector('.cat-label').style.color = 'var(--slate-900)';
                                 }}
                             >
                                 <div className="cat-icon" style={{
                                     width: '56px', height: '56px',
                                     borderRadius: '14px',
-                                    background: '#f9fafb',
+                                    background: 'var(--slate-50)',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     margin: '0 auto 14px',
                                     transition: 'all 0.22s ease',
                                 }}>
                                     <span className="cat-initial" style={{
                                         fontSize: '1.4rem', fontWeight: 900,
-                                        color: '#6b7280',
+                                        color: 'var(--slate-400)',
                                         transition: 'color 0.22s ease',
                                         lineHeight: 1,
                                     }}>
@@ -111,13 +111,13 @@ function CategoriasSection({ categorias }) {
                                     </span>
                                 </div>
                                 <h3 className="cat-label" style={{
-                                    fontWeight: 700, fontSize: '0.9rem', color: '#111827',
+                                    fontWeight: 700, fontSize: '0.9rem', color: 'var(--slate-900)',
                                     marginBottom: '4px', transition: 'color 0.22s ease',
                                 }}>
                                     {cat.nombre}
                                 </h3>
                                 {cat.descripcion && (
-                                    <p style={{ fontSize: '0.75rem', color: '#9ca3af', lineHeight: 1.4, margin: 0 }}
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', lineHeight: 1.4, margin: 0 }}
                                         className="line-clamp-2">
                                         {cat.descripcion}
                                     </p>
@@ -132,13 +132,13 @@ function CategoriasSection({ categorias }) {
                         onClick={() => navigate("/servicios")}
                         style={{
                             display: 'inline-flex', alignItems: 'center', gap: '6px',
-                            color: '#ea580c', background: 'none', border: 'none',
+                            color: '#f97316', background: 'none', border: 'none',
                             fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer',
                             padding: '8px 16px', borderRadius: '8px',
                             fontFamily: 'inherit',
                             transition: 'background 0.18s',
                         }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#fff7ed'}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(249,115,22,0.1)'}
                         onMouseLeave={e => e.currentTarget.style.background = 'none'}
                     >
                         Ver todas las categorías <ArrowRight size={16} />

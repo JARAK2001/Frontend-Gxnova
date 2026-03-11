@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Plus, Edit2, Trash2, Shield, X, Users } from 'lucide-react';
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminRoles = () => {
     const [roles, setRoles] = useState([]);
@@ -58,21 +59,33 @@ const AdminRoles = () => {
             });
 
             if (res.ok) {
-                alert(isEditing ? "Rol actualizado" : "Rol creado");
+                Swal.fire('¡Éxito!', isEditing ? "Rol actualizado" : "Rol creado", 'success');
                 setShowModal(false);
                 setFormData({ id_rol: null, nombre: '', descripcion: '' });
                 cargarRoles();
             } else {
                 const error = await res.json();
-                alert(`Error: ${error.error || error.message}`);
+                Swal.fire('Error', `Error: ${error.error || error.message}`, 'error');
             }
         } catch (error) {
             console.error(error);
+            Swal.fire('Error', 'Error de conexión', 'error');
         }
     };
 
     const handleEliminar = async (id) => {
-        if (!window.confirm("¿Seguro que quieres eliminar este rol? Esta acción no se puede deshacer.")) return;
+        const result = await Swal.fire({
+            title: '¿Eliminar rol?',
+            text: '¿Seguro que quieres eliminar este rol? Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         const token = localStorage.getItem('token');
         try {
@@ -82,14 +95,15 @@ const AdminRoles = () => {
             });
 
             if (res.ok) {
-                alert("Rol eliminado");
+                Swal.fire('Eliminado', "Rol eliminado correctamente", 'success');
                 cargarRoles();
             } else {
                 const error = await res.json();
-                alert(`Error: ${error.error || error.message}`);
+                Swal.fire('Error', `Error: ${error.error || error.message}`, 'error');
             }
         } catch (error) {
             console.error(error);
+            Swal.fire('Error', 'Error de conexión', 'error');
         }
     };
 

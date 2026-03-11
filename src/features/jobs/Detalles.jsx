@@ -12,6 +12,7 @@ import {
     CheckCircle, Star, Briefcase, RefreshCw, Loader2,
     Trash2, XCircle, AlertCircle, Tag
 } from 'lucide-react';
+import Swal from 'sweetalert2';
 import { useChat } from "../../context/ChatContext";
 
 function Detalles() {
@@ -127,9 +128,9 @@ function Detalles() {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ id_trabajo: id, id_usuario_receptor: usuarioAReceptar.id_usuario, puntuacion: datos.puntuacion, comentario: datos.comentario }),
             });
-            if (res.ok) { alert("Calificación enviada exitosamente"); verificarSiYaCalifico(); }
-            else { const d = await res.json(); alert(`Error: ${d.error}`); }
-        } catch (err) { alert("Error de conexión"); }
+            if (res.ok) { Swal.fire('¡Éxito!', "Calificación enviada exitosamente", 'success'); verificarSiYaCalifico(); }
+            else { const d = await res.json(); Swal.fire('Error', `Error: ${d.error}`, 'error'); }
+        } catch (err) { Swal.fire('Error', "Error de conexión", 'error'); }
     };
 
     const handlePostular = async (e) => {
@@ -143,9 +144,9 @@ function Detalles() {
                 body: JSON.stringify({ id_trabajo: parseInt(id), mensaje, precio_propuesto: precioPropuesto ? parseFloat(precioPropuesto) : null }),
             });
             const data = await res.json();
-            if (res.ok) { alert("Postulación enviada exitosamente"); setMensaje(""); setPrecioPropuesto(""); setMostrarFormPostulacion(false); cargarPostulaciones(); }
-            else { alert(`Error: ${data.error || data.message}`); }
-        } catch (err) { alert("Error de conexión con el servidor"); }
+            if (res.ok) { Swal.fire('¡Éxito!', "Postulación enviada exitosamente", 'success'); setMensaje(""); setPrecioPropuesto(""); setMostrarFormPostulacion(false); cargarPostulaciones(); }
+            else { Swal.fire('Error', `Error: ${data.error || data.message}`, 'error'); }
+        } catch (err) { Swal.fire('Error', "Error de conexión con el servidor", 'error'); }
     };
 
     const confirmarAccion = async () => {
@@ -160,26 +161,26 @@ function Detalles() {
 
                 const res = await fetch(`${API_URL}/api/trabajos/${id}`, options);
                 if (res.ok) {
-                    alert("Trabajo cancelado exitosamente.");
+                    Swal.fire('¡Cancelado!', "Trabajo cancelado exitosamente.", 'success');
                     cargarTrabajo();
                 } else {
                     const data = await res.json();
-                    alert(`Error: ${data.error || 'No se pudo cancelar el trabajo.'}`);
+                    Swal.fire('Error', `Error: ${data.error || 'No se pudo cancelar el trabajo.'}`, 'error');
                 }
             } else if (actionModal.type === 'eliminar') {
                 options.method = 'DELETE';
                 const res = await fetch(`${API_URL}/api/trabajos/${id}`, options);
                 if (res.ok) {
-                    alert("Trabajo eliminado.");
+                    Swal.fire('¡Eliminado!', "Trabajo eliminado.", 'success');
                     navigate('/perfil');
                 } else {
                     const data = await res.json();
-                    alert(`Error: ${data.error || 'No se pudo eliminar el trabajo.'}`);
+                    Swal.fire('Error', `Error: ${data.error || 'No se pudo eliminar el trabajo.'}`, 'error');
                 }
             }
         } catch (error) {
             console.error("Error al ejecutar acción:", error);
-            alert("Error de conexión al servidor.");
+            Swal.fire('Error', "Error de conexión al servidor.", 'error');
         } finally {
             setActionLoading(false);
             setActionModal({ isOpen: false, type: null });
@@ -187,13 +188,23 @@ function Detalles() {
     };
 
     const handleGestionarPostulacion = async (idPostulacion, accion) => {
-        if (!window.confirm(`¿Estás seguro de ${accion} esta postulación?`)) return;
+        const result = await Swal.fire({
+            title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} postulación?`,
+            text: `¿Estás seguro de ${accion} esta postulación?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: accion === 'aceptar' ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: `Sí, ${accion}`,
+            cancelButtonText: 'Cancelar'
+        });
+        if (!result.isConfirmed) return;
         const token = localStorage.getItem("token");
         try {
             const res = await fetch(`${API_URL}/api/postulaciones/${idPostulacion}/${accion}`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
-            if (res.ok) { alert(`Postulación ${accion === 'aceptar' ? 'aceptada' : 'rechazada'} correctamente`); cargarPostulaciones(); cargarTrabajo(); }
-            else { const d = await res.json(); alert(`Error: ${d.error || d.message}`); }
-        } catch (err) { console.error(err); }
+            if (res.ok) { Swal.fire('¡Éxito!', `Postulación ${accion === 'aceptar' ? 'aceptada' : 'rechazada'} correctamente`, 'success'); cargarPostulaciones(); cargarTrabajo(); }
+            else { const d = await res.json(); Swal.fire('Error', `Error: ${d.error || d.message}`, 'error'); }
+        } catch (err) { console.error(err); Swal.fire('Error', 'Hubo un error de conexión', 'error'); }
     };
 
     const formatearPrecio = (m) => {
@@ -245,6 +256,7 @@ function Detalles() {
 
     const { label: estadoLabel, bg: estadoBg, color: estadoColor, border: estadoBorder } = estadoBadge(trabajo.estado);
     const fotoUrl = trabajo.foto ? (trabajo.foto.startsWith('http') ? trabajo.foto : `${API_URL}${trabajo.foto}`) : null;
+    const yaPostulado = usuario ? postulaciones.some(p => p.id_trabajador === usuario.id_usuario) : false;
 
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #fff7ed 0%, #f8fafc 40%, #fff 100%)' }}>
@@ -344,23 +356,29 @@ function Detalles() {
                         {/* Postularme */}
                         {trabajo.estado === 'publicado' && (!usuario || usuario.id_usuario !== trabajo.id_empleador) && (
                             <div>
-                                <button
-                                    onClick={() => {
-                                        const token = localStorage.getItem("token");
-                                        if (!token) { setShowLoginModal(true); }
-                                        else setMostrarFormPostulacion(!mostrarFormPostulacion);
-                                    }}
-                                    className="w-full flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl text-white font-black text-base transition-all"
-                                    style={{
-                                        background: mostrarFormPostulacion ? '#94a3b8' : 'linear-gradient(135deg,#f97316,#ea580c)',
-                                        boxShadow: mostrarFormPostulacion ? 'none' : '0 8px 24px -4px rgba(249,115,22,0.45)',
-                                    }}
-                                >
-                                    {mostrarFormPostulacion
-                                        ? <><X size={18} /> Cancelar Postulación</>
-                                        : <><Rocket size={18} /> Postularme a este Trabajo</>
-                                    }
-                                </button>
+                                {yaPostulado ? (
+                                    <div className="w-full flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl bg-slate-100 text-slate-500 font-bold text-base border-2 border-slate-200">
+                                        <CheckCircle size={18} /> Ya te postulaste a este Trabajo
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            const token = localStorage.getItem("token");
+                                            if (!token) { setShowLoginModal(true); }
+                                            else setMostrarFormPostulacion(!mostrarFormPostulacion);
+                                        }}
+                                        className="w-full flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl text-white font-black text-base transition-all"
+                                        style={{
+                                            background: mostrarFormPostulacion ? '#94a3b8' : 'linear-gradient(135deg,#f97316,#ea580c)',
+                                            boxShadow: mostrarFormPostulacion ? 'none' : '0 8px 24px -4px rgba(249,115,22,0.45)',
+                                        }}
+                                    >
+                                        {mostrarFormPostulacion
+                                            ? <><X size={18} /> Cancelar Postulación</>
+                                            : <><Rocket size={18} /> Postularme a este Trabajo</>
+                                        }
+                                    </button>
+                                )}
 
                                 {mostrarFormPostulacion && (
                                     <form onSubmit={handlePostular} className="mt-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
@@ -435,7 +453,7 @@ function Detalles() {
                                     onClick={async () => {
                                         const token = localStorage.getItem("token");
                                         const pa = postulaciones.find(p => p.estado === 'aceptada');
-                                        if (!pa) { alert("No se encontró una postulación aceptada."); return; }
+                                        if (!pa) { Swal.fire('Atención', "No se encontró una postulación aceptada.", 'warning'); return; }
                                         let idAcuerdo = pa?.acuerdo?.id_acuerdo;
                                         if (!idAcuerdo) {
                                             try {
@@ -452,8 +470,8 @@ function Detalles() {
                                                 });
                                                 const d = await r.json();
                                                 if (r.ok && d.acuerdo) idAcuerdo = d.acuerdo.id_acuerdo;
-                                                else { alert("No se pudo crear el acuerdo."); return; }
-                                            } catch (_) { alert("Error de conexión al crear el acuerdo."); return; }
+                                                else { Swal.fire('Error', "No se pudo crear el acuerdo.", 'error'); return; }
+                                            } catch (_) { Swal.fire('Error', "Error de conexión al crear el acuerdo.", 'error'); return; }
                                         }
                                         try {
                                             const r = await fetch(`${API_URL}/api/transacciones`, {
@@ -461,8 +479,8 @@ function Detalles() {
                                                 body: JSON.stringify({ id_acuerdo: idAcuerdo, tipo_pago: trabajo.tipo_pago })
                                             });
                                             if (r.ok) { await cargarPostulaciones(); await cargarTransaccion(); }
-                                            else { const d = await r.json(); alert(`Error: ${d.error}`); }
-                                        } catch (ex) { alert("Error de conexión"); }
+                                            else { const d = await r.json(); Swal.fire('Error', `Error: ${d.error}`, 'error'); }
+                                        } catch (ex) { Swal.fire('Error', "Error de conexión", 'error'); }
                                     }}
                                     className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition-all shadow-md"
                                     style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}

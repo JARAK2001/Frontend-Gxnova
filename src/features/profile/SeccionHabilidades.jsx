@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_URL from '../../config/api';
 import { Wrench, Plus, Folder, FileText, DollarSign, Save, Trash2, Loader2, Star, Clock, CheckCircle, XCircle } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 function SeccionHabilidades({ usuarioId }) {
     const [habilidades, setHabilidades] = useState([]);
@@ -52,11 +53,11 @@ function SeccionHabilidades({ usuarioId }) {
         e.preventDefault();
         const token = localStorage.getItem("token");
         if (!nuevaHabilidad.id_categoria || !nuevaHabilidad.descripcion || !nuevaHabilidad.tarifa_hora) {
-            alert("Por favor completa todos los campos de la habilidad.");
+            Swal.fire('Atención', "Por favor completa todos los campos de la habilidad.", 'warning');
             return;
         }
         if (!archivoCertificado) {
-            alert("Por favor sube un certificado o diploma para validar tu habilidad.");
+            Swal.fire('Atención', "Por favor sube un certificado o diploma para validar tu habilidad.", 'warning');
             return;
         }
 
@@ -83,27 +84,39 @@ function SeccionHabilidades({ usuarioId }) {
                 setMostrarFormHabilidad(false);
                 cargarHabilidades();
                 if (res.status === 202) {
-                    alert("Habilidad enviada. Debido a que el sistema IA tiene dudas, un administrador revisará tu certificado manualmente.");
+                    Swal.fire('¡Enviada!', "Habilidad enviada. Debido a que el sistema IA tiene dudas, un administrador revisará tu certificado manualmente.", 'success');
                 } else {
-                    alert("Habilidad comprobada y agregada exitosamente.");
+                    Swal.fire('¡Éxito!', "Habilidad comprobada y agregada exitosamente.", 'success');
                 }
             } else {
                 let errorMsg = data.error || "No se pudo agregar";
                 if (data.detalles && Array.isArray(data.detalles)) {
                     errorMsg += `\nFalta: ${data.detalles.join(", ")}`;
                 }
-                alert(`Error: ${errorMsg}`);
+                Swal.fire('Error', `Error: ${errorMsg}`, 'error');
             }
         } catch (error) {
             console.error("Error creando habilidad:", error);
-            alert("Hubo un error de conexión al intentar validar el certificado.");
+            Swal.fire('Error', "Hubo un error de conexión al intentar validar el certificado.", 'error');
         } finally {
             setCreandoHabilidad(false);
         }
     };
 
     const handleEliminarHabilidad = async (id_habilidad) => {
-        if (!window.confirm("¿Seguro que deseas eliminar esta habilidad?")) return;
+        const result = await Swal.fire({
+            title: '¿Eliminar habilidad?',
+            text: "¿Seguro que deseas eliminar esta habilidad?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
         const token = localStorage.getItem("token");
 
         try {
@@ -113,11 +126,13 @@ function SeccionHabilidades({ usuarioId }) {
             });
             if (res.ok) {
                 cargarHabilidades();
+                Swal.fire('Eliminada', 'Habilidad eliminada correctamente', 'success');
             } else {
-                alert("Error al eliminar");
+                Swal.fire('Error', "Error al eliminar la habilidad", 'error');
             }
         } catch (error) {
             console.error("Error eliminando habilidad:", error);
+            Swal.fire('Error', 'Error de conexión', 'error');
         }
     };
 

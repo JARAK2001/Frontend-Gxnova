@@ -44,15 +44,15 @@ const ComoFunciona = () => {
     }, []);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: '#fff' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: 'var(--slate-50)' }} ref={sectionRef}>
             <div className="container mx-auto px-6" style={{ maxWidth: '1100px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <span className="section-badge">Proceso Simple</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: '#0f172a', marginTop: '16px', letterSpacing: '-0.02em' }}>
-                        ¿Cómo funciona <span style={{ color: '#f97316' }}>Gxnova</span>?
+                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '16px', letterSpacing: '-0.02em' }}>
+                        ¿Cómo funciona <span style={{ color: 'var(--orange-600)' }}>Gxnova</span>?
                     </h2>
-                    <p style={{ marginTop: '12px', color: '#6b7280', maxWidth: '540px', margin: '12px auto 0', lineHeight: 1.7 }}>
+                    <p style={{ marginTop: '12px', color: 'var(--slate-600)', maxWidth: '540px', margin: '12px auto 0', lineHeight: 1.7 }}>
                         Conectamos necesidades con talentos de forma rápida, segura y flexible.
                     </p>
                 </div>
@@ -82,8 +82,8 @@ const ComoFunciona = () => {
                                     background: '#fff',
                                     borderRadius: '20px',
                                     padding: '36px 28px',
-                                    border: '1.5px solid #f1f5f9',
-                                    boxShadow: '0 4px 20px -4px rgba(0,0,0,0.07)',
+                                    border: '1.5px solid var(--slate-100)',
+                                    boxShadow: 'var(--shadow-md)',
                                     textAlign: 'center',
                                     opacity: 0,
                                     transform: 'translateY(24px)',
@@ -125,10 +125,10 @@ const ComoFunciona = () => {
                                     </div>
                                 </div>
 
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', marginBottom: '10px' }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '10px' }}>
                                     {paso.titulo}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: 1.7 }}>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--slate-600)', lineHeight: 1.7 }}>
                                     {paso.descripcion}
                                 </p>
                             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Check, X, Eye, Clock, Award, FileCheck } from "lucide-react";
 import API_URL from "../../config/api";
+import Swal from 'sweetalert2';
 
 const EstadoBadge = ({ estado }) => {
     const estilos = {
@@ -49,7 +50,18 @@ const AdminHabilidades = () => {
 
     const handleValidar = async (id, aprobado) => {
         const accion = aprobado ? "aprobar" : "rechazar";
-        if (!confirm(`¿Deseas ${accion} esta habilidad?`)) return;
+        const result = await Swal.fire({
+            title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} habilidad?`,
+            text: `¿Deseas ${accion} esta habilidad?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: aprobado ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: `Sí, ${accion}`,
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         setProcesando(id);
         try {
@@ -66,8 +78,9 @@ const AdminHabilidades = () => {
             if (!res.ok) throw new Error("Error al procesar la solicitud");
             // Remover de la lista
             setHabilidades((prev) => prev.filter((h) => h.id_habilidad !== id));
+            Swal.fire('¡Éxito!', `Habilidad ${aprobado ? 'aprobada' : 'rechazada'} correctamente`, 'success');
         } catch (err) {
-            alert(err.message);
+            Swal.fire('Error', err.message, 'error');
         } finally {
             setProcesando(null);
         }

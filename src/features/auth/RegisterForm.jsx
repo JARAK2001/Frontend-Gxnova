@@ -23,7 +23,8 @@ function RegisterForm({
     showRegisterPassword,
     setShowRegisterPassword,
     PRIMARY_COLOR,
-    HOVER_COLOR
+    HOVER_COLOR,
+    isLoading
 }) {
     return (
         <form className="space-y-4" onSubmit={handleRegister}>
@@ -34,6 +35,7 @@ function RegisterForm({
                 </p>
             </div>
 
+            {/* Nombre y Apellido */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                     <label htmlFor="nombre" className="text-sm font-medium text-gray-700">Nombre</label>
@@ -92,6 +94,7 @@ function RegisterForm({
                 </div>
             </div>
 
+            {/* Email */}
             <div className="space-y-1">
                 <label htmlFor="correo" className="text-sm font-medium text-gray-700">Email</label>
                 <input
@@ -106,7 +109,7 @@ function RegisterForm({
                 />
             </div>
 
-            {/* Input Contraseña */}
+            {/* Contraseña */}
             <div className="space-y-1 pt-2">
                 <label htmlFor="password" className="text-sm font-medium text-gray-700">Contraseña</label>
                 <div className="relative">
@@ -130,7 +133,7 @@ function RegisterForm({
                 </div>
             </div>
 
-            {/* Input Confirmar Contraseña */}
+            {/* Confirmar Contraseña */}
             <div className="space-y-1">
                 <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                     Confirmar contraseña
@@ -149,102 +152,7 @@ function RegisterForm({
                 </div>
             </div>
 
-            {/* Sección de Verificación de Identidad */}
-            <div className="space-y-3 pt-3 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700">Verificación de Identidad</h3>
-                <p className="text-xs text-gray-500">
-                    Para garantizar la seguridad, necesitamos verificar tu identidad
-                </p>
-
-                {/* Foto de Cédula */}
-                <div className="space-y-1">
-                    <label htmlFor="foto_cedula" className="text-sm font-medium text-gray-700">
-                        Foto de Cédula <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="file"
-                        id="foto_cedula"
-                        name="foto_cedula"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                // Crear preview
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                    document.getElementById('preview_cedula').src = reader.result;
-                                    document.getElementById('preview_cedula').classList.remove('hidden');
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        }}
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-600 file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                        required
-                    />
-                    <img id="preview_cedula" className="hidden mt-2 w-32 h-32 object-cover rounded-md border border-gray-300" alt="Preview cédula" />
-                </div>
-
-                {/* Selfie */}
-                <div className="space-y-1">
-                    <label htmlFor="selfie" className="text-sm font-medium text-gray-700">
-                        Selfie (Foto de tu rostro) <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="file"
-                        id="selfie"
-                        name="selfie"
-                        accept="image/*"
-                        capture="user"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                // Crear preview
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                    document.getElementById('preview_selfie').src = reader.result;
-                                    document.getElementById('preview_selfie').classList.remove('hidden');
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        }}
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-600 file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                        required
-                    />
-                    <img id="preview_selfie" className="hidden mt-2 w-32 h-32 object-cover rounded-md border border-gray-300" alt="Preview selfie" />
-                    <p className="text-xs text-gray-500">
-                        📸 Asegúrate de que tu rostro sea visible y esté bien iluminado
-                    </p>
-                </div>
-
-                {/* Foto de Perfil (Opcional) */}
-                <div className="space-y-1">
-                    <label htmlFor="foto_perfil" className="text-sm font-medium text-gray-700">
-                        Foto de Perfil (Opcional)
-                    </label>
-                    <input
-                        type="file"
-                        id="foto_perfil"
-                        name="foto_perfil"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                // Crear preview
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                    document.getElementById('preview_perfil').src = reader.result;
-                                    document.getElementById('preview_perfil').classList.remove('hidden');
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        }}
-                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-600 file:mr-4 file:py-2 file:px-4 file:rounded-l-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                    />
-                    <img id="preview_perfil" className="hidden mt-2 w-32 h-32 object-cover rounded-md border border-gray-300" alt="Preview perfil" />
-                </div>
-            </div>
-
-            {/* Checkbox de Términos y Condiciones */}
+            {/* Términos y Condiciones */}
             <div className="flex items-start pt-3 border-t border-gray-200">
                 <div className="flex h-5 items-center">
                     <input
@@ -266,11 +174,32 @@ function RegisterForm({
                 </div>
             </div>
 
+            {/* Indicador de pasos */}
+            <div style={{ background: '#fff7ed', borderRadius: '10px', padding: '12px 16px', border: '1px solid #fed7aa', marginTop: '4px' }}>
+                <p style={{ fontSize: '0.8rem', color: '#9a3412', margin: 0, fontWeight: 600 }}>
+                    📋 Paso 1 de 3: Datos básicos
+                </p>
+                <p style={{ fontSize: '0.75rem', color: '#c2410c', margin: '4px 0 0 0' }}>
+                    Después verificarás tu correo y subirás tu foto de identidad.
+                </p>
+            </div>
+
             <button
                 type="submit"
-                className={`group relative flex w-full justify-center rounded-md bg-${PRIMARY_COLOR} px-4 py-2 text-sm font-medium text-white hover:bg-${HOVER_COLOR} focus:outline-none focus:ring-2 focus:ring-${PRIMARY_COLOR}/50 transition duration-150`}
+                disabled={isLoading}
+                className={`group relative flex w-full justify-center rounded-md bg-${PRIMARY_COLOR} px-4 py-2 text-sm font-medium text-white hover:bg-${HOVER_COLOR} focus:outline-none focus:ring-2 focus:ring-${PRIMARY_COLOR}/50 transition duration-150 disabled:opacity-70 disabled:cursor-not-allowed`}
             >
-                Crear cuenta
+                {isLoading ? (
+                    <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creando cuenta...
+                    </span>
+                ) : (
+                    "Continuar →"
+                )}
             </button>
         </form>
     );

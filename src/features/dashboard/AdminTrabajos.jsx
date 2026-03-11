@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Trash2, Eye, Briefcase } from 'lucide-react';
 import API_URL from '../../config/api';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const estadoStyle = {
     publicado: { background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' },
@@ -40,16 +41,36 @@ const AdminTrabajos = () => {
     };
 
     const handleEliminar = async (id) => {
-        if (!window.confirm('¿Estás seguro de eliminar este trabajo? Esta acción no se puede deshacer.')) return;
+        const result = await Swal.fire({
+            title: '¿Eliminar trabajo?',
+            text: '¿Estás seguro de eliminar este trabajo? Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
         const token = localStorage.getItem('token');
         try {
             const res = await fetch(`${API_URL}/api/admin/trabajos/${id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` }
             });
-            if (res.ok) { alert('Trabajo eliminado correctamente'); cargarDatos(); }
-            else alert('Error al eliminar trabajo');
-        } catch (error) { console.error(error); }
+            if (res.ok) {
+                Swal.fire('¡Éxito!', 'Trabajo eliminado correctamente', 'success');
+                cargarDatos();
+            }
+            else {
+                Swal.fire('Error', 'Error al eliminar trabajo', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        }
     };
 
     const filtrarPorFecha = (trabajo) => {

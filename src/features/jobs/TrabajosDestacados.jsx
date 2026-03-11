@@ -59,7 +59,7 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                     }}>
                         {titulo || (esRecientes ? 'Trabajos recientes' : 'Trabajos destacados')}
                     </h2>
-                    <p style={{ color: '#6b7280', marginTop: '8px', fontSize: '1rem' }}>
+                    <p style={{ color: 'var(--slate-600)', marginTop: '8px', fontSize: '1rem' }}>
                         {titulo ? 'Proyectos que cierran en las próximas 24 horas' : 'Proyectos recientes que buscan talento'}
                     </p>
                 </div>
@@ -74,9 +74,10 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                         padding: '3rem',
                         background: '#fff',
                         borderRadius: 'var(--radius-card)',
-                        border: '1.5px solid var(--slate-200)',
-                        color: '#6b7280',
+                        border: '1.5px solid var(--slate-100)',
+                        color: 'var(--slate-500)',
                         fontSize: '1rem',
+                        boxShadow: 'var(--shadow-sm)',
                     }}>
                         No hay trabajos disponibles en este momento
                     </div>
@@ -97,7 +98,7 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                         background: '#fff',
                                         borderRadius: 'var(--radius-card)',
                                         padding: '24px',
-                                        border: urgente ? '2px solid rgba(239,68,68,0.4)' : '1.5px solid var(--slate-200)',
+                                        border: urgente ? '2px solid rgba(239,68,68,0.4)' : '1.5px solid var(--slate-100)',
                                         boxShadow: 'var(--shadow-sm)',
                                         cursor: 'pointer',
                                         opacity: 0,
@@ -136,12 +137,12 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                                         <span style={{
                                             padding: '5px 12px',
-                                            background: 'linear-gradient(135deg, #fff7ed, #ffedd5)',
-                                            border: '1px solid #fed7aa',
+                                            background: 'var(--orange-50)',
+                                            border: '1px solid var(--orange-100)',
                                             borderRadius: '999px',
                                             fontSize: '0.75rem',
                                             fontWeight: 700,
-                                            color: 'var(--orange-700)',
+                                            color: 'var(--orange-600)',
                                         }}>
                                             {trabajo.categoria?.nombre || 'Sin categoría'}
                                         </span>
@@ -151,9 +152,9 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                             fontSize: '0.72rem',
                                             fontWeight: 700,
                                             textTransform: 'capitalize',
-                                            background: trabajo.estado === 'publicado' ? '#f0fdf4' : '#f1f5f9',
-                                            color: trabajo.estado === 'publicado' ? '#166534' : '#475569',
-                                            border: `1px solid ${trabajo.estado === 'publicado' ? '#bbf7d0' : '#e2e8f0'}`,
+                                            background: trabajo.estado === 'publicado' ? '#f0fdf4' : 'var(--slate-50)',
+                                            color: trabajo.estado === 'publicado' ? '#16a34a' : 'var(--slate-500)',
+                                            border: `1px solid ${trabajo.estado === 'publicado' ? '#dcfce7' : 'var(--slate-100)'}`,
                                         }}>
                                             {trabajo.estado}
                                         </span>
@@ -173,7 +174,7 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     </h3>
                                     <p style={{
                                         fontSize: '0.875rem',
-                                        color: '#6b7280',
+                                        color: 'var(--slate-600)',
                                         lineHeight: 1.6,
                                         marginBottom: '16px',
                                         display: '-webkit-box',
@@ -184,12 +185,12 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                         {trabajo.descripcion}
                                     </p>
                                     <div style={{ marginBottom: '12px' }}>
-                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '2px' }}>Tipo de pago</p>
-                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--slate-800)' }}>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', marginBottom: '2px' }}>Tipo de pago</p>
+                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--slate-900)' }}>
                                             {trabajo.tipo_pago === 'dinero' ? formatearPrecio(trabajo.monto_pago) : 'Trueque'}
                                         </p>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#64748b', marginBottom: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--slate-500)', marginBottom: '16px' }}>
                                         <MapPin size={14} /> {trabajo.ubicacion}
                                     </div>
                                     <button
@@ -247,7 +248,7 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                             fontFamily: 'inherit',
                             transition: 'background 0.18s, color 0.18s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--orange-50)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.1)'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
                     >
                         Ver todos los trabajos <ArrowRight size={16} />

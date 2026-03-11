@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import API_URL from '../../config/api';
 import { Camera, User, Mail, Phone, Save, X } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 function FormularioPerfil({ usuario, onCancel, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -42,14 +43,14 @@ function FormularioPerfil({ usuario, onCancel, onSuccess }) {
             const result = await respuesta.json();
 
             if (respuesta.ok) {
-                alert("Perfil actualizado exitosamente");
+                Swal.fire('¡Actualizado!', 'Perfil actualizado exitosamente', 'success');
                 onSuccess();
             } else {
-                alert(`Error: ${result.error || result.message}`);
+                Swal.fire('Error', `Error: ${result.error || result.message}`, 'error');
             }
         } catch (error) {
             console.error("Error al actualizar:", error);
-            alert("Error de conexión con el servidor");
+            Swal.fire('Error', 'Error de conexión con el servidor', 'error');
         } finally {
             setUploading(false);
         }

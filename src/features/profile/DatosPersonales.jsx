@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import API_URL from '../../config/api';
 import Estrellas from "../../ui/Estrellas";
 import { Mail, Phone, CheckCircle, Users, Calendar, Briefcase, Wrench, Rocket, ShieldCheck, Star } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 /* ── Tarjeta de info individual ── */
 const InfoCard = ({ icon, iconBg, iconColor, label, children, fullWidth = false }) => (
@@ -43,7 +44,19 @@ function DatosPersonales({ usuario, onEdit, onRefresh }) {
     };
 
     const handleActivarRol = async (nuevoRol) => {
-        if (!window.confirm(`¿Quieres activar el perfil de ${nuevoRol}?`)) return;
+        const result = await Swal.fire({
+            title: 'Confirmar activación',
+            text: `¿Quieres activar el perfil de ${nuevoRol}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#f97316',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Sí, activar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
         const token = localStorage.getItem("token");
         try {
             const res = await fetch(`${API_URL}/api/usuarios/agregar-rol`, {
@@ -51,9 +64,18 @@ function DatosPersonales({ usuario, onEdit, onRefresh }) {
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ rol: nuevoRol })
             });
-            if (res.ok) { alert(`Ahora tienes el perfil de ${nuevoRol}`); onRefresh(); }
-            else { const data = await res.json(); alert(`Error: ${data.error || data.message}`); }
-        } catch (error) { console.error("Error activando rol:", error); alert("Error de conexión"); }
+            if (res.ok) {
+                Swal.fire('¡Éxito!', `Ahora tienes el perfil de ${nuevoRol}`, 'success');
+                onRefresh();
+            }
+            else {
+                const data = await res.json();
+                Swal.fire('Error', `Error: ${data.error || data.message}`, 'error');
+            }
+        } catch (error) {
+            console.error("Error activando rol:", error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        }
     };
 
     return (

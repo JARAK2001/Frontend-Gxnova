@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import API_URL from '../../config/api';
 import { Link } from "react-router-dom";
 import { Inbox, Calendar, Users, Eye, Trash2, XCircle, AlertCircle, Plus, LayoutDashboard } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 function MisPublicaciones({ usuarioId }) {
     const [trabajos, setTrabajos] = useState([]);
@@ -44,11 +45,14 @@ function MisPublicaciones({ usuarioId }) {
             } else if (type === 'eliminar') {
                 options.method = 'DELETE';
                 const res = await fetch(`${API_URL}/api/trabajos/${job.id_trabajo}`, options);
-                if (res.ok) setTrabajos(prev => prev.filter(t => t.id_trabajo !== job.id_trabajo));
+                if (res.ok) {
+                    setTrabajos(prev => prev.filter(t => t.id_trabajo !== job.id_trabajo));
+                    Swal.fire('Eliminado', 'El trabajo ha sido eliminado.', 'success');
+                }
             }
         } catch (error) {
             console.error("Error al ejecutar acción:", error);
-            alert("Error de conexión al servidor.");
+            Swal.fire('Error', 'Error de conexión al servidor.', 'error');
         } finally {
             setActionLoading(false);
             setActionModal({ isOpen: false, type: null, job: null });
@@ -148,7 +152,7 @@ function MisPublicaciones({ usuarioId }) {
                         }}
                             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 15px 35px -5px rgba(0,0,0,0.06), 0 5px 15px -5px rgba(249,115,22,0.1)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
                             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}>
-                            
+
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '14px' }}>
                                     <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', margin: 0, lineHeight: 1.3 }}>
@@ -187,7 +191,7 @@ function MisPublicaciones({ usuarioId }) {
                                 >
                                     <LayoutDashboard size={18} color="#f97316" /> Gestionar Candidatos
                                 </Link>
-                                
+
                                 {filtroTab === 'activas' && job.estado === 'publicado' && (
                                     <div style={{ display: 'flex', gap: '10px' }}>
                                         <button

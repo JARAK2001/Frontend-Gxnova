@@ -8,6 +8,7 @@ import {
     Briefcase, Tag, FileText, Calendar, Navigation,
     X, CheckCircle, Loader2, RefreshCw
 } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 function CrearTrabajo() {
     const navigate = useNavigate();
@@ -40,10 +41,10 @@ function CrearTrabajo() {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => setFormData(prev => ({ ...prev, latitud: pos.coords.latitude, longitud: pos.coords.longitude })),
-                () => alert("No se pudo obtener la ubicación. Por favor ingrésala manualmente.")
+                () => Swal.fire('Error', "No se pudo obtener la ubicación. Por favor ingrésala manualmente.", 'error')
             );
         } else {
-            alert("Tu navegador no soporta geolocalización.");
+            Swal.fire('Error', "Tu navegador no soporta geolocalización.", 'error');
         }
     };
 
@@ -69,15 +70,15 @@ function CrearTrabajo() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.id_categoria || !formData.titulo || !formData.descripcion || !formData.ubicacion) {
-            alert("Por favor completa todos los campos obligatorios");
+            Swal.fire('Atención', "Por favor completa todos los campos obligatorios", 'warning');
             return;
         }
         if (formData.tipo_pago === "dinero" && !formData.monto_pago) {
-            alert("El monto es obligatorio cuando el tipo de pago es dinero");
+            Swal.fire('Atención', "El monto es obligatorio cuando el tipo de pago es dinero", 'warning');
             return;
         }
         if (formData.tipo_pago === "trueque" && !formData.descripcion_trueque) {
-            alert("La descripción del trueque es obligatoria");
+            Swal.fire('Atención', "La descripción del trueque es obligatoria", 'warning');
             return;
         }
 
@@ -106,13 +107,15 @@ function CrearTrabajo() {
             });
             const data = await res.json();
             if (res.ok) {
-                navigate(`/detalles/${data.trabajo.id_trabajo}`);
+                Swal.fire('¡Éxito!', 'Trabajo publicado correctamente', 'success').then(() => {
+                    navigate(`/detalles/${data.trabajo.id_trabajo}`);
+                });
             } else {
-                alert(`Error: ${data.error || data.message}`);
+                Swal.fire('Error', `Error: ${data.error || data.message}`, 'error');
             }
         } catch (err) {
             console.error("Error al crear trabajo:", err);
-            alert("Error de conexión con el servidor");
+            Swal.fire('Error', "Error de conexión con el servidor", 'error');
         } finally {
             setSubmitting(false);
         }

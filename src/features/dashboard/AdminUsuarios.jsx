@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, ShieldAlert, CheckCircle, Users } from 'lucide-react';
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminUsuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -27,7 +28,19 @@ const AdminUsuarios = () => {
     };
 
     const handleCambiarEstado = async (id, nuevoEstado) => {
-        if (!window.confirm(`¿Estás seguro de cambiar el estado a ${nuevoEstado}?`)) return;
+        const result = await Swal.fire({
+            title: `¿Cambiar a ${nuevoEstado}?`,
+            text: `¿Estás seguro de cambiar el estado del usuario a ${nuevoEstado}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: nuevoEstado === 'activo' ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: `Sí, ${nuevoEstado}`,
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
         const token = localStorage.getItem('token');
         try {
             const res = await fetch(`${API_URL}/api/admin/usuarios/${id}/status`, {
@@ -35,9 +48,17 @@ const AdminUsuarios = () => {
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ estado: nuevoEstado })
             });
-            if (res.ok) { alert(`Usuario ${nuevoEstado} correctamente`); cargarUsuarios(); }
-            else alert('Error al actualizar usuario');
-        } catch (error) { console.error(error); }
+            if (res.ok) {
+                Swal.fire('¡Éxito!', `Usuario ${nuevoEstado} correctamente`, 'success');
+                cargarUsuarios();
+            }
+            else {
+                Swal.fire('Error', 'Error al actualizar usuario', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        }
     };
 
     const usuariosFiltrados = usuarios.filter(u => {

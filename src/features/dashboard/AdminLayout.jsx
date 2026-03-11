@@ -155,10 +155,10 @@ const AdminLayout = () => {
                 <header
                     className="flex items-center justify-between px-5 h-14 flex-shrink-0"
                     style={{
-                        background: 'rgba(255,255,255,0.88)',
+                        background: 'rgba(255, 255, 255, 0.9)',
                         backdropFilter: 'blur(14px)',
                         WebkitBackdropFilter: 'blur(14px)',
-                        borderBottom: '1px solid rgba(249,115,22,0.10)',
+                        borderBottom: '1px solid rgba(249, 115, 22, 0.10)',
                         boxShadow: '0 2px 12px -2px rgba(0,0,0,0.06)',
                     }}
                 >

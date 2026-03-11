@@ -9,12 +9,16 @@ import FormularioPerfil from "./FormularioPerfil";
 import SeccionHabilidades from "./SeccionHabilidades";
 import MisPublicaciones from "./MisPublicaciones";
 import MisPostulaciones from "./MisPostulaciones";
-import { User, Wrench, Briefcase, Send, Loader2, PenLine } from "lucide-react";
+import MisEstadisticas from "./MisEstadisticas";
+import MisRutas from "./MisRutas";
+import { User, Wrench, Briefcase, Send, Loader2, PenLine, BarChart2, Map } from "lucide-react";
 
 const tabs = [
     { id: "perfil",        label: "Mi Perfil",         icon: User,     requiresRole: null },
     { id: "habilidades",   label: "Mis Habilidades",   icon: Wrench,   requiresRole: "Trabajador" },
     { id: "postulaciones", label: "Mis Postulaciones", icon: Send,     requiresRole: "Trabajador" },
+    { id: "rutas",         label: "Mis Rutas",         icon: Map,      requiresRole: "Trabajador" },
+    { id: "estadisticas",  label: "Estadísticas",      icon: BarChart2,requiresRole: "Trabajador" },
     { id: "publicaciones", label: "Mis Publicaciones", icon: Briefcase,requiresRole: "Empleador" },
 ];
 
@@ -84,6 +88,8 @@ function Perfil() {
         perfil:        { icon: User,      title: "Mi Perfil",         subtitle: "Tu información personal y estado de cuenta." },
         habilidades:   { icon: Wrench,    title: "Mis Habilidades",   subtitle: "Tus especialidades certificadas y tarifas." },
         postulaciones: { icon: Send,      title: "Mis Postulaciones", subtitle: "Los proyectos a los que te has aplicado." },
+        rutas:         { icon: Map,       title: "Mis Rutas",         subtitle: "Tus rutas programadas hacia los trabajos aceptados." },
+        estadisticas:  { icon: BarChart2, title: "Mis Estadísticas",  subtitle: "Analiza tus ganancias y zonas de alta demanda." },
         publicaciones: { icon: Briefcase, title: "Mis Publicaciones", subtitle: "Los trabajos que has publicado como empleador." },
     };
 
@@ -285,6 +291,12 @@ function Perfil() {
                                     )}
                                     {activeTab === "postulaciones" && tieneTrabajador && (
                                         <MisPostulaciones usuarioId={usuario.id_usuario} />
+                                    )}
+                                    {activeTab === "rutas" && tieneTrabajador && (
+                                        <MisRutas usuarioId={usuario.id_usuario} />
+                                    )}
+                                    {activeTab === "estadisticas" && tieneTrabajador && (
+                                        <MisEstadisticas />
                                     )}
                                     {activeTab === "publicaciones" && tieneEmpleador && (
                                         <MisPublicaciones usuarioId={usuario.id_usuario} />

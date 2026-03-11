@@ -6,7 +6,7 @@ import { Clock, CheckCircle, XCircle, Briefcase, Eye, Calendar, MapPin } from 'l
 function MisPostulaciones({ usuarioId }) {
     const [postulaciones, setPostulaciones] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [filtroTab, setFiltroTab] = useState('activas'); // 'activas' o 'historial'
+    const [filtroTab, setFiltroTab] = useState('activas');
 
     useEffect(() => {
         if (usuarioId) cargarPostulaciones();
@@ -34,6 +34,8 @@ function MisPostulaciones({ usuarioId }) {
         if (filtroTab === 'activas') return !esHistorial;
         return esHistorial;
     });
+
+
 
     const StatusBadge = ({ estado, trabajoEstado }) => {
         const config = {
@@ -63,11 +65,15 @@ function MisPostulaciones({ usuarioId }) {
 
     return (
         <div style={{ marginTop: '0.5rem' }}>
+
             {/* Pill tabs redesign */}
             <div style={{
-                display: 'inline-flex', background: 'rgba(241,245,249,0.8)', padding: '5px', borderRadius: '18px',
-                marginBottom: '2.5rem', border: '1px solid rgba(0,0,0,0.05)', backdropFilter: 'blur(8px)',
+                display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', gap: '1rem'
             }}>
+                <div style={{
+                    display: 'inline-flex', background: 'rgba(241,245,249,0.8)', padding: '5px', borderRadius: '18px',
+                    border: '1px solid rgba(0,0,0,0.05)', backdropFilter: 'blur(8px)',
+                }}>
                 <button
                     onClick={() => setFiltroTab('activas')}
                     style={{
@@ -94,6 +100,8 @@ function MisPostulaciones({ usuarioId }) {
                 >
                     Historial
                 </button>
+            </div>
+
             </div>
 
             {loading ? (

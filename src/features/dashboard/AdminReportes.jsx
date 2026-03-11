@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, XCircle, Eye, User, Briefcase, FileText } from 'lucide-react';
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminReportes = () => {
     const [reportes, setReportes] = useState([]);
@@ -36,7 +37,19 @@ const AdminReportes = () => {
     };
 
     const resolverReporte = async (id, accion) => {
-        if (!window.confirm(`¿Confirmar ${accion === 'resolver' ? 'resolver' : 'rechazar'} este reporte?`)) return;
+        const accionStr = accion === 'resolver' ? 'resolver' : 'rechazar';
+        const result = await Swal.fire({
+            title: `¿${accionStr.charAt(0).toUpperCase() + accionStr.slice(1)} reporte?`,
+            text: `¿Seguro que deseas ${accionStr} este reporte?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: accion === 'resolver' ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: `Sí, ${accionStr}`,
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -46,15 +59,15 @@ const AdminReportes = () => {
             });
 
             if (res.ok) {
-                alert(`Reporte ${accion === 'resolver' ? 'resuelto' : 'rechazado'} correctamente`);
+                Swal.fire('¡Éxito!', `Reporte ${accion === 'resolver' ? 'resuelto' : 'rechazado'} correctamente`, 'success');
                 cargarReportes();
                 setReporteSeleccionado(null);
             } else {
-                alert('Error al procesar el reporte');
+                Swal.fire('Error', 'Error al procesar el reporte', 'error');
             }
         } catch (error) {
             console.error("Error:", error);
-            alert('Error de conexión');
+            Swal.fire('Error', 'Error de conexión', 'error');
         }
     };
 

@@ -8,6 +8,8 @@ import UserMenu from "./UserMenu";
 import MobileMenu from "./MobileMenu";
 import ChatButton from "../features/chat/components/ChatButton";
 import API_URL from '../config/api';
+import { io } from "socket.io-client";
+import Swal from 'sweetalert2';
 
 function Encabezado() {
     const navigate = useNavigate();
@@ -24,8 +26,39 @@ function Encabezado() {
     }, []);
 
     useEffect(() => {
-        if (token) cargarNotificacionesNoLeidas();
-    }, [token]);
+        if (token) {
+            cargarNotificacionesNoLeidas();
+
+            // Sockets para alerta de proximidad de trabajador
+            const socket = io(API_URL);
+            
+            if (user?.id_usuario) {
+                // Nos unimos a la sala personal para recibir la alerta
+                socket.emit('join_personal_room', user.id_usuario);
+            }
+
+            socket.on('worker_arriving', (data) => {
+                Swal.fire({
+                    title: '¡Tu experto está cerca!',
+                    text: `${data.mensaje} (Aprox. a ${data.distancia} metros)`,
+                    icon: 'info',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 8000,
+                    timerProgressBar: true,
+                    iconColor: '#f97316',
+                    customClass: {
+                        popup: 'animated slideInRight'
+                    }
+                });
+            });
+
+            return () => {
+                socket.close();
+            };
+        }
+    }, [token, user?.id_usuario]);
 
     const cargarNotificacionesNoLeidas = async () => {
         if (!token) return;
@@ -59,14 +92,20 @@ function Encabezado() {
         zIndex: 50,
         width: '100%',
         transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-        background: scrolled ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,1)',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(249,115,22,0.12)' : '1px solid #f3f4f6',
-        boxShadow: scrolled ? '0 4px 24px -4px rgba(0,0,0,0.08)' : 'none',
+        background: scrolled
+            ? 'rgba(255, 255, 255, 0.95)'
+            : 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: scrolled
+            ? '1px solid rgba(249, 115, 22, 0.15)'
+            : '1px solid rgba(0, 0, 0, 0.05)',
+        boxShadow: scrolled
+            ? '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)'
+            : 'none',
     };
 
-    const ghostBtn = "p-2 rounded-full transition-all duration-200 text-gray-600 hover:bg-orange-50 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400/40";
+    const ghostBtn = "p-2 rounded-full transition-all duration-200 text-slate-600 hover:bg-orange-50 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500/10";
     const badgeCls = "absolute -top-1 -right-1 w-5 h-5 rounded-full text-white text-[10px] flex items-center justify-center font-bold shadow border-2 border-white";
 
     return (
@@ -144,7 +183,7 @@ function Encabezado() {
                                 </div>
 
                                 {/* Perfil */}
-                                <div className="pl-2 border-l border-gray-200 ml-0.5">
+                                <div className="pl-2 border-l border-slate-200 ml-0.5">
                                     <UserMenu
                                         usuario={user}
                                         cantidadNotificaciones={cantidadNotificaciones}
@@ -176,13 +215,13 @@ function Encabezado() {
 
                         {/* Hamburger */}
                         <button
-                            className={`md:hidden ${ghostBtn} p-2 bg-gray-50 rounded-lg`}
+                            className={`md:hidden ${ghostBtn} p-2 bg-slate-50 rounded-lg`}
                             aria-label="Menú de navegación"
                             onClick={() => setMostrarMenuMovil(!mostrarMenuMovil)}
                         >
                             {mostrarMenuMovil
-                                ? <X className="w-5 h-5 text-gray-700" />
-                                : <Menu className="w-5 h-5 text-gray-700" />
+                                ? <X className="w-5 h-5 text-slate-600" />
+                                : <Menu className="w-5 h-5 text-slate-600" />
                             }
                         </button>
                     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Trash2, Plus, X, Edit2 } from 'lucide-react';
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminCategorias = () => {
     const [categorias, setCategorias] = useState([]);
@@ -50,13 +51,13 @@ const AdminCategorias = () => {
             });
 
             if (res.ok) {
-                alert(isEditing ? "Categoría actualizada" : "Categoría creada");
+                Swal.fire('¡Éxito!', isEditing ? "Categoría actualizada" : "Categoría creada", 'success');
                 setShowModal(false);
                 setFormData({ id_categoria: null, nombre: '', descripcion: '' });
                 cargarCategorias();
             } else {
                 const error = await res.json();
-                alert(`Error: ${error.error || error.message}`);
+                Swal.fire('Error', `Error: ${error.error || error.message}`, 'error');
             }
         } catch (error) {
             console.error(error);
@@ -64,7 +65,18 @@ const AdminCategorias = () => {
     };
 
     const handleEliminar = async (id) => {
-        if (!window.confirm("¿Seguro que quieres eliminar esta categoría? Si tiene trabajos asociados, podría fallar.")) return;
+        const result = await Swal.fire({
+            title: '¿Eliminar categoría?',
+            text: "Si tiene trabajos asociados, podría fallar.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         const token = localStorage.getItem('token');
         try {
@@ -74,11 +86,11 @@ const AdminCategorias = () => {
             });
 
             if (res.ok) {
-                alert("Categoría eliminada");
+                Swal.fire('Eliminada', "Categoría eliminada", 'success');
                 cargarCategorias();
             } else {
                 const error = await res.json();
-                alert(`Error: ${error.error || error.message}`);
+                Swal.fire('Error', `Error: ${error.error || error.message}`, 'error');
             }
         } catch (error) {
             console.error(error);

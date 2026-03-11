@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Check, X, Eye } from "lucide-react";
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminVerificacion = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -34,7 +35,18 @@ const AdminVerificacion = () => {
     };
 
     const handleVerificacion = async (id, aprobado) => {
-        if (!confirm(aprobado ? "¿Aprobar usuario?" : "¿Rechazar verificación?")) return;
+        const result = await Swal.fire({
+            title: aprobado ? "¿Aprobar usuario?" : "¿Rechazar verificación?",
+            text: `¿Estás seguro de que deseas ${aprobado ? 'aprobar' : 'rechazar'} a este usuario?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: aprobado ? '#16a34a' : '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: aprobado ? 'Sí, aprobar' : 'Sí, rechazar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             const token = localStorage.getItem("token");
@@ -51,9 +63,9 @@ const AdminVerificacion = () => {
 
             // Actualizar lista
             setUsuarios(usuarios.filter((u) => u.id_usuario !== id));
-            alert(aprobado ? "Usuario verificado" : "Verificación rechazada");
+            Swal.fire('¡Éxito!', aprobado ? "Usuario verificado" : "Verificación rechazada", 'success');
         } catch (err) {
-            alert(err.message);
+            Swal.fire('Error', err.message, 'error');
         }
     };
 

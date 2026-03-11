@@ -4,8 +4,11 @@ import { useAuth } from "../../context/AuthContext";
 import logoGxnova from "../../assets/gxnova-logo.png";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import VerifyEmail from "./VerifyEmail";
+import IdentityVerification from "./IdentityVerification";
 import API_URL from "../../config/api";
 import { CheckCircle, XCircle, Info } from "lucide-react";
+import Swal from 'sweetalert2';
 
 const PRIMARY_COLOR = "orange-600";
 const HOVER_COLOR = "orange-700";
@@ -17,6 +20,11 @@ function Auth() {
     const [view, setView] = useState('login');
     const [message, setMessage] = useState(null);
     const [messageType, setMessageType] = useState(null);
+    const [pendingVerificationCorreo, setPendingVerificationCorreo] = useState(null);
+    const [pendingIdentityCorreo, setPendingIdentityCorreo] = useState(null); // Paso 3: identidad
+
+    // Add loading state for registration
+    const [isLoading, setIsLoading] = useState(false);
 
     // Login states
     const [emailLogin, setEmailLogin] = useState("");
@@ -59,6 +67,11 @@ function Auth() {
                 throw new Error(err.message || 'Credenciales incorrectas.');
             }
             const data = await res.json();
+            // Verificar si requiere verificación de correo
+            if (data.requiereVerificacion) {
+                setPendingVerificationCorreo(data.correo || emailLogin);
+                return;
+            }
             if (data.token) {
                 login(data.token, data.usuario);
                 showMessage('success', "Inicio de sesión exitoso. Redirigiendo...");
@@ -75,58 +88,77 @@ function Auth() {
     const handleRegister = async (e) => {
         e.preventDefault();
         showMessage(null, null);
+
         if (!nombre || !apellido || !emailRegister || !passwordRegister || !confirmPassword) {
-            showMessage('error', "Todos los campos son obligatorios.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Todos los campos son obligatorios.',
+                confirmButtonColor: '#ea580c'
+            });
             return;
         }
         if (!terminosAceptados) {
-            showMessage('error', "Debes aceptar los Términos y la Política de Privacidad.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Términos y condiciones',
+                text: 'Debes aceptar los Términos y la Política de Privacidad.',
+                confirmButtonColor: '#ea580c'
+            });
             return;
         }
         if (passwordRegister !== confirmPassword) {
-            showMessage('error', "Las contraseñas no coinciden.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseñas diferentes',
+                text: 'Las contraseñas no coinciden.',
+                confirmButtonColor: '#ea580c'
+            });
             return;
         }
-        const fotoCedula = document.getElementById('foto_cedula').files[0];
-        const selfie = document.getElementById('selfie').files[0];
-        if (!fotoCedula || !selfie) {
-            showMessage('error', "La foto de cédula y la selfie son obligatorias.");
-            return;
-        }
-        try {
-            const formData = new FormData();
-            formData.append('nombre', nombre);
-            formData.append('apellido', apellido);
-            formData.append('correo', emailRegister);
-            formData.append('password', passwordRegister);
-            formData.append('telefono', telefono);
-            formData.append('rolNombre', rolNombre);
-            formData.append('terminosAceptados', terminosAceptados);
-            formData.append('foto_cedula', fotoCedula);
-            formData.append('selfie', selfie);
-            const fotoPerfil = document.getElementById('foto_perfil').files[0];
-            if (fotoPerfil) formData.append('foto_perfil', fotoPerfil);
 
-            showMessage('info', "Verificando tu identidad... Esto puede tardar unos segundos.");
-            const res = await fetch(`${API_URL}/api/auth/register`, { method: "POST", body: formData });
+
+        try {
+            document.activeElement?.blur();
+            setIsLoading(true);
+
+            Swal.fire({
+                title: 'Creando tu cuenta...',
+                text: 'Estamos registrando tu información.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const res = await fetch(`${API_URL}/api/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre, apellido, correo: emailRegister, password: passwordRegister, telefono, rolNombre, terminosAceptados: true })
+            });
             const data = await res.json();
+
+            Swal.close();
+
             if (res.ok) {
-                showMessage('success', "Registro exitoso. Ahora puedes iniciar sesión.");
-                setNombre(''); setApellido(''); setEmailRegister(''); setPasswordRegister('');
-                setConfirmPassword(''); setTelefono(''); setRolNombre('Trabajador'); setTerminosAceptados(false);
-                ['foto_cedula', 'selfie', 'foto_perfil'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = '';
-                });
-                ['preview_cedula', 'preview_selfie', 'preview_perfil'].forEach(id => {
-                    document.getElementById(id)?.classList.add('hidden');
-                });
-                setTimeout(() => handleToggleView("login"), 3000);
+                if (data.requiereVerificacion) {
+                    setPendingVerificationCorreo(data.usuario?.correo || emailRegister);
+                    setNombre(''); setApellido(''); setEmailRegister(''); setPasswordRegister('');
+                    setConfirmPassword(''); setTelefono(''); setRolNombre('Trabajador'); setTerminosAceptados(false);
+                    return;
+                }
             } else {
-                showMessage('error', data.message || 'Error desconocido');
+                Swal.fire({ icon: 'error', title: 'Error al registrar', text: data.message || 'Error desconocido.', confirmButtonColor: '#dc2626' });
             }
-        } catch {
-            showMessage('error', "Error de conexión con el servidor.");
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor. Por favor, intenta de nuevo.',
+                confirmButtonColor: '#dc2626'
+            });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -138,6 +170,51 @@ function Auth() {
     };
     const mc = msgConfig[messageType] || {};
 
+    // Paso 2: Verificar correo
+    if (pendingVerificationCorreo) {
+        return (
+            <VerifyEmail
+                correo={pendingVerificationCorreo}
+                onVerificado={() => {
+                    // Al verificar el correo → ir al Paso 3 (identidad)
+                    setPendingIdentityCorreo(pendingVerificationCorreo);
+                    setPendingVerificationCorreo(null);
+                }}
+            />
+        );
+    }
+
+    // Paso 3: Verificar identidad
+    if (pendingIdentityCorreo) {
+        return (
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '1.5rem',
+                background: 'linear-gradient(135deg, #fff7ed 0%, #ffffff 40%, #f8fafc 100%)',
+            }}>
+                <div style={{ width: '100%', maxWidth: '440px' }}>
+                    <div style={{
+                        background: '#fff',
+                        borderRadius: '24px',
+                        boxShadow: '0 20px 40px -12px rgba(0,0,0,0.1)',
+                        border: '1.5px solid #f1f5f9',
+                        padding: '28px'
+                    }}>
+                        <IdentityVerification
+                            correo={pendingIdentityCorreo}
+                            onVerificado={(data) => {
+                                login(data.token, data.usuario);
+                                const esAdmin = data.usuario?.rolesAsignados?.some(r => r.rol.nombre === 'Administrador');
+                                navigate(esAdmin ? '/admin' : '/');
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={{
             minHeight: '100vh',
@@ -145,37 +222,39 @@ function Auth() {
             padding: '1.5rem',
             position: 'relative',
             overflow: 'hidden',
-            background: 'linear-gradient(160deg, #fff7ed 0%, #fff 50%, #fdf4ff 100%)',
+            background: 'linear-gradient(135deg, #fff7ed 0%, #ffffff 40%, #f8fafc 100%)',
         }}>
             {/* Decorative orbs */}
-            <div style={{ position: 'absolute', top: '-100px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', bottom: '-80px', left: '-60px', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: '-100px', right: '-80px', width: '450px', height: '450px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,146,60,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-80px', left: '-60px', width: '380px', height: '380px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
             <div className="animate-scale-in" style={{ width: '100%', maxWidth: '440px', position: 'relative', zIndex: 1 }}>
                 {/* Logo */}
                 <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
                     <div style={{
-                        width: '72px', height: '72px', background: '#fff',
+                        width: '72px', height: '72px',
+                        background: '#fff',
                         borderRadius: '20px', margin: '0 auto 14px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 8px 24px -4px rgba(249,115,22,0.25), 0 2px 8px rgba(0,0,0,0.06)',
-                        border: '1px solid #fed7aa',
+                        boxShadow: 'var(--shadow-orange), 0 0 0 1px rgba(0,0,0,0.02)',
+                        border: '1.5px solid var(--slate-100)',
                     }}>
                         <img src={logoGxnova} alt="GXNOVA" style={{ width: '52px', height: 'auto' }} />
                     </div>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', marginBottom: '4px' }}>GXNOVA</h1>
-                    <p style={{ fontSize: '0.875rem', color: '#9ca3af' }}>Conectamos talento con oportunidades</p>
+                    <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--slate-900)', letterSpacing: '-0.03em', marginBottom: '4px' }}>GXNOVA</h1>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>Conectamos talento con oportunidades</p>
                 </div>
 
                 {/* Card */}
                 <div style={{
-                    background: '#fff', borderRadius: '24px',
-                    boxShadow: '0 24px 60px -12px rgba(0,0,0,0.12), 0 8px 24px -4px rgba(0,0,0,0.06)',
-                    border: '1.5px solid #f1f5f9',
+                    background: '#fff',
+                    borderRadius: '24px',
+                    boxShadow: '0 20px 40px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
+                    border: '1.5px solid var(--slate-100)',
                     overflow: 'hidden',
                 }}>
                     {/* Tabs */}
-                    <div style={{ display: 'flex', borderBottom: '1.5px solid #f1f5f9', position: 'relative', padding: '6px 6px 0' }}>
+                    <div style={{ display: 'flex', borderBottom: '1.5px solid var(--slate-100)', position: 'relative', padding: '6px 6px 0' }}>
                         {(['login', 'register']).map(v => (
                             <button
                                 key={v}
@@ -186,7 +265,7 @@ function Auth() {
                                     background: 'none', border: 'none',
                                     fontWeight: 700, fontSize: '0.9rem',
                                     cursor: 'pointer',
-                                    color: view === v ? '#ea580c' : '#9ca3af',
+                                    color: view === v ? 'var(--orange-600)' : 'var(--slate-500)',
                                     borderRadius: '12px 12px 0 0',
                                     transition: 'color 0.18s ease',
                                     position: 'relative',
@@ -245,7 +324,7 @@ function Auth() {
                     </div>
                 </div>
 
-                <p style={{ textAlign: 'center', color: '#d1d5db', fontSize: '0.78rem', marginTop: '1.5rem' }}>
+                <p style={{ textAlign: 'center', color: 'var(--slate-400)', fontSize: '0.78rem', marginTop: '1.5rem' }}>
                     © {new Date().getFullYear()} GXNOVA · Todos los derechos reservados
                 </p>
             </div>

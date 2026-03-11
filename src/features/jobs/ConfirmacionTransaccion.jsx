@@ -4,6 +4,7 @@ import {
     CheckCircle, Clock, AlertCircle, Upload, Image, ArrowRight,
     DollarSign, RefreshCw, Loader
 } from "lucide-react";
+import Swal from 'sweetalert2';
 
 /**
  * ConfirmacionTransaccion
@@ -65,7 +66,7 @@ function ConfirmacionTransaccion({ transaccion, idUsuario, idEmpleador, idTrabaj
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al subir evidencia");
-            alert("✅ Evidencia guardada correctamente.");
+            Swal.fire('¡Éxito!', 'Evidencia guardada correctamente.', 'success');
             onActualizado();
         } catch (e) {
             setError(e.message);

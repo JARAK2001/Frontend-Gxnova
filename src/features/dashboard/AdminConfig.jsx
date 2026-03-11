@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Save, RefreshCw, Settings, Smartphone, Mail, Bell, Shield, DollarSign } from 'lucide-react';
 import API_URL from '../../config/api';
+import Swal from 'sweetalert2';
 
 const AdminConfig = () => {
     const [config, setConfig] = useState(null);
@@ -51,12 +52,13 @@ const AdminConfig = () => {
             });
 
             if (res.ok) {
-                alert("Configuración guardada correctamente");
+                Swal.fire('¡Guardado!', "Configuración guardada correctamente", 'success');
             } else {
-                alert("Error al guardar");
+                Swal.fire('Error', "Error al guardar la configuración", 'error');
             }
         } catch (error) {
             console.error(error);
+            Swal.fire('Error', "Error de conexión al servidor", 'error');
         } finally {
             setSaving(false);
         }
