@@ -94,14 +94,12 @@ function VerifyEmail({ correo, onVerificado }) {
         }
     };
 
-    // Paleta naranja/glassmorphism
+    // Paleta naranja/glassmorphism (Light)
     const glass = {
-        background: "rgba(255, 255, 255, 0.07)",
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
-        border: "1.5px solid rgba(249, 115, 22, 0.3)",
-        borderRadius: "20px",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+        background: "#fff",
+        borderRadius: "24px",
+        boxShadow: "0 20px 40px -12px rgba(0,0,0,0.1)",
+        border: "1.5px solid #f1f5f9",
     };
 
     return (
@@ -109,12 +107,12 @@ function VerifyEmail({ correo, onVerificado }) {
             minHeight: "100vh",
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "1.5rem",
-            background: "linear-gradient(135deg, #0f172a 0%, #1e1207 40%, #1c0a00 70%, #0f172a 100%)",
+            background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 40%, #f8fafc 100%)",
             position: "relative", overflow: "hidden",
         }}>
             {/* Orbes decorativos */}
-            <div style={{ position: "absolute", top: "-120px", right: "-80px", width: "420px", height: "420px", borderRadius: "50%", background: "radial-gradient(circle, rgba(234,88,12,0.25) 0%, transparent 70%)", pointerEvents: "none" }} />
-            <div style={{ position: "absolute", bottom: "-100px", left: "-60px", width: "360px", height: "360px", borderRadius: "50%", background: "radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", top: "-100px", right: "-80px", width: "450px", height: "450px", borderRadius: "50%", background: "radial-gradient(circle, rgba(251,146,60,0.1) 0%, transparent 70%)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: "-80px", left: "-60px", width: "380px", height: "380px", borderRadius: "50%", background: "radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
 
             <div style={{ width: "100%", maxWidth: "420px", position: "relative", zIndex: 1 }}>
 
@@ -127,11 +125,11 @@ function VerifyEmail({ correo, onVerificado }) {
                         boxShadow: "0 8px 24px rgba(234,88,12,0.5), 0 0 0 1px rgba(249,115,22,0.3)",
                         fontSize: "32px",
                     }}>🔐</div>
-                    <h1 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#f1f5f9", letterSpacing: "-0.03em", margin: "0 0 6px" }}>
+                    <h1 style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--slate-900)", letterSpacing: "-0.03em", margin: "0 0 6px" }}>
                         Verifica tu correo
                     </h1>
-                    <p style={{ fontSize: "0.875rem", color: "#94a3b8", margin: 0 }}>
-                        Enviamos un código de 6 dígitos a:
+                    <p style={{ fontSize: "0.875rem", color: "var(--slate-500)", margin: 0 }}>
+                        Enviamos un código a:
                     </p>
                     <p style={{ fontSize: "0.875rem", fontWeight: 700, color: "#fb923c", margin: "4px 0 0" }}>
                         {correo}
@@ -159,18 +157,18 @@ function VerifyEmail({ correo, onVerificado }) {
                                     width: "48px", height: "56px",
                                     textAlign: "center",
                                     fontSize: "1.5rem", fontWeight: 800,
-                                    color: d ? "#ffffff" : "#64748b",
+                                    color: d ? "var(--slate-800)" : "#94a3b8",
                                     background: d
-                                        ? "linear-gradient(135deg, rgba(249,115,22,0.3), rgba(234,88,12,0.2))"
-                                        : "rgba(255,255,255,0.05)",
+                                        ? "rgba(249,115,22,0.05)"
+                                        : "#f8fafc",
                                     border: d
-                                        ? "2px solid rgba(249,115,22,0.7)"
-                                        : "1.5px solid rgba(255,255,255,0.1)",
+                                        ? "2px solid rgba(249,115,22,0.5)"
+                                        : "1.5px solid #e2e8f0",
                                     borderRadius: "14px",
                                     outline: "none",
                                     caretColor: "#f97316",
                                     transition: "all 0.2s ease",
-                                    boxShadow: d ? "0 0 20px rgba(249,115,22,0.2)" : "none",
+                                    boxShadow: d ? "0 0 15px rgba(249,115,22,0.1)" : "none",
                                     fontFamily: "'Courier New', monospace",
                                     cursor: "text",
                                 }}
@@ -206,9 +204,9 @@ function VerifyEmail({ correo, onVerificado }) {
                             width: "100%", padding: "14px",
                             background: digits.join("").length === 6
                                 ? "linear-gradient(135deg, #ea580c, #f97316)"
-                                : "rgba(255,255,255,0.05)",
+                                : "#f1f5f9",
                             border: "none", borderRadius: "12px",
-                            color: digits.join("").length === 6 ? "#fff" : "#475569",
+                            color: digits.join("").length === 6 ? "#fff" : "#94a3b8",
                             fontWeight: 700, fontSize: "1rem",
                             cursor: digits.join("").length === 6 && !loading ? "pointer" : "not-allowed",
                             transition: "all 0.2s ease",
@@ -240,7 +238,7 @@ function VerifyEmail({ correo, onVerificado }) {
                     </div>
                 </div>
 
-                <p style={{ textAlign: "center", color: "#334155", fontSize: "0.78rem", marginTop: "1.5rem" }}>
+                <p style={{ textAlign: "center", color: "var(--slate-400)", fontSize: "0.78rem", marginTop: "1.5rem" }}>
                     © {new Date().getFullYear()} GXNOVA · Todos los derechos reservados
                 </p>
             </div>

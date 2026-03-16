@@ -14,6 +14,7 @@ function SeccionHabilidades({ usuarioId }) {
         id_categoria: "",
         descripcion: "",
         tarifa_hora: "",
+        tipo_documento: "certificado",
     });
 
     useEffect(() => {
@@ -68,6 +69,7 @@ function SeccionHabilidades({ usuarioId }) {
             formData.append('id_categoria', nuevaHabilidad.id_categoria);
             formData.append('descripcion', nuevaHabilidad.descripcion);
             formData.append('tarifa_hora', nuevaHabilidad.tarifa_hora);
+            formData.append('tipo_documento', nuevaHabilidad.tipo_documento);
             formData.append('certificado', archivoCertificado);
 
             const res = await fetch(`${API_URL}/api/habilidades`, {
@@ -78,8 +80,8 @@ function SeccionHabilidades({ usuarioId }) {
                 body: formData,
             });
             const data = await res.json();
-            if (res.status === 200 || res.status === 202) {
-                setNuevaHabilidad({ id_categoria: "", descripcion: "", tarifa_hora: "" });
+            if (res.status === 200 || res.status === 201 || res.status === 202) {
+                setNuevaHabilidad({ id_categoria: "", descripcion: "", tarifa_hora: "", tipo_documento: "certificado" });
                 setArchivoCertificado(null);
                 setMostrarFormHabilidad(false);
                 cargarHabilidades();
@@ -248,6 +250,19 @@ function SeccionHabilidades({ usuarioId }) {
                                         required
                                     />
                                 </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Tipo de Documento a Subir</label>
+                                <select
+                                    value={nuevaHabilidad.tipo_documento}
+                                    onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tipo_documento: e.target.value })}
+                                    style={{ width: '100%', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem', background: '#fff' }}
+                                    required
+                                >
+                                    <option value="certificado">Certificado Técnico/Curso</option>
+                                    <option value="diploma">Diploma de Bachiller</option>
+                                </select>
                             </div>
 
                             <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px' }}>

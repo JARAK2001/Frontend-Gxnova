@@ -6,6 +6,9 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import VerifyEmail from "./VerifyEmail";
 import IdentityVerification from "./IdentityVerification";
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
+import FacialLogin from "./FacialLogin";
 import API_URL from "../../config/api";
 import { CheckCircle, XCircle, Info } from "lucide-react";
 import Swal from 'sweetalert2';
@@ -22,6 +25,7 @@ function Auth() {
     const [messageType, setMessageType] = useState(null);
     const [pendingVerificationCorreo, setPendingVerificationCorreo] = useState(null);
     const [pendingIdentityCorreo, setPendingIdentityCorreo] = useState(null); // Paso 3: identidad
+    const [resetCorreo, setResetCorreo] = useState(null); // Recuperación de contraseña
 
     // Add loading state for registration
     const [isLoading, setIsLoading] = useState(false);
@@ -162,6 +166,85 @@ function Auth() {
         }
     };
 
+    const handleForgotPassword = async (correo) => {
+        showMessage(null, null);
+        try {
+            setIsLoading(true);
+            const res = await fetch(`${API_URL}/api/auth/recuperar-password`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ correo })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setResetCorreo(correo);
+                setView('reset-password');
+                showMessage('success', data.message || "Código enviado.");
+            } else {
+                showMessage('error', data.message || "Error al solicitar código.");
+            }
+        } catch (error) {
+            showMessage('error', "Error de conexión.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (correo, codigo, nuevaPassword, confirmarPassword) => {
+        showMessage(null, null);
+        if (nuevaPassword !== confirmarPassword) {
+            return showMessage('error', "Las contraseñas no coinciden.");
+        }
+        try {
+            setIsLoading(true);
+            const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ correo, codigo, nuevaPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showMessage('success', "Contraseña actualizada. Inicia sesión.");
+                setView('login');
+            } else {
+                showMessage('error', data.message || "Error al restablecer contraseña.");
+            }
+        } catch (error) {
+            showMessage('error', "Error de conexión.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFacialLogin = async (correo, selfieFile) => {
+        showMessage(null, null);
+        try {
+            setIsLoading(true);
+            const formData = new FormData();
+            formData.append("correo", correo);
+            formData.append("selfie", selfieFile);
+
+            const res = await fetch(`${API_URL}/api/auth/login-facial`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await res.json();
+            if (res.ok && data.token) {
+                login(data.token, data.usuario);
+                showMessage('success', "Ingreso facial exitoso.");
+                const esAdmin = data.usuario.rolesAsignados?.some(r => r.rol.nombre === 'Administrador');
+                setTimeout(() => navigate(esAdmin ? "/admin" : "/"), 1500);
+            } else {
+                showMessage('error', data.message || "Error en inicio de sesión facial.");
+            }
+        } catch (error) {
+            showMessage('error', "Error de conexión con el servicio facial.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     /* ── Message ── */
     const msgConfig = {
         error: { bg: '#fef2f2', border: '#fecaca', color: '#b91c1c', Icon: XCircle },
@@ -254,6 +337,7 @@ function Auth() {
                     overflow: 'hidden',
                 }}>
                     {/* Tabs */}
+                    {['login', 'register'].includes(view) && (
                     <div style={{ display: 'flex', borderBottom: '1.5px solid var(--slate-100)', position: 'relative', padding: '6px 6px 0' }}>
                         {(['login', 'register']).map(v => (
                             <button
@@ -282,6 +366,7 @@ function Auth() {
                             </button>
                         ))}
                     </div>
+                    )}
 
                     <div style={{ padding: '24px' }}>
                         {/* Feedback message */}
@@ -306,7 +391,7 @@ function Auth() {
                                 handleToggleView={handleToggleView}
                                 PRIMARY_COLOR={PRIMARY_COLOR} HOVER_COLOR={HOVER_COLOR}
                             />
-                        ) : (
+                        ) : view === "register" ? (
                             <RegisterForm
                                 handleRegister={handleRegister}
                                 nombre={nombre} setNombre={setNombre}
@@ -320,7 +405,29 @@ function Auth() {
                                 showRegisterPassword={showRegisterPassword} setShowRegisterPassword={setShowRegisterPassword}
                                 PRIMARY_COLOR={PRIMARY_COLOR} HOVER_COLOR={HOVER_COLOR}
                             />
-                        )}
+                        ) : view === "forgot-password" ? (
+                            <ForgotPassword
+                                handleToggleView={handleToggleView}
+                                onCodeSent={handleForgotPassword}
+                                PRIMARY_COLOR={PRIMARY_COLOR}
+                                HOVER_COLOR={HOVER_COLOR}
+                            />
+                        ) : view === "reset-password" ? (
+                            <ResetPassword
+                                correo={resetCorreo}
+                                onResetSuccess={handleResetPassword}
+                                handleToggleView={handleToggleView}
+                                PRIMARY_COLOR={PRIMARY_COLOR}
+                                HOVER_COLOR={HOVER_COLOR}
+                            />
+                        ) : view === "facial-login" ? (
+                            <FacialLogin
+                                handleFacialLogin={handleFacialLogin}
+                                handleToggleView={handleToggleView}
+                                PRIMARY_COLOR={PRIMARY_COLOR}
+                                HOVER_COLOR={HOVER_COLOR}
+                            />
+                        ) : null}
                     </div>
                 </div>
 

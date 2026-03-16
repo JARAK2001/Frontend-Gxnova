@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import { useChat } from '../../../context/ChatContext';
 import { useAuth } from '../../../context/AuthContext';
 import API_URL from '../../../config/api';
-import { X, Send, Minus } from 'lucide-react';
+import { X, Send, Minus, Image as ImageIcon } from 'lucide-react';
 
 const ChatWindow = ({ conversacion, onClose }) => {
-    const { socket, joinChat, cerrarChat } = useChat();
+    const { socket, joinChat, cerrarChat, setChatActivo, conversaciones } = useChat();
     const { user } = useAuth();
 
     // Función de cierre que usa tanto el prop como el contexto (doble seguro)
@@ -19,12 +19,23 @@ const ChatWindow = ({ conversacion, onClose }) => {
     const [nuevoMensaje, setNuevoMensaje] = useState("");
     const [minimizado, setMinimizado] = useState(false);
     const [enviando, setEnviando] = useState(false);
+    const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
     const mensajesFinRef = useRef(null);
     const inputRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     if (!user || !conversacion) return null;
 
-    const chatId = conversacion.id_conversacion;
+    let chatId = conversacion.id_conversacion;
+    if (!chatId && conversaciones) {
+        const exist = conversaciones.find(c => 
+             c.id_trabajador === conversacion.id_trabajador && 
+             c.id_empleador === conversacion.id_empleador &&
+             c.id_trabajo === (conversacion.id_trabajo || null)
+        );
+        if (exist) chatId = exist.id_conversacion;
+    }
 
     const receptor = conversacion.trabajador?.id_usuario === user.id_usuario
         ? conversacion.empleador
@@ -76,34 +87,56 @@ const ChatWindow = ({ conversacion, onClose }) => {
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!nuevoMensaje.trim() || enviando) return;
+        if ((!nuevoMensaje.trim() && !imagenSeleccionada) || enviando) return;
 
         setEnviando(true);
         const token = localStorage.getItem('token');
         try {
-            const payload = {
-                contenido: nuevoMensaje,
-                id_receptor: receptor?.id_usuario,
-                id_trabajo: conversacion.id_trabajo || null,
-            };
-            if (chatId) payload.id_conversacion = chatId;
+            const formData = new FormData();
+            formData.append("id_receptor", receptor?.id_usuario);
+            if (nuevoMensaje.trim()) formData.append("contenido", nuevoMensaje);
+            if (conversacion.id_trabajo) formData.append("id_trabajo", conversacion.id_trabajo);
+            if (chatId) formData.append("id_conversacion", chatId);
+            if (imagenSeleccionada) formData.append("imagen", imagenSeleccionada);
 
-            await fetch(`${API_URL}/api/chat/mensajes`, {
+            const response = await fetch(`${API_URL}/api/chat/mensajes`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(payload)
+                body: formData
             });
 
+            if (response.ok) {
+                const msgData = await response.json();
+                if (!chatId) {
+                    setMensajes([msgData]);
+                    setChatActivo({ ...conversacion, id_conversacion: msgData.id_conversacion });
+                }
+            }
+
             setNuevoMensaje("");
+            removeImage();
         } catch (error) {
             console.error("Error enviando mensaje", error);
         } finally {
             setEnviando(false);
             inputRef.current?.focus();
         }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImagenSeleccionada(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+    
+    const removeImage = () => {
+        setImagenSeleccionada(null);
+        setPreviewUrl(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const handleKeyDown = (e) => {
@@ -266,7 +299,18 @@ const ChatWindow = ({ conversacion, onClose }) => {
                                             border: esMio ? 'none' : '1px solid #f3f4f6',
                                             wordBreak: 'break-word',
                                         }}>
-                                            {msg.contenido}
+                                            {msg.imagen_url && (
+                                                <div style={{ marginBottom: msg.contenido ? '6px' : '0' }}>
+                                                    <a href={msg.imagen_url} target="_blank" rel="noopener noreferrer">
+                                                        <img 
+                                                            src={msg.imagen_url} 
+                                                            alt="Adjunto" 
+                                                            style={{ maxWidth: '100%', borderRadius: '8px', cursor: 'zoom-in', maxHeight: '200px', objectFit: 'contain' }} 
+                                                        />
+                                                    </a>
+                                                </div>
+                                            )}
+                                            {msg.contenido && <div style={{ wordBreak: 'break-word' }}>{msg.contenido}</div>}
                                             {(msg.enviado_en || msg.fecha_envio) && (
                                                 <div style={{ fontSize: '10px', marginTop: '4px', opacity: 0.65, textAlign: esMio ? 'right' : 'left' }}>
                                                     {formatTime(msg.enviado_en || msg.fecha_envio)}
@@ -278,6 +322,22 @@ const ChatWindow = ({ conversacion, onClose }) => {
                             })}
                             <div ref={mensajesFinRef} />
                         </div>
+
+                        {/* ── IMAGE PREVIEW ── */}
+                        {previewUrl && (
+                            <div style={{ padding: '8px 12px', background: '#f8fafc', borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center' }}>
+                                <div style={{ position: 'relative', display: 'inline-block' }}>
+                                    <img src={previewUrl} alt="Preview" style={{ height: '60px', borderRadius: '8px', objectFit: 'cover', border: '2px solid #fed7aa' }} />
+                                    <button
+                                        type="button"
+                                        onClick={removeImage}
+                                        style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'white', borderRadius: '50%', padding: '2px', border: '1px solid #e5e7eb', cursor: 'pointer', display: 'flex', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                                    >
+                                        <X size={14} color="#dc2626" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* ── INPUT ── */}
                         <form
@@ -291,6 +351,35 @@ const ChatWindow = ({ conversacion, onClose }) => {
                                 alignItems: 'center',
                             }}
                         >
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                ref={fileInputRef} 
+                                onChange={handleImageChange} 
+                                style={{ display: 'none' }} 
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={enviando}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: '6px',
+                                    color: '#9ca3af',
+                                    transition: 'color 0.2s, transform 0.15s',
+                                    display: 'flex',
+                                    outline: 'none',
+                                    opacity: enviando ? 0.5 : 1
+                                }}
+                                onMouseEnter={e => !enviando && (e.currentTarget.style.color = '#f97316')}
+                                onMouseLeave={e => !enviando && (e.currentTarget.style.color = '#9ca3af')}
+                                onMouseDown={e => !enviando && (e.currentTarget.style.transform = 'scale(0.95)')}
+                                onMouseUp={e => !enviando && (e.currentTarget.style.transform = 'scale(1)')}
+                            >
+                                <ImageIcon size={20} />
+                            </button>
                             <input
                                 ref={inputRef}
                                 className="chat-win-input"
@@ -313,9 +402,9 @@ const ChatWindow = ({ conversacion, onClose }) => {
                             <button
                                 type="submit"
                                 className="chat-send-btn"
-                                disabled={!nuevoMensaje.trim() || enviando}
+                                disabled={(!nuevoMensaje.trim() && !imagenSeleccionada) || enviando}
                                 style={{
-                                    background: nuevoMensaje.trim() && !enviando
+                                    background: (nuevoMensaje.trim() || imagenSeleccionada) && !enviando
                                         ? 'linear-gradient(135deg, #f97316, #ea580c)'
                                         : '#f3f4f6',
                                     border: 'none',
@@ -325,13 +414,13 @@ const ChatWindow = ({ conversacion, onClose }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    cursor: nuevoMensaje.trim() && !enviando ? 'pointer' : 'not-allowed',
+                                    cursor: (nuevoMensaje.trim() || imagenSeleccionada) && !enviando ? 'pointer' : 'not-allowed',
                                     transition: 'background 0.2s, transform 0.15s',
                                     flexShrink: 0,
-                                    boxShadow: nuevoMensaje.trim() && !enviando ? '0 3px 10px rgba(249,115,22,0.35)' : 'none',
+                                    boxShadow: (nuevoMensaje.trim() || imagenSeleccionada) && !enviando ? '0 3px 10px rgba(249,115,22,0.35)' : 'none',
                                 }}
                             >
-                                <Send size={15} color={nuevoMensaje.trim() && !enviando ? 'white' : '#9ca3af'} />
+                                <Send size={15} color={(nuevoMensaje.trim() || imagenSeleccionada) && !enviando ? 'white' : '#9ca3af'} />
                             </button>
                         </form>
                     </>

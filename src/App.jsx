@@ -23,6 +23,8 @@ import AdminHabilidades from "./features/dashboard/AdminHabilidades";
 import AdminRoute from "./features/dashboard/AdminRoute";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import PricingPage from "./pages/PricingPage";
+
 import TerminosCondiciones from "./ui/TerminosCondiciones";
 import PoliticaPrivacidad from "./ui/PoliticaPrivacidad";
 
@@ -46,6 +48,7 @@ function App() {
               <Route path="/crear-trabajo" element={<CrearTrabajo />} />
               <Route path="/notificaciones" element={<Notificaciones />} />
               <Route path="/dashboard" element={<EmpleadorDashboard />} />
+              <Route path="/pricing" element={<PricingPage />} />
               <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
               <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
 

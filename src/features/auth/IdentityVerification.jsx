@@ -6,19 +6,15 @@ import Swal from "sweetalert2";
 /**
  * Paso 3 del Registro: Verificación de Identidad
  * Se muestra al usuario después de que verifica su correo electrónico.
- * Llama a POST /api/auth/verificar-identidad con foto_cedula y selfie.
+ * Llama a POST /api/auth/verificar-identidad con la selfie.
  */
 function IdentityVerification({ correo, onVerificado }) {
-    const [fotoCedula, setFotoCedula] = useState(null);
     const [selfie, setSelfie] = useState(null);
     const [fotoPerfil, setFotoPerfil] = useState(null);
-    const [previewCedula, setPreviewCedula] = useState(null);
     const [previewSelfie, setPreviewSelfie] = useState(null);
     const [previewPerfil, setPreviewPerfil] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    const cedulaRef = useRef();
     const selfieRef = useRef();
     const perfilRef = useRef();
 
@@ -34,8 +30,8 @@ function IdentityVerification({ correo, onVerificado }) {
         e.preventDefault();
         setError(null);
 
-        if (!fotoCedula || !selfie) {
-            setError("La foto de cédula y la selfie son obligatorias.");
+        if (!selfie) {
+            setError("La selfie es obligatoria.");
             return;
         }
 
@@ -52,7 +48,6 @@ function IdentityVerification({ correo, onVerificado }) {
         try {
             const formData = new FormData();
             formData.append("correo", correo);
-            formData.append("foto_cedula", fotoCedula);
             formData.append("selfie", selfie);
             if (fotoPerfil) formData.append("foto_perfil", fotoPerfil);
 
@@ -153,16 +148,7 @@ function IdentityVerification({ correo, onVerificado }) {
 
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 {/* Fotos requeridas */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <FileCard
-                        icon={CreditCard}
-                        title="Foto de Cédula"
-                        subtitle="Frente de tu documento"
-                        preview={previewCedula}
-                        onSelect={[setFotoCedula, setPreviewCedula]}
-                        inputRef={cedulaRef}
-                        accept="image/*"
-                    />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
                     <FileCard
                         icon={Camera}
                         title="Selfie"
@@ -209,19 +195,19 @@ function IdentityVerification({ correo, onVerificado }) {
 
                 <button
                     type="submit"
-                    disabled={isLoading || !fotoCedula || !selfie}
+                    disabled={isLoading || !selfie}
                     style={{
                         width: "100%",
                         padding: "11px",
                         borderRadius: "10px",
-                        background: (!fotoCedula || !selfie) ? "#e5e7eb" : "linear-gradient(135deg, #f97316, #ea580c)",
-                        color: (!fotoCedula || !selfie) ? "#9ca3af" : "#fff",
+                        background: (!selfie) ? "#e5e7eb" : "linear-gradient(135deg, #f97316, #ea580c)",
+                        color: (!selfie) ? "#9ca3af" : "#fff",
                         fontWeight: 700,
                         fontSize: "0.9rem",
                         border: "none",
-                        cursor: (!fotoCedula || !selfie) ? "not-allowed" : "pointer",
+                        cursor: (!selfie) ? "not-allowed" : "pointer",
                         transition: "all 0.2s",
-                        boxShadow: (!fotoCedula || !selfie) ? "none" : "0 4px 14px rgba(249,115,22,0.35)"
+                        boxShadow: (!selfie) ? "none" : "0 4px 14px rgba(249,115,22,0.35)"
                     }}
                 >
                     {isLoading ? "Verificando..." : "Verificar Identidad y Entrar"}

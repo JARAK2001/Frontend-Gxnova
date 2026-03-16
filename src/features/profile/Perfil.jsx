@@ -11,7 +11,7 @@ import MisPublicaciones from "./MisPublicaciones";
 import MisPostulaciones from "./MisPostulaciones";
 import MisEstadisticas from "./MisEstadisticas";
 import MisRutas from "./MisRutas";
-import { User, Wrench, Briefcase, Send, Loader2, PenLine, BarChart2, Map } from "lucide-react";
+import { User, Wrench, Briefcase, Send, Loader2, PenLine, BarChart2, Map, Star } from "lucide-react";
 
 const tabs = [
     { id: "perfil",        label: "Mi Perfil",         icon: User,     requiresRole: null },
@@ -83,6 +83,7 @@ function Perfil() {
         if (t.requiresRole === "Empleador")  return tieneEmpleador;
         return false;
     });
+
 
     const tabMeta = {
         perfil:        { icon: User,      title: "Mi Perfil",         subtitle: "Tu información personal y estado de cuenta." },
@@ -198,23 +199,38 @@ function Perfil() {
                             </div>
                         </div>
 
-                        {/* Botón editar */}
+                        {/* Botón editar y Premium */}
                         {!editando && (
-                            <button
-                                onClick={() => { setActiveTab("perfil"); setEditando(true); }}
-                                style={{
-                                    padding: '11px 22px', background: '#fff', color: '#ea580c',
-                                    borderRadius: '14px', fontWeight: 700, border: '2px solid rgba(249,115,22,0.3)',
-                                    cursor: 'pointer', boxShadow: '0 4px 16px -2px rgba(249,115,22,0.15)',
-                                    transition: 'all 0.2s', display: 'flex', alignItems: 'center',
-                                    gap: '8px', fontFamily: 'var(--font-sans)', fontSize: '0.92rem',
-                                    marginBottom: '0.75rem',
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = '#f97316'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#f97316'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#ea580c'; e.currentTarget.style.borderColor = 'rgba(249,115,22,0.3)'; }}
-                            >
-                                <PenLine size={17} /> Editar perfil
-                            </button>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+                                <button
+                                    onClick={() => navigate("/pricing")}
+                                    style={{
+                                        padding: '11px 22px', background: 'linear-gradient(135deg, #fb923c, #ea580c)', color: '#fff',
+                                        borderRadius: '14px', fontWeight: 700, border: 'none',
+                                        cursor: 'pointer', boxShadow: '0 4px 16px -2px rgba(234,88,12,0.35)',
+                                        transition: 'all 0.2s', display: 'flex', alignItems: 'center',
+                                        gap: '8px', fontFamily: 'var(--font-sans)', fontSize: '0.92rem',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px -2px rgba(234,88,12,0.5)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px -2px rgba(234,88,12,0.35)'; }}
+                                >
+                                    <Star size={17} color="#fbbf24" fill="#fbbf24" /> Premium
+                                </button>
+                                <button
+                                    onClick={() => { setActiveTab("perfil"); setEditando(true); }}
+                                    style={{
+                                        padding: '11px 22px', background: '#fff', color: '#ea580c',
+                                        borderRadius: '14px', fontWeight: 700, border: '2px solid rgba(249,115,22,0.3)',
+                                        cursor: 'pointer', boxShadow: '0 4px 16px -2px rgba(249,115,22,0.15)',
+                                        transition: 'all 0.2s', display: 'flex', alignItems: 'center',
+                                        gap: '8px', fontFamily: 'var(--font-sans)', fontSize: '0.92rem',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = '#f97316'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#f97316'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#ea580c'; e.currentTarget.style.borderColor = 'rgba(249,115,22,0.3)'; }}
+                                >
+                                    <PenLine size={17} /> Editar perfil
+                                </button>
+                            </div>
                         )}
                     </div>
 
@@ -242,7 +258,7 @@ function Perfil() {
                                             border: 'none', cursor: 'pointer',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
                                             fontFamily: 'var(--font-sans)', transition: 'all 0.2s',
-                                            background: isActive ? 'linear-gradient(135deg,#f97316,#ea580c)' : 'transparent',
+                                            background: isActive ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'transparent',
                                             color: isActive ? '#fff' : 'var(--slate-500)',
                                             boxShadow: isActive ? '0 4px 14px -2px rgba(249,115,22,0.35)' : 'none',
                                         }}
@@ -265,7 +281,7 @@ function Perfil() {
                         overflow: 'hidden',
                     }}>
                         {/* Barra naranja superior */}
-                        <div style={{ height: '4px', background: 'linear-gradient(90deg,#f97316,#ea580c,#fb923c)', width: '100%' }} />
+                        <div style={{ height: '4px', background: 'linear-gradient(90deg, #f97316, #ea580c, #fb923c)', width: '100%' }} />
 
                         <div style={{ padding: '2rem 2rem 2.5rem' }}>
                             {editando ? (

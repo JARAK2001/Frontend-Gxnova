@@ -20,6 +20,8 @@ function Navbar({ estaLogueado, esEmpleador, ghostButtonClasses }) {
                 Servicios
             </button>
 
+
+
             {esEmpleador && (
                 <button
                     className={`py-2 px-3 text-sm font-medium ${ghostButtonClasses}`}

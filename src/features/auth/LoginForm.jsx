@@ -72,10 +72,29 @@ function LoginForm({
                 <button
                     type="button"
                     onClick={() => handleToggleView("register")}
-                    className={`text-sm font-medium text-gray-500 hover:text-${HOVER_COLOR} transition-colors`}
+                    className={`text-sm font-medium text-gray-500 hover:text-${HOVER_COLOR} transition-colors block w-full mb-4`}
                 >
                     ¿No tienes cuenta? Regístrate aquí
                 </button>
+
+                <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
+                    <button
+                        type="button"
+                        onClick={() => handleToggleView("forgot-password")}
+                        className={`text-sm font-semibold text-${PRIMARY_COLOR} hover:text-${HOVER_COLOR} transition-colors text-center w-full`}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => handleToggleView("facial-login")}
+                        className="flex items-center justify-center w-full py-2.5 px-4 rounded-xl text-sm font-bold text-orange-600 bg-orange-50 hover:bg-orange-100 border border-orange-200 transition-all shadow-sm"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                        Acceso con Rostro
+                    </button>
+                </div>
             </div>
         </form>
     );
