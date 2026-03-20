@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 const estadoStyle = {
     publicado: { background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' },
     cancelado: { background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' },
-    en_progreso: { background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa' },
+    en_proceso: { background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa' },
     completado: { background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' },
 };
 
@@ -115,7 +115,7 @@ const AdminTrabajos = () => {
                     <select className="admin-select" value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}>
                         <option value="todos">Todos los Estados</option>
                         <option value="publicado">Publicados</option>
-                        <option value="en_progreso">En Progreso</option>
+                        <option value="en_proceso">En Progreso</option>
                         <option value="completado">Completados</option>
                         <option value="cancelado">Cancelados</option>
                     </select>

@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import API_URL from "../../config/api";
 
 const RESEND_COOLDOWN = 60; // segundos
 
 function VerifyEmail({ correo, onVerificado }) {
+    const navigate = useNavigate();
     const { login } = useAuth();
     const [digits, setDigits] = useState(["", "", "", "", "", ""]);
     const [error, setError] = useState(null);
@@ -117,7 +119,10 @@ function VerifyEmail({ correo, onVerificado }) {
             <div style={{ width: "100%", maxWidth: "420px", position: "relative", zIndex: 1 }}>
 
                 {/* Ícono superior */}
-                <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+                <div 
+                    onClick={() => navigate("/")}
+                    style={{ textAlign: "center", marginBottom: "1.5rem", cursor: "pointer" }}
+                >
                     <div style={{
                         width: "68px", height: "68px", margin: "0 auto 16px",
                         background: "linear-gradient(135deg, #ea580c, #f97316)",

@@ -10,6 +10,13 @@ const AdminUsuarios = () => {
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [filtroRol, setFiltroRol] = useState('todos');
 
+    // Estado para el modal de crear personal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [nuevoPersonal, setNuevoPersonal] = useState({
+        nombre: '', apellido: '', correo: '', password: '', rol: 'Administrador'
+    });
+
     useEffect(() => { cargarUsuarios(); }, []);
 
     const cargarUsuarios = async () => {
@@ -61,6 +68,34 @@ const AdminUsuarios = () => {
         }
     };
 
+    const handleCrearPersonal = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch(`${API_URL}/api/admin/usuarios/personal`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify(nuevoPersonal)
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                Swal.fire('¡Éxito!', data.message || 'Personal creado correctamente', 'success');
+                setIsModalOpen(false);
+                setNuevoPersonal({ nombre: '', apellido: '', correo: '', password: '', rol: 'Administrador' });
+                cargarUsuarios();
+            } else {
+                Swal.fire('Error', data.error || 'Error al crear personal', 'error');
+            }
+        } catch (error) {
+            console.error("Error creando personal:", error);
+            Swal.fire('Error', 'Error de conexión', 'error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const usuariosFiltrados = usuarios.filter(u => {
         const cumpleTexto = u.nombre.toLowerCase().includes(filtroTexto.toLowerCase()) ||
             u.correo.toLowerCase().includes(filtroTexto.toLowerCase());
@@ -79,10 +114,19 @@ const AdminUsuarios = () => {
                     <p className="text-sm text-slate-500 mt-0.5">Administra cuentas, roles y estados</p>
                 </div>
 
-                {/* Filters */}
-                <div className="flex flex-wrap gap-2">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-orange-600/20 transition-all flex items-center gap-2"
+                    >
+                        <Users size={16} /> Crear Personal
+                    </button>
+                </div>
+
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         <input
                             type="text"
                             placeholder="Buscar usuario…"
@@ -227,6 +271,60 @@ const AdminUsuarios = () => {
                     </div>
                 )}
             </div>
+
+            {/* Modal Crear Personal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <h2 className="font-bold text-slate-800">Crear Nuevo Personal</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                                ✕
+                            </button>
+                        </div>
+                        <form onSubmit={handleCrearPersonal} className="p-5 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Nombre</label>
+                                    <input type="text" required className="admin-input w-full"
+                                        value={nuevoPersonal.nombre} onChange={e => setNuevoPersonal({ ...nuevoPersonal, nombre: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Apellido</label>
+                                    <input type="text" required className="admin-input w-full"
+                                        value={nuevoPersonal.apellido} onChange={e => setNuevoPersonal({ ...nuevoPersonal, apellido: e.target.value })} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-1.5">Correo Electrónico</label>
+                                <input type="email" required className="admin-input w-full"
+                                    value={nuevoPersonal.correo} onChange={e => setNuevoPersonal({ ...nuevoPersonal, correo: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-1.5">Contraseña Asignada</label>
+                                <input type="text" required minLength="6" className="admin-input w-full"
+                                    placeholder="Contraseña inicial..."
+                                    value={nuevoPersonal.password} onChange={e => setNuevoPersonal({ ...nuevoPersonal, password: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-1.5">Rol Administrativo</label>
+                                <select className="admin-select w-full" value={nuevoPersonal.rol} onChange={e => setNuevoPersonal({ ...nuevoPersonal, rol: e.target.value })}>
+                                    <option value="Administrador">Administrador</option>
+                                    {/* Si en el futuro hay otros roles como "Soporte", se añaden aquí */}
+                                </select>
+                            </div>
+                            <div className="pt-3 flex gap-3">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50">
+                                    Cancelar
+                                </button>
+                                <button type="submit" disabled={saving} className="flex-1 px-4 py-2 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 disabled:opacity-50">
+                                    {saving ? 'Creando...' : 'Guardar Personal'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

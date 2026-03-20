@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Users, Briefcase, Star, TrendingUp, AlertCircle, CheckCircle, ArrowUpRight } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import API_URL from '../../config/api';
@@ -29,6 +30,7 @@ const StatCard = ({ title, value, icon, gradient, trend, trendUp }) => (
 );
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -242,6 +244,7 @@ const AdminDashboard = () => {
                         ].map((action, i) => (
                             <button
                                 key={i}
+                                onClick={() => navigate(action.path)}
                                 className="p-4 text-left rounded-xl transition-all duration-200 group"
                                 style={{ background: '#fff7ed', border: '1px solid #fed7aa' }}
                                 onMouseEnter={e => {

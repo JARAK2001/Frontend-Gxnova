@@ -37,9 +37,21 @@ const ChatWindow = ({ conversacion, onClose }) => {
         if (exist) chatId = exist.id_conversacion;
     }
 
-    const receptor = conversacion.trabajador?.id_usuario === user.id_usuario
-        ? conversacion.empleador
-        : conversacion.trabajador;
+    let receptor = null;
+    if (conversacion.nombre !== undefined) {
+        // Formato simplificado (desde Trabajadores.jsx)
+        receptor = {
+            id_usuario: conversacion.idUsuario,
+            nombre: conversacion.nombre,
+            apellido: '',
+            foto_perfil: conversacion.foto
+        };
+    } else {
+        // Formato completo (desde ChatButton.jsx o Detalles.jsx)
+        receptor = conversacion.trabajador?.id_usuario === user.id_usuario
+            ? conversacion.empleador
+            : conversacion.trabajador;
+    }
 
     useEffect(() => {
         if (chatId) {

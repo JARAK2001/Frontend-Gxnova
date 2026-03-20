@@ -37,14 +37,31 @@ const HeatmapLayer = ({ data }) => {
     return null;
 };
 
+const MapCenterUpdater = ({ center }) => {
+    const map = useMap();
+    useEffect(() => {
+        if (center) {
+            map.setView(center, map.getZoom(), { animate: true });
+        }
+    }, [center, map]);
+    return null;
+};
+
 const MisEstadisticas = () => {
     const { token } = useAuth();
     const [loading, setLoading] = useState(true);
     const [heatmapData, setHeatmapData] = useState([]);
     const [earningsData, setEarningsData] = useState([]);
+    const [mapCenter, setMapCenter] = useState([4.6097, -74.0817]); // Default Bogotá
 
     useEffect(() => {
         cargarDatos();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => setMapCenter([position.coords.latitude, position.coords.longitude]),
+                (error) => console.error("Error obteniendo la ubicación:", error)
+            );
+        }
     }, []);
 
     const cargarDatos = async () => {
@@ -155,10 +172,11 @@ const MisEstadisticas = () => {
                     border: '1px solid #e2e8f0', position: 'relative', zIndex: 1
                 }}>
                     <MapContainer
-                        center={[4.6097, -74.0817]} // Coordenadas por defecto (Bogotá) o centro ideal
+                        center={mapCenter}
                         zoom={12}
                         style={{ width: '100%', height: '100%' }}
                     >
+                        <MapCenterUpdater center={mapCenter} />
                         <TileLayer
                             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'

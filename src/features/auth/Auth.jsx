@@ -313,7 +313,10 @@ function Auth() {
 
             <div className="animate-scale-in" style={{ width: '100%', maxWidth: '440px', position: 'relative', zIndex: 1 }}>
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+                <div 
+                    onClick={() => navigate("/")}
+                    style={{ textAlign: 'center', marginBottom: '1.75rem', cursor: 'pointer' }}
+                >
                     <div style={{
                         width: '72px', height: '72px',
                         background: '#fff',

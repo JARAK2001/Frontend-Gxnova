@@ -44,10 +44,37 @@ const AdminAnalytics = () => {
     if (!data) return <div className="p-8 text-center text-red-500">No hay datos disponibles.</div>;
 
     // Procesar datos para gráficas
-    const distribucionCategorias = data.distribucion.map(item => ({
-        id: item.id_categoria,
-        count: item._count.id_categoria
-    }));
+    const distribucionCategorias = [...data.distribucion]
+        .map(item => ({
+            name: item.nombre || `Categoría ${item.id_categoria}`,
+            count: item.count !== undefined ? item.count : (item._count?.id_categoria || 0)
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // Rellenar días vacíos para la gráfica de crecimiento
+    let crecimientoDatos = [];
+    if (data.crecimiento && data.crecimiento.length > 0) {
+        const sortedData = [...data.crecimiento].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        const firstDate = new Date(sortedData[0].fecha + 'T12:00:00'); 
+        const today = new Date();
+        
+        let current = new Date(firstDate);
+        current.setDate(current.getDate() - 3); // 3 días antes para contexto visual
+        
+        while (current <= today) {
+            const dateStr = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+            const existing = sortedData.find(d => d.fecha === dateStr);
+            crecimientoDatos.push({
+                fecha: dateStr.slice(5), // Mostrar "MM-DD"
+                cantidad: existing ? existing.cantidad : 0
+            });
+            current.setDate(current.getDate() + 1);
+        }
+    } else {
+        // Fallback si no hay datos
+        crecimientoDatos = data.crecimiento || [];
+    }
 
     return (
         <div className="space-y-5">
@@ -66,7 +93,7 @@ const AdminAnalytics = () => {
                 </div>
                 <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data.crecimiento}>
+                        <AreaChart data={crecimientoDatos}>
                             <defs>
                                 <linearGradient id="colorCrecimiento" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#f97316" stopOpacity={0.25} />
@@ -129,7 +156,7 @@ const AdminAnalytics = () => {
                             <BarChart data={distribucionCategorias} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" horizontal={true} stroke="#f1f5f9" />
                                 <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
-                                <YAxis dataKey="id" type="category" width={50} tick={{ fontSize: 11, fill: '#64748b' }} />
+                                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 11, fill: '#64748b' }} />
                                 <Tooltip cursor={{ fill: 'rgba(249,115,22,0.06)' }} contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px' }} />
                                 <Bar dataKey="count" fill="#ea580c" radius={[0, 6, 6, 0]} barSize={18} />
                             </BarChart>

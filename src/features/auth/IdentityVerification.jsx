@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Shield, Camera, CreditCard, CheckCircle, RefreshCw, AlertCircle } from "lucide-react";
 import API_URL from "../../config/api";
 import Swal from "sweetalert2";
@@ -9,6 +10,7 @@ import Swal from "sweetalert2";
  * Llama a POST /api/auth/verificar-identidad con la selfie.
  */
 function IdentityVerification({ correo, onVerificado }) {
+    const navigate = useNavigate();
     const [selfie, setSelfie] = useState(null);
     const [fotoPerfil, setFotoPerfil] = useState(null);
     const [previewSelfie, setPreviewSelfie] = useState(null);
@@ -129,7 +131,10 @@ function IdentityVerification({ correo, onVerificado }) {
     return (
         <div>
             {/* Header */}
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <div 
+                onClick={() => navigate("/")}
+                style={{ textAlign: "center", marginBottom: "20px", cursor: "pointer" }}
+            >
                 <div style={{ width: "52px", height: "52px", borderRadius: "16px", background: "linear-gradient(135deg, #f97316, #ea580c)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px", boxShadow: "0 8px 20px rgba(249,115,22,0.3)" }}>
                     <Shield size={26} color="#fff" />
                 </div>
