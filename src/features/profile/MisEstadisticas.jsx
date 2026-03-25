@@ -3,6 +3,7 @@ import API_URL from '../../config/api';
 import { useAuth } from '../../context/AuthContext';
 import { Loader2, Map as MapIcon, BarChart3, TrendingUp } from 'lucide-react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import 'leaflet.heat';
@@ -49,6 +50,7 @@ const MapCenterUpdater = ({ center }) => {
 
 const MisEstadisticas = () => {
     const { token } = useAuth();
+    const t = useThemeTokens();
     const [loading, setLoading] = useState(true);
     const [heatmapData, setHeatmapData] = useState([]);
     const [earningsData, setEarningsData] = useState([]);
@@ -72,8 +74,11 @@ const MisEstadisticas = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const dataHeatmap = await resHeatmap.json();
-            if (dataHeatmap.success) {
+            
+            if (dataHeatmap.success && dataHeatmap.trabajos.length > 0) {
                 setHeatmapData(dataHeatmap.trabajos);
+            } else {
+                setHeatmapData([]);
             }
 
             // 2. Cargar datos de Ganancias por Barrio
@@ -81,8 +86,11 @@ const MisEstadisticas = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const dataEarnings = await resEarnings.json();
-            if (dataEarnings.success) {
+            
+            if (dataEarnings.success && dataEarnings.data && dataEarnings.data.length > 0) {
                 setEarningsData(dataEarnings.data);
+            } else {
+                setEarningsData([]);
             }
         } catch (error) {
             console.error('Error al cargar estadísticas:', error);
@@ -106,21 +114,23 @@ const MisEstadisticas = () => {
             
             {/* Header / Resumen */}
             <div style={{
-                background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
-                padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0',
+                background: t.cardBg,
+                padding: '1.5rem', borderRadius: '16px', border: `1px solid ${t.cardBorder}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem'
             }}>
                 <div>
-                    <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, color: t.textPrimary, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <TrendingUp size={24} color="#f97316" />
                         Tus Ingresos Totales
                     </h3>
-                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem', marginTop: '4px' }}>Basado en trabajos pagados con dinero</p>
+                    <p style={{ margin: 0, color: t.textSecondary, fontSize: '0.9rem', marginTop: '4px' }}>
+                        Basado en trabajos pagados con dinero
+                    </p>
                 </div>
                 <div style={{
-                    background: '#fff', padding: '1rem 2rem', borderRadius: '12px',
+                    background: t.cardBg2, padding: '1rem 2rem', borderRadius: '12px',
                     boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
-                    border: '1px solid #e2e8f0'
+                    border: `1px solid ${t.cardBorder}`
                 }}>
                     <span style={{ fontSize: '1.8rem', fontWeight: 900, color: '#10b981' }}>
                         ${totalIngresos.toLocaleString('es-CO')}
@@ -130,11 +140,11 @@ const MisEstadisticas = () => {
 
             {/* Gráfica de Ganancias por Barrio */}
             <div>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', marginBottom: '1rem' }}>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: t.textPrimary, marginBottom: '1rem' }}>
                     <BarChart3 size={20} color="#f97316" />
                     Ganancias por Barrio
                 </h4>
-                <div style={{ height: '350px', background: '#fff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ height: '350px', background: t.cardBg, padding: '1.5rem', borderRadius: '16px', border: `1px solid ${t.cardBorder}` }}>
                     {earningsData.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                             <BarChart data={earningsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -154,7 +164,7 @@ const MisEstadisticas = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
+                        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.textSecondary }}>
                             Aún no tienes ingresos registrados para graficar.
                         </div>
                     )}
@@ -163,13 +173,13 @@ const MisEstadisticas = () => {
 
             {/* Mapa de Calor de Demanda */}
             <div>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', marginBottom: '1rem' }}>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: t.textPrimary, marginBottom: '1rem' }}>
                     <MapIcon size={20} color="#f97316" />
                     Zonas de Alta Demanda (Servicios Solicitados)
                 </h4>
                 <div style={{
                     height: '450px', borderRadius: '16px', overflow: 'hidden',
-                    border: '1px solid #e2e8f0', position: 'relative', zIndex: 1
+                    border: `1px solid ${t.cardBorder}`, position: 'relative', zIndex: 1
                 }}>
                     <MapContainer
                         center={mapCenter}

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import API_URL from '../../config/api';
-import { Wrench, Plus, Folder, FileText, DollarSign, Save, Trash2, Loader2, Star, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { useThemeTokens } from "../../hooks/useThemeTokens";
+import { Wrench, Plus, Folder, FileText, DollarSign, Save, Trash2, Loader2, Star, Clock, CheckCircle, XCircle, Lightbulb, Camera, Edit3 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 function SeccionHabilidades({ usuarioId }) {
+    const t = useThemeTokens();
     const [habilidades, setHabilidades] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -74,9 +76,7 @@ function SeccionHabilidades({ usuarioId }) {
 
             const res = await fetch(`${API_URL}/api/habilidades`, {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
             const data = await res.json();
@@ -108,7 +108,7 @@ function SeccionHabilidades({ usuarioId }) {
     const handleEliminarHabilidad = async (id_habilidad) => {
         const result = await Swal.fire({
             title: '¿Eliminar habilidad?',
-            text: "¿Seguro que deseas eliminar esta habilidad?",
+            text: "¿Seguro que deseas eliminar esta especialidad permanentemente?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ea580c',
@@ -138,6 +138,10 @@ function SeccionHabilidades({ usuarioId }) {
         }
     };
 
+    const handleEditarHabilidad = () => {
+         Swal.fire('Edición', 'La funcionalidad de edición de habilidades estará disponible en la próxima actualización.', 'info');
+    };
+
     const StatusBadge = ({ estado }) => {
         const config = {
             aprobada: { icon: CheckCircle, text: "Aprobada", bg: "#ecfdf5", color: "#059669", border: "#a7f3d0" },
@@ -148,8 +152,8 @@ function SeccionHabilidades({ usuarioId }) {
         const Icon = item.icon;
         return (
             <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '999px',
-                fontSize: '0.75rem', fontWeight: 800, background: item.bg, color: item.color, border: `1px solid ${item.border}`
+                display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 10px', borderRadius: '10px',
+                fontSize: '0.72rem', fontWeight: 800, background: item.bg, color: item.color, border: `1px solid ${item.border}`, letterSpacing: '0.04em'
             }}>
                 <Icon size={12} /> {item.text}
             </span>
@@ -159,208 +163,290 @@ function SeccionHabilidades({ usuarioId }) {
     const statsAprobadas = habilidades.filter(h => h.estado === 'aprobada').length;
     const statsPendientes = habilidades.filter(h => h.estado === 'pendiente_revision').length;
 
+    const cardsColors = [
+        { dot: '#2563eb', border: '#3b82f6' },
+        { dot: '#eab308', border: '#facc15' },
+        { dot: '#10b981', border: '#34d399' },
+        { dot: '#f97316', border: '#fb923c' },
+        { dot: '#8b5cf6', border: '#a78bfa' },
+    ];
+
     return (
-        <div style={{ marginTop: '0.5rem' }}>
-            {/* Stats rápidas */}
-            {habilidades.length > 0 && (
-                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '1.75rem' }}>
-                    {[
-                        { label: 'Total', value: habilidades.length, bg: '#f8fafc', color: '#475569', border: '#e2e8f0' },
-                        { label: 'Aprobadas', value: statsAprobadas, bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' },
-                        { label: 'En revisión', value: statsPendientes, bg: '#fefce8', color: '#ca8a04', border: '#fde047' },
-                    ].map(stat => (
-                        <div key={stat.label} style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            padding: '10px 18px', borderRadius: '14px',
-                            background: stat.bg, border: `1px solid ${stat.border}`,
-                        }}>
-                            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: stat.color, lineHeight: 1 }}>{stat.value}</span>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: stat.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{stat.label}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Toolbar row */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '420px', margin: 0, lineHeight: 1.5 }}>
-                    Añade tus especialidades para que los empleadores sepan en qué destacas y cuál es tu tarifa base.
-                </p>
-                <button
-                    onClick={() => setMostrarFormHabilidad(!mostrarFormHabilidad)}
-                    style={{
-                        padding: '10px 20px', fontWeight: 700, borderRadius: '12px', transition: 'all 0.2s',
-                        border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
-                        background: mostrarFormHabilidad ? '#f1f5f9' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                        color: mostrarFormHabilidad ? '#475569' : '#fff',
-                        boxShadow: mostrarFormHabilidad ? 'none' : '0 4px 12px rgba(249,115,22,0.3)',
-                    }}
-                >
-                    {mostrarFormHabilidad ? "Cerrar" : <><Plus size={18} /> Nueva Habilidad</>}
-                </button>
-            </div>
-
-            {/* Formulario */}
-            {mostrarFormHabilidad && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start', marginTop: '0.5rem' }}>
+            
+            {/* ── COLUMNA IZQUIERDA (Principal) ── */}
+            <div style={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column', gap: '2rem', minWidth: '320px' }}>
+                
+                {/* 1. Header & Stats */}
                 <div style={{
-                    background: 'rgba(255,255,255,0.6)', padding: '2rem', borderRadius: '20px', marginBottom: '2.5rem',
-                    border: '1px solid rgba(249,115,22,0.25)', boxShadow: '0 10px 25px -5px rgba(249,115,22,0.1)',
-                    backdropFilter: 'blur(10px)',
+                    background: t.darkMode ? '#1a1d2e' : 'rgba(255,255,255,0.75)',
+                    border: `1px solid ${t.darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(249,115,22,0.15)'}`,
+                    borderRadius: '24px', padding: '1.75rem',
+                    backdropFilter: 'blur(12px)',
+                    boxShadow: t.shadowCard,
                 }}>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Star size={22} color="#f97316" /> Agregar nueva especialidad
-                    </h4>
-                    <form onSubmit={handleCrearHabilidad} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Categoría</label>
-                                <select
-                                    value={nuevaHabilidad.id_categoria}
-                                    onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, id_categoria: e.target.value })}
-                                    style={{ width: '100%', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem', background: '#fff' }}
-                                    required
-                                >
-                                    <option value="" disabled>Selecciona un rubro...</option>
-                                    {categorias.map(cat => (
-                                        <option key={cat.id_categoria} value={cat.id_categoria}>{cat.nombre}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Descripción breve (Ej: Pintor profesional)</label>
-                                <input
-                                    type="text"
-                                    value={nuevaHabilidad.descripcion}
-                                    onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, descripcion: e.target.value })}
-                                    style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem' }}
-                                    required
-                                />
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Tarifa / hora (COP)</label>
-                                <div style={{ position: 'relative' }}>
-                                    <DollarSign size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
-                                    <input
-                                        type="number"
-                                        value={nuevaHabilidad.tarifa_hora}
-                                        onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tarifa_hora: e.target.value })}
-                                        style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px 12px 38px', fontSize: '0.95rem' }}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Tipo de Documento a Subir</label>
-                                <select
-                                    value={nuevaHabilidad.tipo_documento}
-                                    onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tipo_documento: e.target.value })}
-                                    style={{ width: '100%', borderRadius: '14px', border: '1.5px solid var(--slate-200)', padding: '12px 16px', fontSize: '0.95rem', background: '#fff' }}
-                                    required
-                                >
-                                    <option value="certificado">Certificado Técnico/Curso</option>
-                                    <option value="diploma">Diploma de Bachiller</option>
-                                </select>
-                            </div>
-
-                            <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-700)' }}>Diploma o Certificado (Imagen)</label>
-                                <div style={{ border: '2px dashed #cbd5e1', borderRadius: '16px', padding: '20px', background: '#f8fafc', textAlign: 'center' }}>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => setArchivoCertificado(e.target.files[0])}
-                                        style={{ fontSize: '0.9rem', color: '#475569' }}
-                                        required
-                                    />
-                                    <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '10px', margin: 0 }}>Sube un documento válido para certificar tu conocimiento.</p>
-                                </div>
-                            </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: t.darkMode ? '#21253a' : 'linear-gradient(135deg,#f8fafc,#f1f5f9)', color: t.textSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Wrench size={24} />
                         </div>
+                        <div>
+                            <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: t.textPrimary, margin: 0 }}>Mis Habilidades</h3>
+                            <p style={{ fontSize: '0.88rem', color: t.textSecondary, margin: '2px 0 0' }}>Tus especialidades certificadas y tarifas.</p>
+                        </div>
+                    </div>
 
-                        <button
-                            type="submit"
-                            disabled={creandoHabilidad}
-                            style={{
-                                padding: '14px', borderRadius: '14px', background: creandoHabilidad ? '#94a3b8' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                                color: '#fff', fontWeight: 800, border: 'none', cursor: creandoHabilidad ? 'not-allowed' : 'pointer',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 20px -4px rgba(249,115,22,0.4)',
-                                transition: 'all 0.2s',
-                            }}
-                        >
-                            {creandoHabilidad ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                            {creandoHabilidad ? "Certificando con IA..." : "Someter para Verificación"}
-                        </button>
-                    </form>
+                    {/* Stats Pills */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 18px', borderRadius: '14px', background: t.cardBg2, border: `1px solid ${t.cardBorder}` }}>
+                            <span style={{ fontSize: '1.25rem', fontWeight: 900, color: t.textPrimary, lineHeight: 1 }}>{habilidades.length}</span>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: t.textSecondary }}>Total</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 18px', borderRadius: '14px', background: t.greenBg, border: `1px solid ${t.greenBorder}` }}>
+                            <span style={{ fontSize: '1.25rem', fontWeight: 900, color: t.greenColor, lineHeight: 1 }}>{statsAprobadas}</span>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: t.greenColor }}>Aprobadas</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 18px', borderRadius: '14px', background: t.yellowBg, border: `1px solid ${t.yellowBorder}` }}>
+                            <span style={{ fontSize: '1.25rem', fontWeight: 900, color: t.yellowColor, lineHeight: 1 }}>{statsPendientes}</span>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: t.yellowColor }}>En revisión</span>
+                        </div>
+                    </div>
                 </div>
-            )}
 
-            {/* Lista de Habilidades */}
-            {loading ? (
-                <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-                    <Loader2 className="animate-spin" size={40} color="#ea580c" />
+                {/* 2. Banner Acción Nueva Habilidad */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', padding: '1.5rem', background: t.cardBg, borderRadius: '20px', border: `1px dashed ${t.inputBorder}` }}>
+                    <p style={{ color: t.textSecondary, fontSize: '0.92rem', maxWidth: '380px', margin: 0, lineHeight: 1.5 }}>
+                        Añade tus especialidades para que los empleadores sepan en qué destacas y cuál es tu tarifa base.
+                    </p>
+                    <button
+                        onClick={() => setMostrarFormHabilidad(!mostrarFormHabilidad)}
+                        style={{
+                            padding: '12px 24px', fontWeight: 800, borderRadius: '14px', transition: 'all 0.2s', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0,
+                            background: mostrarFormHabilidad ? '#f1f5f9' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                            color: mostrarFormHabilidad ? '#475569' : '#fff',
+                            boxShadow: mostrarFormHabilidad ? 'none' : '0 8px 20px -4px rgba(249,115,22,0.35)',
+                        }}
+                    >
+                        {mostrarFormHabilidad ? "Cerrar Panel" : <><Plus size={18} /> Nueva Habilidad</>}
+                    </button>
                 </div>
-            ) : habilidades.length > 0 ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-                    {habilidades.map((hab) => (
-                        <div
-                            key={hab.id_habilidad}
-                            style={{
-                                background: '#fff', borderRadius: '22px', padding: '24px', position: 'relative',
-                                border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '1rem',
-                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', cursor: 'default',
-                                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)'
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.transform = 'scale(1.02)';
-                                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(249,115,22,0.08)';
-                                e.currentTarget.style.borderColor = '#fed7aa';
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.02)';
-                                e.currentTarget.style.borderColor = '#f1f5f9';
-                            }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#f97316', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{hab.categoria.nombre}</span>
-                                    <h4 style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{hab.descripcion}</h4>
+
+                {/* 3. Formulario (Acordeón) */}
+                {mostrarFormHabilidad && (
+                    <div style={{ background: t.cardBg, padding: '2.5rem', borderRadius: '24px', border: `1px solid ${t.darkMode ? 'rgba(249,115,22,0.25)' : 'rgba(249,115,22,0.2)'}`, boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 10px 30px -5px rgba(249,115,22,0.08)' }}>
+                        <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: t.textPrimary, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Star size={22} color="#f97316" /> Agregar nueva especialidad
+                        </h4>
+                        <form onSubmit={handleCrearHabilidad} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: t.textSecondary }}>Categoría</label>
+                                    <select
+                                        value={nuevaHabilidad.id_categoria}
+                                        onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, id_categoria: e.target.value })}
+                                        style={{ width: '100%', borderRadius: '14px', border: `1.5px solid ${t.inputBorder}`, padding: '12px 16px', fontSize: '0.95rem', background: t.inputBg, color: t.textPrimary }}
+                                        required
+                                    >
+                                        <option value="" disabled>Selecciona un rubro...</option>
+                                        {categorias.map(cat => (
+                                            <option key={cat.id_categoria} value={cat.id_categoria}>{cat.nombre}</option>
+                                        ))}
+                                    </select>
                                 </div>
-                                <StatusBadge estado={hab.estado} />
-                            </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: '#f8fafc', borderRadius: '16px' }}>
-                                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b' }}>TARIFA HORA</span>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#ea580c' }}>${parseInt(hab.tarifa_hora).toLocaleString('es-CO')}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: t.textSecondary }}>Descripción / Título (Ej: Experta en fugas)</label>
+                                    <input
+                                        type="text"
+                                        value={nuevaHabilidad.descripcion}
+                                        onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, descripcion: e.target.value })}
+                                        style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: `1.5px solid ${t.inputBorder}`, padding: '12px 16px', fontSize: '0.95rem', background: t.inputBg, color: t.textPrimary }}
+                                        required
+                                    />
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: t.textSecondary }}>Tarifa estimada por hora (COP)</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <DollarSign size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary }} />
+                                        <input
+                                            type="number"
+                                            value={nuevaHabilidad.tarifa_hora}
+                                            onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tarifa_hora: e.target.value })}
+                                            style={{ width: '100%', boxSizing: 'border-box', borderRadius: '14px', border: `1.5px solid ${t.inputBorder}`, padding: '12px 16px 12px 38px', fontSize: '0.95rem', background: t.inputBg, color: t.textPrimary }}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: t.textSecondary }}>Documento de Respaldo</label>
+                                    <select
+                                        value={nuevaHabilidad.tipo_documento}
+                                        onChange={(e) => setNuevaHabilidad({ ...nuevaHabilidad, tipo_documento: e.target.value })}
+                                        style={{ width: '100%', borderRadius: '14px', border: `1.5px solid ${t.inputBorder}`, padding: '12px 16px', fontSize: '0.95rem', background: t.inputBg, color: t.textPrimary }}
+                                        required
+                                    >
+                                        <option value="certificado">Certificado Técnico/Curso</option>
+                                        <option value="diploma">Diploma de Bachiller</option>
+                                    </select>
+                                </div>
+
+                                <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    <label style={{ fontSize: '0.85rem', fontWeight: 800, color: t.textSecondary }}>Sube la Foto del Diploma/Certificado</label>
+                                    <div style={{ border: `2px dashed ${t.inputBorder}`, borderRadius: '16px', padding: '20px', background: t.inputBg, textAlign: 'center' }}>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => setArchivoCertificado(e.target.files[0])}
+                                            style={{ fontSize: '0.9rem', color: t.textSecondary }}
+                                            required
+                                        />
+                                        <p style={{ fontSize: '0.75rem', color: t.textMuted, marginTop: '10px', margin: 0 }}>La Inteligencia Artificial validará tu documento automáticamente en segundos.</p>
+                                    </div>
+                                </div>
                             </div>
 
                             <button
-                                onClick={() => handleEliminarHabilidad(hab.id_habilidad)}
+                                type="submit"
+                                disabled={creandoHabilidad}
                                 style={{
-                                    width: '100%', padding: '10px', borderRadius: '12px', background: '#fff1f2', color: '#e11d48',
-                                    fontWeight: 800, fontSize: '0.85rem', border: 'none', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s',
+                                    padding: '16px', borderRadius: '16px', background: creandoHabilidad ? '#94a3b8' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                                    color: '#fff', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: creandoHabilidad ? 'not-allowed' : 'pointer',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 8px 24px -6px rgba(249,115,22,0.45)',
+                                    transition: 'all 0.2s', marginTop: '0.5rem'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.background = '#ffe4e6'}
-                                onMouseLeave={e => e.currentTarget.style.background = '#fff1f2'}
                             >
-                                <Trash2 size={16} /> Eliminar
+                                {creandoHabilidad ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                                {creandoHabilidad ? "Certificando con IA..." : "Validar y Guardar Habilidad"}
                             </button>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div style={{ textAlign: 'center', padding: '4rem 2rem', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #e2e8f0' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1', margin: '0 auto 1.5rem' }}>
-                        <Star size={32} />
+                        </form>
                     </div>
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Tu catálogo de servicios está vacío</h4>
-                    <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '350px', margin: '0 auto' }}>Publica tu primera habilidad certificada para empezar a recibir ofertas de trabajo.</p>
+                )}
+
+                {/* 4. Lista (Grid) de Habilidades - Diseño mejorado */}
+                {loading ? (
+                    <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+                        <Loader2 className="animate-spin" size={40} color="#ea580c" />
+                    </div>
+                ) : habilidades.length > 0 ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                        {habilidades.map((hab, index) => {
+                            const look = cardsColors[index % cardsColors.length];
+                            return (
+                                <div key={hab.id_habilidad} style={{
+                                    background: t.cardBg, borderRadius: '24px', position: 'relative',
+                                    border: `1px solid ${t.cardBorder}`, borderTop: `5px solid ${look.border}`,
+                                    display: 'flex', flexDirection: 'column', transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', cursor: 'default',
+                                    boxShadow: t.shadowCard, overflow: 'hidden'
+                                }}
+                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 30px -10px rgba(0,0,0,0.1)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 10px 25px -10px rgba(0,0,0,0.05)'; }}
+                                >
+                                    <div style={{ padding: '24px 24px 16px', flexGrow: 1 }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                                            <span style={{ 
+                                                fontSize: '0.72rem', fontWeight: 900, color: t.textSecondary, letterSpacing: '0.06em', textTransform: 'uppercase', 
+                                                display: 'flex', alignItems: 'center', gap: '6px'
+                                            }}>
+                                                <span style={{ display: 'block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: look.dot }} />
+                                                {hab.categoria.nombre}
+                                            </span>
+                                            <StatusBadge estado={hab.estado} />
+                                        </div>
+                                        
+                                        <h4 style={{ fontSize: '1.25rem', fontWeight: 900, color: t.textPrimary, margin: '0 0 8px 0', lineHeight: 1.25 }}>Servicios de {hab.categoria.nombre}</h4>
+                                        <p style={{ fontSize: '0.88rem', color: t.textSecondary, margin: 0, lineHeight: 1.5 }}>
+                                            {hab.descripcion}
+                                        </p>
+                                    </div>
+                                    
+                                    {/* Tarifa Box */}
+                                    <div style={{ background: t.cardBg2, padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px dashed ${t.cardBorder}`, borderBottom: `1px dashed ${t.cardBorder}` }}>
+                                        <span style={{ fontSize: '0.78rem', fontWeight: 800, color: t.textSecondary, letterSpacing: '0.05em' }}>TARIFA / HORA</span>
+                                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                            <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#f97316' }}>${parseInt(hab.tarifa_hora).toLocaleString('es-CO')}</span>
+                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#94a3b8' }}>/hr</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer Botones */}
+                                    <div style={{ display: 'flex', gap: '10px', padding: '16px 24px' }}>
+                                        <button onClick={handleEditarHabilidad} style={{
+                                            flex: 1, padding: '10px', borderRadius: '12px', background: '#fff', color: '#475569', fontWeight: 700, fontSize: '0.85rem',
+                                            border: '1px solid #cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
+                                        }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#0f172a'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#475569'; }}>
+                                            <Edit3 size={15} /> Editar
+                                        </button>
+
+                                        <button onClick={() => handleEliminarHabilidad(hab.id_habilidad)} style={{
+                                            flex: 1, padding: '10px', borderRadius: '12px', background: '#fff', color: '#e11d48', fontWeight: 700, fontSize: '0.85rem',
+                                            border: '1px solid #fecdd3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
+                                        }} onMouseEnter={e => e.currentTarget.style.background = '#fff1f2'} onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                                            <Trash2 size={15} /> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div style={{ textAlign: 'center', padding: '4.5rem 2rem', background: t.cardBg2, borderRadius: '24px', border: `2px dashed ${t.cardBorder}` }}>
+                        <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: t.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.textMuted, margin: '0 auto 1.5rem', boxShadow: t.shadowCard }}>
+                            <Star size={32} />
+                        </div>
+                        <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: t.textPrimary, marginBottom: '8px' }}>Tu catálogo de servicios está vacío</h4>
+                        <p style={{ color: t.textSecondary, fontSize: '0.92rem', maxWidth: '380px', margin: '0 auto' }}>Publica tu primera habilidad y obtén el sello de certificación IA para destacar frente a contratistas.</p>
+                    </div>
+                )}
+            </div>
+
+            {/* ── COLUMNA DERECHA (Sidebar Consejos) ── */}
+            <div style={{ flex: '1 1 30%', minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{
+                    background: t.darkMode ? '#1a1d2e' : 'rgba(255,255,255,0.85)',
+                    border: `1px solid ${t.darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(249,115,22,0.15)'}`,
+                    borderRadius: '24px', padding: '1.75rem',
+                    backdropFilter: 'blur(12px)',
+                    boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 10px 30px -10px rgba(249,115,22,0.1)'
+                }}>
+                    <div style={{ marginBottom: '1.75rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '46px', height: '46px', borderRadius: '16px', background: t.darkMode ? 'rgba(251,191,36,0.15)' : 'linear-gradient(135deg,#fef3c7,#fde68a)', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Lightbulb size={24} />
+                        </div>
+                        <div>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: t.textPrimary, margin: 0 }}>Consejos</h3>
+                            <p style={{ fontSize: '0.85rem', color: t.textSecondary, margin: '2px 0 0' }}>Mejora tu visibilidad</p>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ background: t.cardBg2, border: `1px solid ${t.cardBorder}`, borderRadius: '20px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                 <span style={{ color: '#f97316' }}><Camera size={20} /></span>
+                                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: t.textPrimary, margin: 0 }}>Agrega fotos de tu trabajo</h4>
+                             </div>
+                             <p style={{ fontSize: '0.85rem', color: t.textSecondary, margin: 0, lineHeight: 1.5 }}>Los perfiles con portafolio visual reciben 3x más solicitudes de empleadores.</p>
+                        </div>
+
+                        <div style={{ background: t.cardBg2, border: `1px solid ${t.cardBorder}`, borderRadius: '20px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                 <span style={{ color: '#10b981' }}><FileText size={20} /></span>
+                                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: t.textPrimary, margin: 0 }}>Sube tus certificaciones</h4>
+                             </div>
+                             <p style={{ fontSize: '0.85rem', color: t.textSecondary, margin: 0, lineHeight: 1.5 }}>Los certificados verificados por IA aumentan la confianza y te posicionan mejor en búsquedas.</p>
+                        </div>
+
+                        <div style={{ background: t.cardBg2, border: `1px solid ${t.cardBorder}`, borderRadius: '20px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                 <span style={{ color: '#3b82f6' }}><DollarSign size={20} /></span>
+                                 <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: t.textPrimary, margin: 0 }}>Actualiza tus tarifas</h4>
+                             </div>
+                             <p style={{ fontSize: '0.85rem', color: t.textSecondary, margin: 0, lineHeight: 1.5 }}>Revisa tus precios cada trimestre para mantenerte competitivo en tu zona.</p>
+                        </div>
+                    </div>
                 </div>
-            )}
+            </div>
+
         </div>
     );
 }

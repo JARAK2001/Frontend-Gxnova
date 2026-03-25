@@ -15,6 +15,17 @@ function Notificaciones() {
             return;
         }
         cargarNotificaciones();
+
+        const handleNuevaNotificacion = (e) => {
+            const nueva = e.detail;
+            setNotificaciones(prev => [nueva, ...prev]);
+        };
+
+        window.addEventListener('gxnova_nueva_notificacion', handleNuevaNotificacion);
+
+        return () => {
+            window.removeEventListener('gxnova_nueva_notificacion', handleNuevaNotificacion);
+        };
     }, []);
 
     const cargarNotificaciones = async () => {

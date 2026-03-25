@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ShieldCheck, RefreshCw, MapPin, Award } from 'lucide-react';
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 
 const beneficios = [
     {
@@ -37,6 +38,7 @@ const beneficios = [
 ];
 
 const Beneficios = () => {
+    const t = useThemeTokens();
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -53,16 +55,16 @@ const Beneficios = () => {
     }, []);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: 'var(--slate-50)' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: t.pageBg, transition: 'background 0.3s' }} ref={sectionRef}>
             <div className="container mx-auto px-6" style={{ maxWidth: '1200px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
                     <span className="section-badge">Ventajas Exclusivas</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '14px', letterSpacing: '-0.02em' }}>
+                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: t.textPrimary, marginTop: '14px', letterSpacing: '-0.02em', transition: 'color 0.3s' }}>
                         ¿Por qué elegir{' '}
-                        <span style={{ color: 'var(--orange-600)' }}>Gxnova</span>?
+                        <span style={{ color: t.orange }}>Gxnova</span>?
                     </h2>
-                    <p style={{ marginTop: '10px', color: 'var(--slate-600)', fontSize: '1.05rem', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7 }}>
+                    <p style={{ marginTop: '10px', color: t.textSecondary, fontSize: '1.05rem', maxWidth: '540px', margin: '0 auto', lineHeight: 1.7, transition: 'color 0.3s' }}>
                         Más que una app de servicios, somos una comunidad diseñada para conectar talento con oportunidades reales.
                     </p>
                 </div>
@@ -80,24 +82,24 @@ const Beneficios = () => {
                                 key={i}
                                 className="benefit-card"
                                 style={{
-                                    background: '#fff',
+                                    background: t.cardBg,
                                     borderRadius: '20px',
                                     padding: '32px 28px',
-                                    border: `1.5px solid var(--slate-100)`,
+                                    border: `1.5px solid ${t.cardBorder}`,
                                     borderLeft: `4px solid ${b.accent}`,
-                                    boxShadow: 'var(--shadow-md)',
+                                    boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : 'var(--shadow-md)',
                                     opacity: 0,
                                     transform: 'translateY(24px)',
-                                    transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s, box-shadow 0.22s ease`,
+                                    transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s, box-shadow 0.22s ease, background 0.3s`,
                                     cursor: 'default',
                                 }}
-                                onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 16px 40px -8px ${b.accent}25, 0 2px 12px -4px rgba(0,0,0,0.06)`; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'var(--slate-200)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--slate-100)'; }}
+                                onMouseEnter={e => { e.currentTarget.style.boxShadow = t.darkMode ? `0 16px 40px -8px ${b.accent}40` : `0 16px 40px -8px ${b.accent}25, 0 2px 12px -4px rgba(0,0,0,0.06)`; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = t.darkMode ? b.accent + '60' : 'var(--slate-200)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : 'var(--shadow-md)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = t.cardBorder; }}
                             >
                                 {/* Icon */}
                                 <div style={{
                                     width: '52px', height: '52px',
-                                    background: `${b.accent}18`,
+                                    background: t.darkMode ? t.cardBg2 : `${b.accent}18`,
                                     borderRadius: '14px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     marginBottom: '20px',
@@ -106,10 +108,10 @@ const Beneficios = () => {
                                     <Icon size={24} color={b.accent} />
                                 </div>
 
-                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '10px' }}>
+                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: t.textPrimary, marginBottom: '10px', transition: 'color 0.3s' }}>
                                     {b.titulo}
                                 </h3>
-                                <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', lineHeight: 1.7, margin: 0 }}>
+                                <p style={{ fontSize: '0.875rem', color: t.textSecondary, lineHeight: 1.7, margin: 0, transition: 'color 0.3s' }}>
                                     {b.descripcion}
                                 </p>
                             </div>

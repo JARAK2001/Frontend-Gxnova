@@ -30,9 +30,11 @@ import PoliticaPrivacidad from "./ui/PoliticaPrivacidad";
 
 import { AuthProvider } from "./context/AuthContext";
 import { ChatProvider } from "./context/ChatContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
+    <ThemeProvider>
     <div className="App">
       <AuthProvider>
         <ChatProvider>
@@ -71,6 +73,7 @@ function App() {
         </ChatProvider>
       </AuthProvider>
     </div>
+    </ThemeProvider>
   );
 }
 

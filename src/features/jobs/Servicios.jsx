@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Encabezado from "../../layouts/Encabezado";
 import Footer from "../../layouts/Footer";
 import MapaTrabajos from "./MapaTrabajos";
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 import {
     Map, List, Search, MapPin, RefreshCw, SlidersHorizontal,
     Sparkles, Briefcase, ArrowRight, LayoutGrid,
@@ -57,14 +58,23 @@ const ToggleBtn = ({ active, onClick, icon: Icon, label }) => (
 ══════════════════════════════════════════ */
 function Servicios() {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const [trabajos, setTrabajos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filtroBusqueda, setFiltroBusqueda] = useState("");
-    const [filtroUbicacion, setFiltroUbicacion] = useState("");
     const [vistaMapa, setVistaMapa] = useState(false);
     const [soloHabilidades, setSoloHabilidades] = useState(false);
-
     const token = localStorage.getItem('token');
+
+    const [filtroUbicacion, setFiltroUbicacion] = useState(() => {
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('usuario'));
+            if (storedUser?.ciudad && storedUser.rolesAsignados?.some(r => r.rol.nombre === 'Trabajador')) {
+                return storedUser.ciudad;
+            }
+        } catch (e) {}
+        return "";
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => { cargarTrabajos(); }, 500);
@@ -114,7 +124,7 @@ function Servicios() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#fff7ed 0%,#f8fafc 35%,#f1f5f9 100%)', position: 'relative' }}>
+        <div style={{ minHeight: '100vh', background: t.pageBg, transition: 'background 0.3s', position: 'relative' }}>
             {/* Blobs decorativos */}
             <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '500px', height: '500px', background: 'radial-gradient(circle,rgba(249,115,22,0.06) 0%,transparent 70%)', borderRadius: '50%' }} />
@@ -167,11 +177,12 @@ function Servicios() {
                     {/* ── Barra de filtros (levitando sobre el banner) ── */}
                     <div style={{
                         marginTop: '-2.5rem', marginBottom: '2rem',
-                        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
+                        background: t.darkMode ? t.cardBg : 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
                         WebkitBackdropFilter: 'blur(16px)',
                         borderRadius: '22px', padding: '1.5rem',
-                        border: '1px solid rgba(249,115,22,0.10)',
-                        boxShadow: '0 8px 40px -8px rgba(0,0,0,0.12)',
+                        border: t.darkMode ? `1px solid ${t.cardBorder}` : '1px solid rgba(249,115,22,0.10)',
+                        boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 8px 40px -8px rgba(0,0,0,0.12)',
+                        transition: 'background 0.3s, border-color 0.3s'
                     }}>
                         {/* Header de filtros */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
@@ -179,7 +190,7 @@ function Servicios() {
                                 <div style={{ width: '36px', height: '36px', borderRadius: '11px', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <SlidersHorizontal size={17} />
                                 </div>
-                                <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>Filtrar servicios</span>
+                                <span style={{ fontWeight: 800, color: t.textPrimary, fontSize: '0.95rem' }}>Filtrar servicios</span>
                             </div>
 
                             {/* Controles derecha */}
@@ -215,7 +226,7 @@ function Servicios() {
                         {/* Inputs */}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: '12px' }}>
                             <div style={{ position: 'relative' }}>
-                                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
+                                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary, pointerEvents: 'none' }} />
                                 <input
                                     type="text"
                                     placeholder="¿Qué estás buscando? (Ej: Plomero...)"
@@ -224,17 +235,17 @@ function Servicios() {
                                     style={{
                                         width: '100%', boxSizing: 'border-box', paddingLeft: '42px',
                                         padding: '12px 16px 12px 42px', borderRadius: '14px',
-                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                                        color: '#0f172a', fontSize: '0.9rem', fontWeight: 500,
+                                        border: `1.5px solid ${t.cardBorder}`, background: t.darkMode ? t.cardBg2 : '#f8fafc',
+                                        color: t.textPrimary, fontSize: '0.9rem', fontWeight: 500,
                                         outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
                                         fontFamily: 'inherit',
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = '#fff'; }}
-                                    onBlur={e  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = ''; e.target.style.background = '#f8fafc'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = t.darkMode ? t.cardBg : '#fff'; }}
+                                    onBlur={e  => { e.target.style.borderColor = t.cardBorder; e.target.style.boxShadow = ''; e.target.style.background = t.darkMode ? t.cardBg2 : '#f8fafc'; }}
                                 />
                             </div>
                             <div style={{ position: 'relative' }}>
-                                <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
+                                <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary, pointerEvents: 'none' }} />
                                 <input
                                     type="text"
                                     placeholder="Ciudad o dirección"
@@ -243,13 +254,13 @@ function Servicios() {
                                     style={{
                                         width: '100%', boxSizing: 'border-box', paddingLeft: '42px',
                                         padding: '12px 16px 12px 42px', borderRadius: '14px',
-                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                                        color: '#0f172a', fontSize: '0.9rem', fontWeight: 500,
+                                        border: `1.5px solid ${t.cardBorder}`, background: t.darkMode ? t.cardBg2 : '#f8fafc',
+                                        color: t.textPrimary, fontSize: '0.9rem', fontWeight: 500,
                                         outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s',
                                         fontFamily: 'inherit',
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = '#fff'; }}
-                                    onBlur={e  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = ''; e.target.style.background = '#f8fafc'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = t.darkMode ? t.cardBg : '#fff'; }}
+                                    onBlur={e  => { e.target.style.borderColor = t.cardBorder; e.target.style.boxShadow = ''; e.target.style.background = t.darkMode ? t.cardBg2 : '#f8fafc'; }}
                                 />
                             </div>
                         </div>
@@ -257,7 +268,7 @@ function Servicios() {
 
                     {/* ── Contador de resultados ── */}
                     {!loading && !vistaMapa && (
-                        <p style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 600, marginBottom: '1.25rem' }}>
+                        <p style={{ fontSize: '0.875rem', color: t.textSecondary, fontWeight: 600, marginBottom: '1.25rem' }}>
                             {trabajos.length === 0
                                 ? 'Sin resultados para estos filtros'
                                 : `${trabajos.length} servicio${trabajos.length !== 1 ? 's' : ''} encontrado${trabajos.length !== 1 ? 's' : ''}`
@@ -274,12 +285,12 @@ function Servicios() {
                         <MapaTrabajos trabajos={trabajos} />
                     ) : trabajos.length === 0 ? (
                         /* ── Empty state ── */
-                        <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '24px', border: '1px solid rgba(249,115,22,0.08)', boxShadow: '0 4px 24px -6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ textAlign: 'center', padding: '5rem 2rem', background: t.darkMode ? t.cardBg : 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '24px', border: `1px solid ${t.cardBorder}`, boxShadow: '0 4px 24px -6px rgba(0,0,0,0.06)' }}>
                             <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 4px 16px -4px rgba(249,115,22,0.2)' }}>
                                 <Search size={28} color="#f97316" />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>Sin resultados</h3>
-                            <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '360px', margin: '0 auto' }}>No hay servicios con estos filtros. Intenta con otras palabras o limpia la búsqueda.</p>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: t.textPrimary, marginBottom: '8px' }}>Sin resultados</h3>
+                            <p style={{ color: t.textSecondary, fontSize: '0.92rem', maxWidth: '360px', margin: '0 auto' }}>No hay servicios con estos filtros. Intenta con otras palabras o limpia la búsqueda.</p>
                         </div>
                     ) : (
                         /* ── Grid de tarjetas ── */
@@ -289,15 +300,15 @@ function Servicios() {
                                     key={trabajo.id_trabajo}
                                     onClick={() => verDetalles(trabajo.id_trabajo)}
                                     style={{
-                                        background: '#fff', borderRadius: '22px',
-                                        border: '1px solid #f1f5f9',
-                                        boxShadow: '0 2px 16px -4px rgba(0,0,0,0.06)',
+                                        background: t.cardBg, borderRadius: '22px',
+                                        border: `1px solid ${t.cardBorder}`,
+                                        boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)': '0 2px 16px -4px rgba(0,0,0,0.06)',
                                         overflow: 'hidden', cursor: 'pointer',
                                         transition: 'transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease',
                                         display: 'flex', flexDirection: 'column',
                                     }}
-                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 20px 48px -8px rgba(0,0,0,0.11), 0 4px 16px -4px rgba(249,115,22,0.12)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 16px -4px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
+                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 40px rgba(249,115,22,0.1)' : '0 20px 48px -8px rgba(0,0,0,0.11), 0 4px 16px -4px rgba(249,115,22,0.12)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 2px 16px -4px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = t.cardBorder; }}
                                 >
                                     {/* Imagen / Placeholder */}
                                     {trabajo.foto ? (
@@ -350,11 +361,11 @@ function Servicios() {
                                         </div>
 
                                         {/* Título */}
-                                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '6px', lineHeight: 1.35 }}
+                                        <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: t.textPrimary, marginBottom: '6px', lineHeight: 1.35 }}
                                             className="line-clamp-2">
                                             {trabajo.titulo}
                                         </h3>
-                                        <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.6, marginBottom: '14px', flex: 1 }}
+                                        <p style={{ fontSize: '0.85rem', color: t.textSecondary, lineHeight: 1.6, marginBottom: '14px', flex: 1 }}
                                             className="line-clamp-2">
                                             {trabajo.descripcion}
                                         </p>
@@ -375,12 +386,12 @@ function Servicios() {
                                         </div>
 
                                         {/* Meta info */}
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #f1f5f9' }}>
-                                            <p style={{ fontSize: '0.8rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px', margin: 0 }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px', paddingBottom: '12px', borderBottom: `1px solid ${t.cardBorder}` }}>
+                                            <p style={{ fontSize: '0.8rem', color: t.textSecondary, display: 'flex', alignItems: 'center', gap: '5px', margin: 0 }}>
                                                 <MapPin size={13} color="#f97316" /> {trabajo.ubicacion || 'Sin ubicación'}
                                             </p>
-                                            <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
-                                                Por: <strong style={{ color: '#475569', fontWeight: 700 }}>{trabajo.empleador?.nombre} {trabajo.empleador?.apellido}</strong>
+                                            <p style={{ fontSize: '0.8rem', color: t.textSecondary, margin: 0 }}>
+                                                Por: <strong style={{ color: t.textPrimary, fontWeight: 700 }}>{trabajo.empleador?.nombre} {trabajo.empleador?.apellido}</strong>
                                             </p>
                                         </div>
 

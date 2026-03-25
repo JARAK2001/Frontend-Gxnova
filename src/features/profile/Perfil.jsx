@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import API_URL from '../../config/api';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useThemeTokens } from "../../hooks/useThemeTokens";
 import Encabezado from "../../layouts/Encabezado";
 import Footer from "../../layouts/Footer";
 import DatosPersonales from "./DatosPersonales";
@@ -50,6 +51,7 @@ const SectionHeader = ({ icon: Icon, title, subtitle, action }) => (
 function Perfil() {
     const navigate = useNavigate();
     const { token, logout } = useAuth();
+    const t = useThemeTokens();
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editando, setEditando] = useState(false);
@@ -96,11 +98,11 @@ function Perfil() {
 
     // ── Loading ──
     if (loading) return (
-        <div style={{ minHeight: '100vh', background: 'var(--slate-50)' }}>
+        <div style={{ minHeight: '100vh', background: t.pageBg }}>
             <Encabezado />
             <div style={{ minHeight: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Loader2 size={40} style={{ color: 'var(--orange-500)', animation: 'spin 0.8s linear infinite' }} />
-                <p style={{ color: 'var(--slate-600)', fontWeight: 600, marginTop: '1rem' }}>Cargando tu perfil...</p>
+                <p style={{ color: t.textSecondary, fontWeight: 600, marginTop: '1rem' }}>Cargando tu perfil...</p>
             </div>
             <Footer />
         </div>
@@ -125,7 +127,7 @@ function Perfil() {
     const meta = tabMeta[activeTab] || tabMeta.perfil;
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #fff7ed 0%, #f8fafc 40%, #f1f5f9 100%)', position: 'relative' }}>
+        <div style={{ minHeight: '100vh', background: t.darkMode ? '#0f1117' : 'linear-gradient(160deg, #fff7ed 0%, #f8fafc 40%, #f1f5f9 100%)', position: 'relative', transition: 'background 0.3s' }}>
             {/* Blobs decorativos */}
             <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
                 <div style={{ position: 'absolute', top: '5%', right: '0%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 70%)', borderRadius: '50%' }} />
@@ -238,11 +240,11 @@ function Perfil() {
                     {!editando && (
                         <div style={{
                             display: 'flex', gap: '4px', flexWrap: 'wrap',
-                            background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(14px)',
-                            WebkitBackdropFilter: 'blur(14px)',
+                            background: t.darkMode ? 'rgba(26,29,46,0.9)' : 'rgba(255,255,255,0.82)',
+                            backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
                             borderRadius: '18px', padding: '6px',
-                            border: '1px solid rgba(249,115,22,0.12)',
-                            boxShadow: '0 4px 20px -6px rgba(0,0,0,0.08)',
+                            border: `1px solid ${t.darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(249,115,22,0.12)'}`,
+                            boxShadow: t.darkMode ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px -6px rgba(0,0,0,0.08)',
                             marginBottom: '1.75rem',
                         }}>
                             {tabsVisibles.map(tab => {
@@ -259,7 +261,7 @@ function Perfil() {
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
                                             fontFamily: 'var(--font-sans)', transition: 'all 0.2s',
                                             background: isActive ? 'linear-gradient(135deg, #f97316, #ea580c)' : 'transparent',
-                                            color: isActive ? '#fff' : 'var(--slate-500)',
+                                            color: isActive ? '#fff' : t.textSecondary,
                                             boxShadow: isActive ? '0 4px 14px -2px rgba(249,115,22,0.35)' : 'none',
                                         }}
                                     >
@@ -272,12 +274,11 @@ function Perfil() {
 
                     {/* ── Contenido ── */}
                     <div style={{
-                        background: 'rgba(255,255,255,0.90)',
-                        backdropFilter: 'blur(18px)',
-                        WebkitBackdropFilter: 'blur(18px)',
+                        background: t.darkMode ? 'rgba(26,29,46,0.95)' : 'rgba(255,255,255,0.90)',
+                        backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
                         borderRadius: '26px',
-                        border: '1px solid rgba(249,115,22,0.10)',
-                        boxShadow: '0 8px 40px -8px rgba(0,0,0,0.10)',
+                        border: `1px solid ${t.darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(249,115,22,0.10)'}`,
+                        boxShadow: t.darkMode ? '0 8px 40px rgba(0,0,0,0.5)' : '0 8px 40px -8px rgba(0,0,0,0.10)',
                         overflow: 'hidden',
                     }}>
                         {/* Barra naranja superior */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Bell, Plus, Menu, X } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import { Bell, Plus, Menu, X, Sun, Moon } from "lucide-react";
 import logoGxnova from "../assets/gxnova-logo.png";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 function Encabezado() {
     const navigate = useNavigate();
     const { user, token, logout } = useAuth();
+    const { darkMode, toggleDarkMode } = useTheme();
     const [cantidadNotificaciones, setCantidadNotificaciones] = useState(0);
     const [mostrarMenuUsuario, setMostrarMenuUsuario] = useState(false);
     const [mostrarMenuMovil, setMostrarMenuMovil] = useState(false);
@@ -46,6 +48,28 @@ function Encabezado() {
                     position: 'top-end',
                     showConfirmButton: false,
                     timer: 8000,
+                    timerProgressBar: true,
+                    iconColor: '#f97316',
+                    customClass: {
+                        popup: 'animated slideInRight'
+                    }
+                });
+            });
+
+            socket.on('nueva_notificacion', (notificacion) => {
+                setCantidadNotificaciones(prev => prev + 1);
+                
+                // Emite un evento document/window para que otros componentes se enteren
+                window.dispatchEvent(new CustomEvent('gxnova_nueva_notificacion', { detail: notificacion }));
+
+                Swal.fire({
+                    title: 'Notificación',
+                    text: notificacion.mensaje,
+                    icon: 'info',
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 5000,
                     timerProgressBar: true,
                     iconColor: '#f97316',
                     customClass: {
@@ -92,16 +116,16 @@ function Encabezado() {
         zIndex: 50,
         width: '100%',
         transition: 'background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-        background: scrolled
-            ? 'rgba(255, 255, 255, 0.95)'
-            : 'rgba(255, 255, 255, 0.8)',
+        background: darkMode
+            ? (scrolled ? 'rgba(15,17,23,0.97)' : 'rgba(15,17,23,0.85)')
+            : (scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)'),
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: scrolled
             ? '1px solid rgba(249, 115, 22, 0.15)'
-            : '1px solid rgba(0, 0, 0, 0.05)',
+            : darkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0, 0, 0, 0.05)',
         boxShadow: scrolled
-            ? '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)'
+            ? '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.05)'
             : 'none',
     };
 
@@ -212,6 +236,34 @@ function Encabezado() {
                                 </button>
                             </>
                         )}
+
+                        {/* Dark Mode Toggle */}
+                        <button
+                            onClick={toggleDarkMode}
+                            aria-label={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                            style={{
+                                padding: '8px',
+                                borderRadius: '50%',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                background: darkMode ? 'rgba(249,115,22,0.15)' : '#f8fafc',
+                                color: darkMode ? '#f97316' : '#64748b',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.25)' : '#f1f5f9';
+                                e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.15)' : '#f8fafc';
+                                e.currentTarget.style.transform = '';
+                            }}
+                        >
+                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
 
                         {/* Hamburger */}
                         <button

@@ -44,7 +44,7 @@ const AdminAnalytics = () => {
     if (!data) return <div className="p-8 text-center text-red-500">No hay datos disponibles.</div>;
 
     // Procesar datos para gráficas
-    const distribucionCategorias = [...data.distribucion]
+    const distribucionCategorias = [...(data.distribucion || [])]
         .map(item => ({
             name: item.nombre || `Categoría ${item.id_categoria}`,
             count: item.count !== undefined ? item.count : (item._count?.id_categoria || 0)

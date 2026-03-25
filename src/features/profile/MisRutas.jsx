@@ -3,11 +3,13 @@ import API_URL from '../../config/api';
 import { Clock, Navigation, Map as MapIcon, Calendar, MapPin, Search } from 'lucide-react';
 import MapaRuta from '../jobs/MapaRuta';
 import { useAuth } from '../../context/AuthContext';
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 import { io } from "socket.io-client";
 import Swal from 'sweetalert2';
 
 function MisRutas({ usuarioId }) {
     const { token } = useAuth();
+    const t = useThemeTokens();
     const [trabajosAceptados, setTrabajosAceptados] = useState([]);
     const [loading, setLoading] = useState(false);
     
@@ -167,7 +169,7 @@ function MisRutas({ usuarioId }) {
         return (
             <div style={{ marginBottom: '2.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '0.75rem' }}>
-                    <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: textColor, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: t.darkMode ? '#e2e8f0' : textColor, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: iconBg }}></div>
                         {titulo} <span style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: 700 }}>({trabajos.length})</span>
                     </h3>
@@ -184,16 +186,16 @@ function MisRutas({ usuarioId }) {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
                     {trabajos.map((trabajo) => (
-                        <div key={trabajo.id_trabajo} style={{ background: '#fff', borderRadius: '18px', padding: '20px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}>
-                            <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.2 }}>{trabajo.titulo}</h4>
+                        <div key={trabajo.id_trabajo} style={{ background: t.cardBg, borderRadius: '18px', padding: '20px', border: `1px solid ${t.cardBorder}`, display: 'flex', flexDirection: 'column', boxShadow: '0 2px 8px rgba(0,0,0,0.02)', transition: 'all 0.2s' }}>
+                            <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: t.textPrimary, margin: '0 0 10px 0', lineHeight: 1.2 }}>{trabajo.titulo}</h4>
                             
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.85rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: t.textSecondary, fontSize: '0.85rem' }}>
                                     <MapPin size={14} color="#ea580c" />
                                     <span>{trabajo.ubicacion}</span>
                                 </div>
                                 {trabajo.fecha_estimada && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.85rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: t.textSecondary, fontSize: '0.85rem' }}>
                                         <Calendar size={14} color="#3b82f6" />
                                         <span>{new Date(trabajo.fecha_estimada).toLocaleDateString("es-CO", { day: 'numeric', month: 'long' })}</span>
                                     </div>
@@ -204,7 +206,7 @@ function MisRutas({ usuarioId }) {
                                 <button
                                     onClick={() => irAlTrabajo(trabajo)}
                                     disabled={cargandoGPS}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: trabajoCargando === trabajo.id_trabajo ? 'linear-gradient(135deg,#f97316,#ea580c)' : '#fff', color: trabajoCargando === trabajo.id_trabajo ? '#fff' : '#ea580c', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #fed7aa', cursor: cargandoGPS ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', opacity: cargandoGPS && trabajoCargando !== trabajo.id_trabajo ? 0.5 : 1 }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: trabajoCargando === trabajo.id_trabajo ? 'linear-gradient(135deg,#f97316,#ea580c)' : t.cardBg2, color: trabajoCargando === trabajo.id_trabajo ? '#fff' : '#ea580c', fontWeight: 700, fontSize: '0.85rem', border: `1px solid ${trabajoCargando === trabajo.id_trabajo ? 'transparent' : '#ea580c'}`, cursor: cargandoGPS ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', opacity: cargandoGPS && trabajoCargando !== trabajo.id_trabajo ? 0.5 : 1 }}
                                 >
                                     {trabajoCargando === trabajo.id_trabajo ? (
                                         <>
@@ -218,7 +220,7 @@ function MisRutas({ usuarioId }) {
 
                                 <button
                                     onClick={() => enviarUbicacion(trabajo)}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: '#ecfdf5', color: '#059669', fontWeight: 700, fontSize: '0.85rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '10px', background: t.darkMode ? 'rgba(5,150,105,0.1)' : '#ecfdf5', color: t.darkMode ? '#34d399' : '#059669', fontWeight: 700, fontSize: '0.85rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                                 >
                                     <Clock size={16} /> Avisar llegada (Socket)
                                 </button>
@@ -261,12 +263,12 @@ function MisRutas({ usuarioId }) {
                     <div style={{ width: '40px', height: '40px', border: '3px solid #f97316', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 </div>
             ) : trabajosAceptados.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4.5rem 2rem', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #e2e8f0' }}>
-                    <div style={{ width: '70px', height: '70px', borderRadius: '22px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ textAlign: 'center', padding: '4.5rem 2rem', background: t.cardBg2, borderRadius: '24px', border: `2px dashed ${t.cardBorder}` }}>
+                    <div style={{ width: '70px', height: '70px', borderRadius: '22px', background: t.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.textSecondary, margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                         <MapIcon size={34} />
                     </div>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Sin rutas asignadas</h4>
-                    <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto' }}>
+                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: t.textPrimary, marginBottom: '8px' }}>Sin rutas asignadas</h4>
+                    <p style={{ color: t.textSecondary, fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto' }}>
                         Tus trabajos aceptados aparecerán aquí para que planifiques tus traslados diarios.
                     </p>
                 </div>

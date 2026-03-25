@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useThemeTokens } from "../../hooks/useThemeTokens";
 
 function CategoriasSection({ categorias }) {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const sectionRef = useRef(null);
 
     // Stagger reveal on scroll
@@ -38,15 +40,15 @@ function CategoriasSection({ categorias }) {
     ];
 
     return (
-        <section style={{ padding: '5.5rem 0', background: '#fff' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: t.cardBg, transition: 'background 0.3s' }} ref={sectionRef}>
             <div className="container mx-auto px-4" style={{ maxWidth: '1280px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                     <span className="section-badge" style={{ marginBottom: '12px' }}>Explora por área</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '12px', letterSpacing: '-0.02em' }}>
+                    <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: t.textPrimary, marginTop: '12px', letterSpacing: '-0.02em', transition: 'color 0.3s' }}>
                         Categorías Disponibles
                     </h2>
-                    <p style={{ color: 'var(--slate-600)', marginTop: '8px', fontSize: '1rem' }}>
+                    <p style={{ color: t.textSecondary, marginTop: '8px', fontSize: '1rem', transition: 'color 0.3s' }}>
                         Encuentra trabajos en las áreas que más te interesan
                     </p>
                 </div>
@@ -61,8 +63,8 @@ function CategoriasSection({ categorias }) {
                                 className="cat-card"
                                 onClick={() => navigate(`/servicios?id_categoria=${cat.id_categoria}`)}
                                 style={{
-                                    background: '#fff',
-                                    border: '1.5px solid var(--slate-100)',
+                                    background: t.cardBg,
+                                    border: `1.5px solid ${t.cardBorder}`,
                                     borderRadius: '16px',
                                     padding: '24px 16px',
                                     textAlign: 'center',
@@ -72,7 +74,7 @@ function CategoriasSection({ categorias }) {
                                     transform: 'translateY(20px)',
                                     transitionDelay: `${i * 50}ms`,
                                     fontFamily: 'inherit',
-                                    boxShadow: 'var(--shadow-sm)',
+                                    boxShadow: t.darkMode ? '0 4px 14px rgba(0,0,0,0.4)' : 'var(--shadow-sm)',
                                 }}
                                 onMouseEnter={e => {
                                     e.currentTarget.style.transform = 'translateY(-5px)';
@@ -85,25 +87,25 @@ function CategoriasSection({ categorias }) {
                                 }}
                                 onMouseLeave={e => {
                                     e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                                    e.currentTarget.style.borderColor = 'var(--slate-100)';
-                                    e.currentTarget.querySelector('.cat-icon').style.background = 'var(--slate-50)';
+                                    e.currentTarget.style.boxShadow = t.darkMode ? '0 4px 14px rgba(0,0,0,0.4)' : 'var(--shadow-sm)';
+                                    e.currentTarget.style.borderColor = t.cardBorder;
+                                    e.currentTarget.querySelector('.cat-icon').style.background = t.cardBg2;
                                     e.currentTarget.querySelector('.cat-icon').style.boxShadow = 'none';
-                                    e.currentTarget.querySelector('.cat-initial').style.color = 'var(--slate-400)';
-                                    e.currentTarget.querySelector('.cat-label').style.color = 'var(--slate-900)';
+                                    e.currentTarget.querySelector('.cat-initial').style.color = t.textSecondary;
+                                    e.currentTarget.querySelector('.cat-label').style.color = t.textPrimary;
                                 }}
                             >
                                 <div className="cat-icon" style={{
                                     width: '56px', height: '56px',
                                     borderRadius: '14px',
-                                    background: 'var(--slate-50)',
+                                    background: t.cardBg2,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     margin: '0 auto 14px',
                                     transition: 'all 0.22s ease',
                                 }}>
                                     <span className="cat-initial" style={{
                                         fontSize: '1.4rem', fontWeight: 900,
-                                        color: 'var(--slate-400)',
+                                        color: t.textSecondary,
                                         transition: 'color 0.22s ease',
                                         lineHeight: 1,
                                     }}>
@@ -111,13 +113,13 @@ function CategoriasSection({ categorias }) {
                                     </span>
                                 </div>
                                 <h3 className="cat-label" style={{
-                                    fontWeight: 700, fontSize: '0.9rem', color: 'var(--slate-900)',
+                                    fontWeight: 700, fontSize: '0.9rem', color: t.textPrimary,
                                     marginBottom: '4px', transition: 'color 0.22s ease',
                                 }}>
                                     {cat.nombre}
                                 </h3>
                                 {cat.descripcion && (
-                                    <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', lineHeight: 1.4, margin: 0 }}
+                                    <p style={{ fontSize: '0.75rem', color: t.textSecondary, lineHeight: 1.4, margin: 0 }}
                                         className="line-clamp-2">
                                         {cat.descripcion}
                                     </p>

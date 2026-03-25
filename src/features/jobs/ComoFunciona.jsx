@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Search, MessageSquare, Star, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 
 const pasos = [
     {
@@ -28,6 +29,7 @@ const pasos = [
 
 const ComoFunciona = () => {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -44,15 +46,15 @@ const ComoFunciona = () => {
     }, []);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: 'var(--slate-50)' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: t.pageBg, transition: 'background 0.3s' }} ref={sectionRef}>
             <div className="container mx-auto px-6" style={{ maxWidth: '1100px' }}>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
                     <span className="section-badge">Proceso Simple</span>
-                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: 'var(--slate-900)', marginTop: '16px', letterSpacing: '-0.02em' }}>
-                        ¿Cómo funciona <span style={{ color: 'var(--orange-600)' }}>Gxnova</span>?
+                    <h2 style={{ fontSize: 'clamp(1.8rem,3vw,2.4rem)', fontWeight: 800, color: t.textPrimary, marginTop: '16px', letterSpacing: '-0.02em', transition: 'color 0.3s' }}>
+                        ¿Cómo funciona <span style={{ color: t.orange }}>Gxnova</span>?
                     </h2>
-                    <p style={{ marginTop: '12px', color: 'var(--slate-600)', maxWidth: '540px', margin: '12px auto 0', lineHeight: 1.7 }}>
+                    <p style={{ marginTop: '12px', color: t.textSecondary, maxWidth: '540px', margin: '12px auto 0', lineHeight: 1.7, transition: 'color 0.3s' }}>
                         Conectamos necesidades con talentos de forma rápida, segura y flexible.
                     </p>
                 </div>
@@ -79,15 +81,15 @@ const ComoFunciona = () => {
                                 key={i}
                                 className="step-item"
                                 style={{
-                                    background: '#fff',
+                                    background: t.cardBg,
                                     borderRadius: '20px',
                                     padding: '36px 28px',
-                                    border: '1.5px solid var(--slate-100)',
-                                    boxShadow: 'var(--shadow-md)',
+                                    border: `1.5px solid ${t.cardBorder}`,
+                                    boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : 'var(--shadow-md)',
                                     textAlign: 'center',
                                     opacity: 0,
                                     transform: 'translateY(24px)',
-                                    transition: `opacity 0.5s ease ${i * 0.12}s, transform 0.5s ease ${i * 0.12}s`,
+                                    transition: `opacity 0.5s ease ${i * 0.12}s, transform 0.5s ease ${i * 0.12}s, background 0.3s`,
                                     position: 'relative',
                                     overflow: 'hidden',
                                 }}
@@ -103,12 +105,13 @@ const ComoFunciona = () => {
                                 {/* Icon */}
                                 <div style={{
                                     width: '72px', height: '72px',
-                                    background: paso.bg,
+                                    background: t.darkMode ? t.cardBg2 : paso.bg,
                                     borderRadius: '20px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     margin: '0 auto 20px',
-                                    boxShadow: `0 8px 24px -6px ${paso.color}30`,
+                                    boxShadow: t.darkMode ? 'none' : `0 8px 24px -6px ${paso.color}30`,
                                     position: 'relative', zIndex: 1,
+                                    border: t.darkMode ? `1px solid ${paso.color}30` : 'none',
                                 }}>
                                     {paso.icono}
                                     {/* Number badge */}
@@ -125,10 +128,10 @@ const ComoFunciona = () => {
                                     </div>
                                 </div>
 
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '10px' }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: t.textPrimary, marginBottom: '10px', transition: 'color 0.3s' }}>
                                     {paso.titulo}
                                 </h3>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--slate-600)', lineHeight: 1.7 }}>
+                                <p style={{ fontSize: '0.9rem', color: t.textSecondary, lineHeight: 1.7, transition: 'color 0.3s' }}>
                                     {paso.descripcion}
                                 </p>
                             </div>

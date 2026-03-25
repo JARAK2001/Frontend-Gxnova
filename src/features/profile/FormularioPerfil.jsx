@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import API_URL from '../../config/api';
-import { Camera, User, Mail, Phone, Save, X } from 'lucide-react';
+import { Camera, User, Mail, Phone, Save, X, MapPin } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 function FormularioPerfil({ usuario, onCancel, onSuccess }) {
@@ -9,6 +9,7 @@ function FormularioPerfil({ usuario, onCancel, onSuccess }) {
         apellido: usuario.apellido || "",
         correo: usuario.correo || "",
         telefono: usuario.telefono || "",
+        ciudad: usuario.ciudad || "",
         foto_perfil: null,
     });
     const [preview, setPreview] = useState(usuario.foto_perfil || "");
@@ -24,6 +25,7 @@ function FormularioPerfil({ usuario, onCancel, onSuccess }) {
         data.append('apellido', formData.apellido);
         data.append('correo', formData.correo);
         data.append('telefono', formData.telefono);
+        data.append('ciudad', formData.ciudad);
         if (formData.foto_perfil) {
             data.append('foto_perfil', formData.foto_perfil);
         }
@@ -194,6 +196,25 @@ function FormularioPerfil({ usuario, onCancel, onSuccess }) {
                         transition: 'all 0.2s', outline: 'none', fontFamily: 'var(--font-sans)',
                     }}
                     placeholder="Ej: +57 300 123 4567"
+                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--orange-500)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; }}
+                    onBlur={e => { e.currentTarget.style.borderColor = 'var(--slate-200)'; e.currentTarget.style.boxShadow = 'none'; }}
+                />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--slate-700)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <MapPin size={16} color="var(--slate-500)" /> Ciudad
+                </label>
+                <input
+                    type="text"
+                    value={formData.ciudad}
+                    onChange={(e) => setFormData({ ...formData, ciudad: e.target.value })}
+                    style={{
+                        width: '100%', boxSizing: 'border-box', borderRadius: '12px', border: '1.5px solid var(--slate-200)',
+                        padding: '12px 14px', fontSize: '1rem', color: 'var(--slate-900)',
+                        transition: 'all 0.2s', outline: 'none', fontFamily: 'var(--font-sans)',
+                    }}
+                    placeholder="Ej: Popayán"
                     onFocus={e => { e.currentTarget.style.borderColor = 'var(--orange-500)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; }}
                     onBlur={e => { e.currentTarget.style.borderColor = 'var(--slate-200)'; e.currentTarget.style.boxShadow = 'none'; }}
                 />

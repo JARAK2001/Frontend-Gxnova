@@ -3,6 +3,7 @@ import API_URL from '../../config/api';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Encabezado from "../../layouts/Encabezado";
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 import {
     MapPin, DollarSign, ArrowRight, Image as ImageIcon,
     Briefcase, Tag, FileText, Calendar, Navigation,
@@ -12,6 +13,7 @@ import Swal from 'sweetalert2';
 
 function CrearTrabajo() {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const { token } = useAuth();
     const fileInputRef = useRef(null);
 
@@ -121,11 +123,17 @@ function CrearTrabajo() {
         }
     };
 
-    const inputClass = "w-full rounded-xl border border-slate-200 bg-white py-3 px-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all text-sm font-medium shadow-sm";
-    const labelClass = "block text-sm font-bold text-slate-700 mb-1.5";
+    const inputClass = "w-full rounded-xl border py-3 px-4 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all text-sm font-medium shadow-sm " + (t.darkMode ? "placeholder-slate-500" : "placeholder-slate-400");
+    const labelClass = "block text-sm font-bold mb-1.5";
+    
+    const inputStyle = {
+        background: t.darkMode ? t.cardBg2 : '#fff',
+        borderColor: t.cardBorder,
+        color: t.textPrimary
+    };
 
     return (
-        <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #fff7ed 0%, #f8fafc 50%, #fff 100%)' }}>
+        <div className="min-h-screen" style={{ background: t.pageBg, transition: 'background 0.3s' }}>
             <Encabezado />
 
             {/* Hero Banner */}
@@ -152,20 +160,20 @@ function CrearTrabajo() {
                 <form onSubmit={handleSubmit} className="space-y-6">
 
                     {/* Sección 1: Información Básica */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="rounded-2xl shadow-sm border overflow-hidden transition-colors duration-300" style={{ background: t.cardBg, borderColor: t.cardBorder }}>
+                        <div className="px-6 py-4 border-b flex items-center gap-3" style={{ borderColor: t.cardBorder }}>
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
                                 <Briefcase size={16} className="text-white" />
                             </div>
                             <div>
-                                <h2 className="font-black text-slate-800 text-sm">Información del Trabajo</h2>
-                                <p className="text-xs text-slate-400">Cuéntanos qué necesitas</p>
+                                <h2 className="font-black text-sm" style={{ color: t.textPrimary }}>Información del Trabajo</h2>
+                                <p className="text-xs" style={{ color: t.textSecondary }}>Cuéntanos qué necesitas</p>
                             </div>
                         </div>
                         <div className="p-6 space-y-4">
                             {/* Categoría */}
                             <div>
-                                <label className={labelClass}>
+                                <label className={labelClass} style={{ color: t.textPrimary }}>
                                     <Tag size={13} className="inline mr-1.5 text-orange-500" />
                                     Categoría <span className="text-orange-500">*</span>
                                 </label>
@@ -173,6 +181,7 @@ function CrearTrabajo() {
                                     value={formData.id_categoria}
                                     onChange={(e) => setFormData({ ...formData, id_categoria: e.target.value })}
                                     className={inputClass}
+                                    style={inputStyle}
                                     required
                                 >
                                     <option value="">Selecciona una categoría…</option>
@@ -184,7 +193,7 @@ function CrearTrabajo() {
 
                             {/* Título */}
                             <div>
-                                <label className={labelClass}>
+                                <label className={labelClass} style={{ color: t.textPrimary }}>
                                     <FileText size={13} className="inline mr-1.5 text-orange-500" />
                                     Título <span className="text-orange-500">*</span>
                                 </label>
@@ -193,6 +202,7 @@ function CrearTrabajo() {
                                     value={formData.titulo}
                                     onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                                     className={inputClass}
+                                    style={inputStyle}
                                     placeholder="Ej: Necesito plomero para arreglar tubería"
                                     required
                                 />
@@ -200,7 +210,7 @@ function CrearTrabajo() {
 
                             {/* Descripción */}
                             <div>
-                                <label className={labelClass}>
+                                <label className={labelClass} style={{ color: t.textPrimary }}>
                                     <FileText size={13} className="inline mr-1.5 text-orange-500" />
                                     Descripción <span className="text-orange-500">*</span>
                                 </label>
@@ -208,10 +218,7 @@ function CrearTrabajo() {
                                     value={formData.descripcion}
                                     onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
                                     className={inputClass}
-                                    rows={5}
-                                    placeholder="Describe detalladamente el trabajo que necesitas: materiales, herramientas, horario, etc."
-                                    required
-                                    style={{ resize: 'vertical' }}
+                                    style={{ ...inputStyle, resize: 'vertical' }}
                                 />
                                 <p className="text-xs text-slate-400 mt-1">Una buena descripción atrae mejores trabajadores</p>
                             </div>
@@ -219,14 +226,14 @@ function CrearTrabajo() {
                     </div>
 
                     {/* Sección 2: Tipo de Pago */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="rounded-2xl shadow-sm border overflow-hidden transition-colors duration-300" style={{ background: t.cardBg, borderColor: t.cardBorder }}>
+                        <div className="px-6 py-4 border-b flex items-center gap-3" style={{ borderColor: t.cardBorder }}>
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
                                 <DollarSign size={16} className="text-white" />
                             </div>
                             <div>
-                                <h2 className="font-black text-slate-800 text-sm">Forma de Pago</h2>
-                                <p className="text-xs text-slate-400">¿Cómo compensarás al trabajador?</p>
+                                <h2 className="font-black text-sm" style={{ color: t.textPrimary }}>Forma de Pago</h2>
+                                <p className="text-xs" style={{ color: t.textSecondary }}>¿Cómo compensarás al trabajador?</p>
                             </div>
                         </div>
                         <div className="p-6 space-y-4">
@@ -242,13 +249,13 @@ function CrearTrabajo() {
                                         onClick={() => setFormData({ ...formData, tipo_pago: opt.value })}
                                         className="p-4 rounded-xl border-2 text-left transition-all cursor-pointer"
                                         style={formData.tipo_pago === opt.value
-                                            ? { borderColor: '#f97316', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', boxShadow: '0 0 0 3px rgba(249,115,22,0.15)' }
-                                            : { borderColor: '#e2e8f0', background: '#f8fafc' }
+                                            ? { borderColor: '#f97316', background: t.darkMode ? `${t.orange}15` : 'linear-gradient(135deg,#fff7ed,#ffedd5)', boxShadow: '0 0 0 3px rgba(249,115,22,0.15)' }
+                                            : { borderColor: t.cardBorder, background: t.darkMode ? t.cardBg2 : '#f8fafc' }
                                         }
                                     >
                                         <div className="text-2xl mb-2">{opt.icon}</div>
-                                        <p className="font-bold text-slate-800 text-sm">{opt.label}</p>
-                                        <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                                        <p className="font-bold text-sm" style={{ color: t.textPrimary }}>{opt.label}</p>
+                                        <p className="text-xs mt-0.5" style={{ color: t.textSecondary }}>{opt.desc}</p>
                                         {formData.tipo_pago === opt.value && (
                                             <div className="mt-2">
                                                 <CheckCircle size={14} className="text-orange-500" />
@@ -261,36 +268,34 @@ function CrearTrabajo() {
                             {/* Campo según tipo de pago */}
                             {formData.tipo_pago === "dinero" ? (
                                 <div>
-                                    <label className={labelClass}>
+                                    <label className={labelClass} style={{ color: t.textPrimary }}>
                                         Monto (COP) <span className="text-orange-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-sm" style={{ color: t.textSecondary }}>$</span>
                                         <input
                                             type="number"
                                             value={formData.monto_pago}
                                             onChange={(e) => setFormData({ ...formData, monto_pago: e.target.value })}
                                             className={inputClass + " pl-8"}
+                                            style={inputStyle}
                                             placeholder="500.000"
                                             min="0"
                                             required
                                         />
                                     </div>
-                                    <p className="text-xs text-slate-400 mt-1">Ingresa el valor en pesos colombianos</p>
+                                    <p className="text-xs mt-1" style={{ color: t.textSecondary }}>Ingresa el valor en pesos colombianos</p>
                                 </div>
                             ) : (
                                 <div>
-                                    <label className={labelClass}>
+                                    <label className={labelClass} style={{ color: t.textPrimary }}>
                                         ¿Qué ofreces a cambio? <span className="text-orange-500">*</span>
                                     </label>
                                     <textarea
                                         value={formData.descripcion_trueque}
                                         onChange={(e) => setFormData({ ...formData, descripcion_trueque: e.target.value })}
                                         className={inputClass}
-                                        rows={3}
-                                        placeholder="Ej: Ofrezco clases de inglés, mantenimiento de PC, etc."
-                                        required
-                                        style={{ resize: 'none' }}
+                                        style={{ ...inputStyle, resize: 'none' }}
                                     />
                                 </div>
                             )}
@@ -298,14 +303,14 @@ function CrearTrabajo() {
                     </div>
 
                     {/* Sección 3: Ubicación y Fecha */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="rounded-2xl shadow-sm border overflow-hidden transition-colors duration-300" style={{ background: t.cardBg, borderColor: t.cardBorder }}>
+                        <div className="px-6 py-4 border-b flex items-center gap-3" style={{ borderColor: t.cardBorder }}>
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
                                 <MapPin size={16} className="text-white" />
                             </div>
                             <div>
-                                <h2 className="font-black text-slate-800 text-sm">Ubicación y Fecha</h2>
-                                <p className="text-xs text-slate-400">¿Dónde y cuándo se realiza el trabajo?</p>
+                                <h2 className="font-black text-sm" style={{ color: t.textPrimary }}>Ubicación y Fecha</h2>
+                                <p className="text-xs" style={{ color: t.textSecondary }}>¿Dónde y cuándo se realiza el trabajo?</p>
                             </div>
                         </div>
                         <div className="p-6 space-y-4">
@@ -330,24 +335,26 @@ function CrearTrabajo() {
                             {/* GPS */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className={labelClass}>Latitud <span className="text-slate-400 font-normal">(opcional)</span></label>
+                                    <label className={labelClass} style={{ color: t.textPrimary }}>Latitud <span className="font-normal mx-1" style={{ color: t.textSecondary }}>(opcional)</span></label>
                                     <input
                                         type="number"
                                         step="any"
                                         value={formData.latitud}
                                         onChange={(e) => setFormData({ ...formData, latitud: e.target.value })}
                                         className={inputClass}
+                                        style={inputStyle}
                                         placeholder="4.7110"
                                     />
                                 </div>
                                 <div>
-                                    <label className={labelClass}>Longitud <span className="text-slate-400 font-normal">(opcional)</span></label>
+                                    <label className={labelClass} style={{ color: t.textPrimary }}>Longitud <span className="font-normal mx-1" style={{ color: t.textSecondary }}>(opcional)</span></label>
                                     <input
                                         type="number"
                                         step="any"
                                         value={formData.longitud}
                                         onChange={(e) => setFormData({ ...formData, longitud: e.target.value })}
                                         className={inputClass}
+                                        style={inputStyle}
                                         placeholder="-74.0721"
                                     />
                                 </div>
@@ -356,9 +363,7 @@ function CrearTrabajo() {
                                 type="button"
                                 onClick={obtenerUbicacionActual}
                                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-bold transition-all"
-                                style={{ borderColor: '#fed7aa', color: '#ea580c', background: '#fff7ed' }}
-                                onMouseEnter={e => e.currentTarget.style.background = '#ffedd5'}
-                                onMouseLeave={e => e.currentTarget.style.background = '#fff7ed'}
+                                style={{ borderColor: t.darkMode ? '#ea580c' : '#fed7aa', color: t.darkMode ? '#fdba74' : '#ea580c', background: t.darkMode ? 'transparent' : '#fff7ed' }}
                             >
                                 <Navigation size={15} />
                                 Usar mi ubicación actual (GPS)
@@ -369,29 +374,30 @@ function CrearTrabajo() {
 
                             {/* Fecha */}
                             <div>
-                                <label className={labelClass}>
+                                <label className={labelClass} style={{ color: t.textPrimary }}>
                                     <Calendar size={13} className="inline mr-1.5 text-orange-500" />
-                                    Fecha Estimada <span className="text-slate-400 font-normal">(opcional)</span>
+                                    Fecha Estimada <span className="font-normal mx-1" style={{ color: t.textSecondary }}>(opcional)</span>
                                 </label>
                                 <input
                                     type="date"
                                     value={formData.fecha_estimada}
                                     onChange={(e) => setFormData({ ...formData, fecha_estimada: e.target.value })}
                                     className={inputClass}
+                                    style={inputStyle}
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Sección 4: Foto */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                    <div className="rounded-2xl shadow-sm border overflow-hidden transition-colors duration-300" style={{ background: t.cardBg, borderColor: t.cardBorder }}>
+                        <div className="px-6 py-4 border-b flex items-center gap-3" style={{ borderColor: t.cardBorder }}>
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
                                 <ImageIcon size={16} className="text-white" />
                             </div>
                             <div>
-                                <h2 className="font-black text-slate-800 text-sm">Foto del Trabajo</h2>
-                                <p className="text-xs text-slate-400">Una imagen dice más que mil palabras</p>
+                                <h2 className="font-black text-sm" style={{ color: t.textPrimary }}>Foto del Trabajo</h2>
+                                <p className="text-xs" style={{ color: t.textSecondary }}>Una imagen dice más que mil palabras</p>
                             </div>
                         </div>
                         <div className="p-6">
@@ -409,7 +415,8 @@ function CrearTrabajo() {
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/90 text-slate-700 hover:bg-white shadow-md transition-colors"
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition-colors"
+                                            style={{ background: t.cardBg, color: t.textPrimary }}
                                         >
                                             <RefreshCw size={12} /> Cambiar foto
                                         </button>
@@ -420,15 +427,13 @@ function CrearTrabajo() {
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
                                     className="w-full border-2 border-dashed rounded-xl py-10 px-4 text-center transition-all"
-                                    style={{ borderColor: '#fed7aa', background: '#fffbf7' }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#f97316'; e.currentTarget.style.background = '#fff7ed'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#fed7aa'; e.currentTarget.style.background = '#fffbf7'; }}
+                                    style={{ borderColor: t.cardBorder, background: t.darkMode ? t.cardBg2 : '#fffbf7' }}
                                 >
                                     <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#fff7ed,#fed7aa)' }}>
                                         <ImageIcon size={22} className="text-orange-500" />
                                     </div>
-                                    <p className="font-bold text-slate-600 text-sm">Haz clic para subir una foto</p>
-                                    <p className="text-xs text-slate-400 mt-1">PNG, JPG, WEBP — máx. 5 MB</p>
+                                    <p className="font-bold text-sm" style={{ color: t.textPrimary }}>Haz clic para subir una foto</p>
+                                    <p className="text-xs mt-1" style={{ color: t.textSecondary }}>PNG, JPG, WEBP — máx. 5 MB</p>
                                 </button>
                             )}
                             <input
@@ -463,7 +468,8 @@ function CrearTrabajo() {
                         <button
                             type="button"
                             onClick={() => navigate("/servicios")}
-                            className="flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-sm text-slate-600 border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all"
+                            className="flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-sm border transition-all"
+                            style={{ background: t.cardBg, borderColor: t.cardBorder, color: t.textSecondary }}
                         >
                             Cancelar
                         </button>

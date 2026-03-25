@@ -63,12 +63,39 @@ const ChatWindow = ({ conversacion, onClose }) => {
 
         if (socket) {
             const handleMessage = (msgData) => {
-                if (chatId && msgData.id_conversacion === chatId) {
-                    setMensajes((prev) => [...prev, msgData]);
+                // Relajamos la conversión para evitar bugs de string vs number
+                if (chatId && Number(msgData.id_conversacion) === Number(chatId)) {
+                    setMensajes((prev) => {
+                        if (prev.some(m => m.id_mensaje === msgData.id_mensaje)) return prev;
+                        return [...prev, msgData];
+                    });
                 }
             };
+            
+            const handleNotification = (data) => {
+                if (chatId && Number(data.chatId) === Number(chatId)) {
+                    setMensajes((prev) => {
+                        if (prev.some(m => m.id_mensaje === data.mensaje.id_mensaje)) return prev;
+                        return [...prev, data.mensaje];
+                    });
+                }
+            };
+
+            const handleReconnect = () => {
+                if (chatId) {
+                    joinChat(chatId);
+                }
+            };
+
             socket.on('receive_message', handleMessage);
-            return () => socket.off('receive_message', handleMessage);
+            socket.on('new_chat_notification', handleNotification);
+            socket.on('connect', handleReconnect);
+            
+            return () => {
+                socket.off('receive_message', handleMessage);
+                socket.off('new_chat_notification', handleNotification);
+                socket.off('connect', handleReconnect);
+            };
         }
     }, [chatId, socket, user?.id_usuario]);
 
@@ -124,6 +151,11 @@ const ChatWindow = ({ conversacion, onClose }) => {
                 if (!chatId) {
                     setMensajes([msgData]);
                     setChatActivo({ ...conversacion, id_conversacion: msgData.id_conversacion });
+                } else {
+                    setMensajes((prev) => {
+                        if (prev.some(m => m.id_mensaje === msgData.id_mensaje)) return prev;
+                        return [...prev, msgData];
+                    });
                 }
             }
 

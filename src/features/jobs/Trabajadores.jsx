@@ -5,6 +5,7 @@ import Footer from "../../layouts/Footer";
 import { useAuth } from "../../context/AuthContext";
 import { useChat } from "../../context/ChatContext";
 import API_URL from "../../config/api";
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 import {
     Search, Users, Star, MessageCircle, ExternalLink,
     Wrench, Loader2, LayoutGrid, ChevronDown,
@@ -44,6 +45,7 @@ const MiniStars = ({ valor }) => {
 
 function Trabajadores() {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const { token } = useAuth();
     const { abrirChat } = useChat();
 
@@ -96,7 +98,7 @@ function Trabajadores() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg,#fff7ed 0%,#f8fafc 35%,#f1f5f9 100%)', position: 'relative' }}>
+        <div style={{ minHeight: '100vh', background: t.pageBg, transition: 'background 0.3s', position: 'relative' }}>
             {/* Blobs */}
             <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '8%', right: '-5%', width: '500px', height: '500px', background: 'radial-gradient(circle,rgba(249,115,22,0.06) 0%,transparent 70%)', borderRadius: '50%' }} />
@@ -146,22 +148,23 @@ function Trabajadores() {
                     {/* Barra de filtros glassmorphism */}
                     <div style={{
                         marginTop: '-2.5rem', marginBottom: '2rem',
-                        background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
+                        background: t.darkMode ? t.cardBg : 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)',
                         WebkitBackdropFilter: 'blur(16px)',
                         borderRadius: '22px', padding: '1.5rem',
-                        border: '1px solid rgba(249,115,22,0.10)',
-                        boxShadow: '0 8px 40px -8px rgba(0,0,0,0.12)',
+                        border: t.darkMode ? `1px solid ${t.cardBorder}` : '1px solid rgba(249,115,22,0.10)',
+                        boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 8px 40px -8px rgba(0,0,0,0.12)',
+                        transition: 'background 0.3s, border-color 0.3s'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
                             <div style={{ width: '36px', height: '36px', borderRadius: '11px', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', color: '#f97316', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Search size={17} />
                             </div>
-                            <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>Buscar profesionales</span>
+                            <span style={{ fontWeight: 800, color: t.textPrimary, fontSize: '0.95rem' }}>Buscar profesionales</span>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: '12px' }}>
                             {/* Búsqueda por nombre */}
                             <div style={{ position: 'relative' }}>
-                                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
+                                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary, pointerEvents: 'none' }} />
                                 <input
                                     type="text"
                                     placeholder="Nombre del profesional..."
@@ -170,34 +173,34 @@ function Trabajadores() {
                                     style={{
                                         width: '100%', boxSizing: 'border-box',
                                         padding: '12px 16px 12px 42px', borderRadius: '14px',
-                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                                        color: '#0f172a', fontSize: '0.9rem', fontWeight: 500,
+                                        border: `1.5px solid ${t.cardBorder}`, background: t.darkMode ? t.cardBg2 : '#f8fafc',
+                                        color: t.textPrimary, fontSize: '0.9rem', fontWeight: 500,
                                         outline: 'none', fontFamily: 'inherit',
                                         transition: 'border-color 0.2s, box-shadow 0.2s',
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = '#fff'; }}
-                                    onBlur={e  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = ''; e.target.style.background = '#f8fafc'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = t.darkMode ? t.cardBg : '#fff'; }}
+                                    onBlur={e  => { e.target.style.borderColor = t.cardBorder; e.target.style.boxShadow = ''; e.target.style.background = t.darkMode ? t.cardBg2 : '#f8fafc'; }}
                                 />
                             </div>
                             {/* Filtro por categoría */}
                             <div style={{ position: 'relative' }}>
-                                <Wrench size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
-                                <ChevronDown size={14} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', pointerEvents: 'none' }} />
+                                <Wrench size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary, pointerEvents: 'none' }} />
+                                <ChevronDown size={14} style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: t.textSecondary, pointerEvents: 'none' }} />
                                 <select
                                     value={categoria}
                                     onChange={e => setCategoria(e.target.value)}
                                     style={{
                                         width: '100%', boxSizing: 'border-box',
                                         padding: '12px 40px 12px 42px', borderRadius: '14px',
-                                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                                        color: categoria ? '#0f172a' : '#94a3b8',
+                                        border: `1.5px solid ${t.cardBorder}`, background: t.darkMode ? t.cardBg2 : '#f8fafc',
+                                        color: categoria ? t.textPrimary : t.textSecondary,
                                         fontSize: '0.9rem', fontWeight: 500,
                                         outline: 'none', fontFamily: 'inherit',
                                         appearance: 'none', cursor: 'pointer',
                                         transition: 'border-color 0.2s, box-shadow 0.2s',
                                     }}
-                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = '#fff'; }}
-                                    onBlur={e  => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = ''; e.target.style.background = '#f8fafc'; }}
+                                    onFocus={e => { e.target.style.borderColor = '#f97316'; e.target.style.boxShadow = '0 0 0 3px rgba(249,115,22,0.12)'; e.target.style.background = t.darkMode ? t.cardBg : '#fff'; }}
+                                    onBlur={e  => { e.target.style.borderColor = t.cardBorder; e.target.style.boxShadow = ''; e.target.style.background = t.darkMode ? t.cardBg2 : '#f8fafc'; }}
                                 >
                                     <option value="">Todas las especialidades</option>
                                     {categorias.map(cat => (
@@ -210,7 +213,7 @@ function Trabajadores() {
 
                     {/* Contador */}
                     {!loading && (
-                        <p style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: 600, marginBottom: '1.25rem' }}>
+                        <p style={{ fontSize: '0.875rem', color: t.textSecondary, fontWeight: 600, marginBottom: '1.25rem' }}>
                             {trabajadores.length === 0
                                 ? 'No se encontraron profesionales con estos filtros'
                                 : `${trabajadores.length} profesional${trabajadores.length !== 1 ? 'es' : ''} disponible${trabajadores.length !== 1 ? 's' : ''}`}
@@ -223,12 +226,12 @@ function Trabajadores() {
                             {[1,2,3,4,5,6].map(n => <SkeletonCard key={n} />)}
                         </div>
                     ) : trabajadores.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '5rem 2rem', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '24px', border: '1px solid rgba(249,115,22,0.08)', boxShadow: '0 4px 24px -6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ textAlign: 'center', padding: '5rem 2rem', background: t.darkMode ? t.cardBg : 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderRadius: '24px', border: `1px solid ${t.cardBorder}`, boxShadow: '0 4px 24px -6px rgba(0,0,0,0.06)' }}>
                             <div style={{ width: '72px', height: '72px', borderRadius: '22px', background: 'linear-gradient(135deg,#fff7ed,#ffedd5)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 4px 16px -4px rgba(249,115,22,0.2)' }}>
                                 <Users size={28} color="#f97316" />
                             </div>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>Sin resultados</h3>
-                            <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '360px', margin: '0 auto' }}>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: t.textPrimary, marginBottom: '8px' }}>Sin resultados</h3>
+                            <p style={{ color: t.textSecondary, fontSize: '0.92rem', maxWidth: '360px', margin: '0 auto' }}>
                                 No hay profesionales disponibles con esos filtros. Intenta con otra categoría o nombre.
                             </p>
                         </div>
@@ -252,8 +255,10 @@ function Trabajadores() {
     );
 }
 
+
 /* ══ TARJETA de trabajador ══ */
 function TrabajadorCard({ trabajador, onContactar, onVerPerfil }) {
+    const t = useThemeTokens();
     const { nombre, apellido, foto_perfil, habilidades = [], estadisticas } = trabajador;
     const initiales = `${nombre?.charAt(0) || ''}${apellido?.charAt(0) || ''}`.toUpperCase();
     const promedio  = estadisticas?.promedio || 0;
@@ -262,14 +267,14 @@ function TrabajadorCard({ trabajador, onContactar, onVerPerfil }) {
     return (
         <div
             style={{
-                background: '#fff', borderRadius: '22px', padding: '22px',
-                border: '1px solid #f1f5f9',
-                boxShadow: '0 2px 16px -4px rgba(0,0,0,0.06)',
+                background: t.cardBg, borderRadius: '22px', padding: '22px',
+                border: `1px solid ${t.cardBorder}`,
+                boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)': '0 2px 16px -4px rgba(0,0,0,0.06)',
                 display: 'flex', flexDirection: 'column', gap: '14px',
-                transition: 'transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease',
+                transition: 'transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.3s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 40px -8px rgba(0,0,0,0.10), 0 4px 16px -4px rgba(249,115,22,0.10)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 16px -4px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 40px rgba(249,115,22,0.1)' : '0 16px 40px -8px rgba(0,0,0,0.10), 0 4px 16px -4px rgba(249,115,22,0.10)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : '0 2px 16px -4px rgba(0,0,0,0.06)'; e.currentTarget.style.borderColor = t.cardBorder; }}
         >
             {/* Header: avatar + nombre + rating */}
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
@@ -289,14 +294,14 @@ function TrabajadorCard({ trabajador, onContactar, onVerPerfil }) {
                 </div>
 
                 <div style={{ minWidth: 0, flex: 1 }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: t.textPrimary, margin: 0, lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {nombre} {apellido}
                     </h3>
                     {/* Rating */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '5px' }}>
                         <MiniStars valor={promedio} />
                         <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#f97316' }}>{promedio > 0 ? promedio.toFixed(1) : '—'}</span>
-                        {total > 0 && <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>({total})</span>}
+                        {total > 0 && <span style={{ fontSize: '0.75rem', color: t.textSecondary, fontWeight: 500 }}>({total})</span>}
                     </div>
                 </div>
             </div>
@@ -307,14 +312,14 @@ function TrabajadorCard({ trabajador, onContactar, onVerPerfil }) {
                     {habilidades.map(hab => (
                         <span key={hab.id_habilidad} style={{
                             padding: '4px 10px', borderRadius: '999px', fontSize: '0.73rem', fontWeight: 700,
-                            background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa',
+                            background: t.darkMode ? `${t.orange}20` : '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa',
                         }}>
                             {hab.categoria?.nombre || hab.descripcion}
                         </span>
                     ))}
                 </div>
             ) : (
-                <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: 0 }}>Sin especialidades listadas</p>
+                <p style={{ fontSize: '0.82rem', color: t.textSecondary, margin: 0 }}>Sin especialidades listadas</p>
             )}
 
             {/* Tarifa mínima */}

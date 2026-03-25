@@ -33,6 +33,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -44,9 +45,13 @@ const AdminDashboard = () => {
                 if (res.ok) {
                     const data = await res.json();
                     setStats(data);
+                } else {
+                    const err = await res.json();
+                    setErrorMsg(err.error || err.message || "Error al cargar datos (sin permisos).");
                 }
             } catch (error) {
                 console.error("Error cargando estadísticas", error);
+                setErrorMsg("Error de conexión con el servidor.");
             } finally {
                 setLoading(false);
             }
@@ -65,16 +70,19 @@ const AdminDashboard = () => {
             </div>
         </div>
     );
+    if (errorMsg) return (
+        <div className="admin-card p-8 text-center text-red-500 font-bold bg-red-50">{errorMsg}</div>
+    );
     if (!stats) return (
-        <div className="admin-card p-8 text-center text-red-500">Error al cargar datos.</div>
+        <div className="admin-card p-8 text-center text-slate-500">Cargando o sin datos...</div>
     );
 
-    const trabajosData = stats.trabajosPorEstado.map(item => ({
+    const trabajosData = (stats.trabajosPorEstado || []).map(item => ({
         name: item.estado.charAt(0).toUpperCase() + item.estado.slice(1),
         cantidad: item._count.estado
     }));
 
-    const usuariosData = stats.usuariosPorEstado.map(item => ({
+    const usuariosData = (stats.usuariosPorEstado || []).map(item => ({
         name: item.estado.charAt(0).toUpperCase() + item.estado.slice(1),
         cantidad: item._count.estado
     }));

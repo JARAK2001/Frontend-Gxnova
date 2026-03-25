@@ -171,7 +171,7 @@ function PerfilPublico() {
                                 )}
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', color: 'var(--slate-500)', fontWeight: 600, fontSize: '0.94rem' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} color="var(--orange-500)" /> {perfil.ubicacion || "Colombia"}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} color="var(--orange-500)" /> {perfil.ciudad || "No especificada"}</div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Calendar size={16} color="var(--orange-500)" /> Se unió en {new Date(perfil.fecha_registro).getFullYear()}</div>
                             </div>
                         </div>

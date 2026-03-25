@@ -16,6 +16,8 @@ function RegisterForm({
     setConfirmPassword,
     telefono,
     setTelefono,
+    ciudad,
+    setCiudad,
     rolNombre,
     setRolNombre,
     terminosAceptados,
@@ -65,7 +67,7 @@ function RegisterForm({
                 </div>
             </div>
 
-            {/* Teléfono y Rol */}
+            {/* Teléfono y Ciudad */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                     <label htmlFor="telefono" className="text-sm font-medium text-gray-700">Teléfono</label>
@@ -80,18 +82,32 @@ function RegisterForm({
                     />
                 </div>
                 <div className="space-y-1">
-                    <label htmlFor="rol" className="text-sm font-medium text-gray-700">¿Qué buscas?</label>
-                    <select
-                        id="rol"
-                        name="rol"
-                        value={rolNombre}
-                        onChange={(e) => setRolNombre(e.target.value)}
-                        className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
-                    >
-                        <option value="Trabajador">Quiero Trabajar</option>
-                        <option value="Empleador">Quiero Contratar</option>
-                    </select>
+                    <label htmlFor="ciudad" className="text-sm font-medium text-gray-700">Ciudad</label>
+                    <input
+                        type="text"
+                        id="ciudad"
+                        name="ciudad"
+                        value={ciudad}
+                        onChange={(e) => setCiudad(e.target.value)}
+                        className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                        placeholder="Ej: Bogotá"
+                    />
                 </div>
+            </div>
+
+            {/* Rol */}
+            <div className="space-y-1">
+                <label htmlFor="rol" className="text-sm font-medium text-gray-700">¿Qué buscas?</label>
+                <select
+                    id="rol"
+                    name="rol"
+                    value={rolNombre}
+                    onChange={(e) => setRolNombre(e.target.value)}
+                    className="block w-full rounded-md border border-gray-300 py-2 px-3 text-gray-900 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                >
+                    <option value="Trabajador">Quiero Trabajar</option>
+                    <option value="Empleador">Quiero Contratar</option>
+                </select>
             </div>
 
             {/* Email */}

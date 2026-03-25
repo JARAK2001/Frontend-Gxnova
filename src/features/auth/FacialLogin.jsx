@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
-import { Camera, Mail, Loader2, ArrowLeft } from "lucide-react";
+import { Camera, Loader2, ArrowLeft } from "lucide-react";
 
 function FacialLogin({ handleFacialLogin, handleToggleView, PRIMARY_COLOR, HOVER_COLOR }) {
-    const [correo, setCorreo] = useState("");
     const [selfieFile, setSelfieFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +21,9 @@ function FacialLogin({ handleFacialLogin, handleToggleView, PRIMARY_COLOR, HOVER
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!correo || !selfieFile) return;
+        if (!selfieFile) return;
         setIsLoading(true);
-        await handleFacialLogin(correo, selfieFile);
+        await handleFacialLogin(selfieFile);
         setIsLoading(false);
     };
 
@@ -36,31 +35,11 @@ function FacialLogin({ handleFacialLogin, handleToggleView, PRIMARY_COLOR, HOVER
                 </div>
                 <h2 className="text-xl font-bold text-slate-800 mb-1">Acceso con Rostro</h2>
                 <p className="text-sm text-slate-500">
-                    Ingresa tu correo y tómate una selfie para ingresar rápidamente.
+                    Tómate una selfie para ingresar. El sistema te identificará automáticamente.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1">
-                    <label htmlFor="facial-email" className="text-sm font-medium text-slate-700">
-                        Correo Electrónico
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                            <Mail className="h-4 w-4" />
-                        </div>
-                        <input
-                            type="email"
-                            id="facial-email"
-                            required
-                            className="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium text-slate-700"
-                            placeholder="tu@correo.com"
-                            value={correo}
-                            onChange={(e) => setCorreo(e.target.value)}
-                        />
-                    </div>
-                </div>
-
                 <div className="space-y-1">
                     <label className="text-sm font-medium text-slate-700 block">Tu Rostro</label>
                     <input
@@ -88,10 +67,11 @@ function FacialLogin({ handleFacialLogin, handleToggleView, PRIMARY_COLOR, HOVER
                     ) : (
                         <div
                             onClick={triggerFileSelect}
-                            className="w-full h-32 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 hover:border-orange-400 hover:text-orange-500 transition-all text-slate-400 group"
+                            className="w-full h-40 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 hover:border-orange-400 hover:text-orange-500 transition-all text-slate-400 group"
                         >
-                            <Camera size={28} className="mb-2 group-hover:scale-110 transition-transform" />
+                            <Camera size={32} className="mb-2 group-hover:scale-110 transition-transform" />
                             <span className="text-sm font-medium">Tocar para abrir cámara</span>
+                            <span className="text-xs mt-1 text-slate-400">o seleccionar foto</span>
                         </div>
                     )}
                 </div>
@@ -99,10 +79,10 @@ function FacialLogin({ handleFacialLogin, handleToggleView, PRIMARY_COLOR, HOVER
                 <div className="pt-2">
                     <button
                         type="submit"
-                        disabled={isLoading || !correo || !selfieFile}
+                        disabled={isLoading || !selfieFile}
                         className={`w-full flex justify-center py-2.5 px-4 rounded-xl text-sm font-bold text-white bg-${PRIMARY_COLOR} hover:bg-${HOVER_COLOR} shadow-lg shadow-orange-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                        {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Verificar e Ingresar"}
+                        {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : "Identificarme e Ingresar"}
                     </button>
                 </div>
             </form>

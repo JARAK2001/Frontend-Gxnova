@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Flame, MapPin, AlertCircle, ArrowRight, Clock } from 'lucide-react';
+import { useThemeTokens } from "../../hooks/useThemeTokens";
 
 function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
     const navigate = useNavigate();
+    const t = useThemeTokens();
     const sectionRef = useRef(null);
 
     const formatearPrecio = (monto) => {
@@ -43,7 +45,7 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
     }, [trabajos]);
 
     return (
-        <section style={{ padding: '5.5rem 0', background: 'var(--slate-50)' }} ref={sectionRef}>
+        <section style={{ padding: '5.5rem 0', background: t.pageBg, transition: 'background 0.3s' }} ref={sectionRef}>
             <div className="container mx-auto px-4" style={{ maxWidth: '1280px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
                     <span className="section-badge" style={{ marginBottom: '12px' }}>
@@ -53,31 +55,32 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                     <h2 style={{
                         fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
                         fontWeight: 800,
-                        color: 'var(--slate-900)',
+                        color: t.textPrimary,
                         marginTop: '12px',
                         letterSpacing: '-0.02em',
+                        transition: 'color 0.3s'
                     }}>
                         {titulo || (esRecientes ? 'Trabajos recientes' : 'Trabajos destacados')}
                     </h2>
-                    <p style={{ color: 'var(--slate-600)', marginTop: '8px', fontSize: '1rem' }}>
+                    <p style={{ color: t.textSecondary, marginTop: '8px', fontSize: '1rem', transition: 'color 0.3s' }}>
                         {titulo ? 'Proyectos que cierran en las próximas 24 horas' : 'Proyectos recientes que buscan talento'}
                     </p>
                 </div>
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280', fontSize: '1rem' }}>
+                    <div style={{ textAlign: 'center', padding: '3rem', color: t.textSecondary, fontSize: '1rem' }}>
                         Cargando trabajos...
                     </div>
                 ) : !trabajos || trabajos.length === 0 ? (
                     <div style={{
                         textAlign: 'center',
                         padding: '3rem',
-                        background: '#fff',
+                        background: t.cardBg,
                         borderRadius: 'var(--radius-card)',
-                        border: '1.5px solid var(--slate-100)',
-                        color: 'var(--slate-500)',
+                        border: `1.5px solid ${t.cardBorder}`,
+                        color: t.textSecondary,
                         fontSize: '1rem',
-                        boxShadow: 'var(--shadow-sm)',
+                        boxShadow: t.darkMode ? '0 10px 30px rgba(0,0,0,0.4)' : 'var(--shadow-sm)',
                     }}>
                         No hay trabajos disponibles en este momento
                     </div>
@@ -95,11 +98,11 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     className="job-card"
                                     onClick={() => navigate(`/detalles/${trabajo.id_trabajo}`)}
                                     style={{
-                                        background: '#fff',
+                                        background: t.cardBg,
                                         borderRadius: 'var(--radius-card)',
                                         padding: '24px',
-                                        border: urgente ? '2px solid rgba(239,68,68,0.4)' : '1.5px solid var(--slate-100)',
-                                        boxShadow: 'var(--shadow-sm)',
+                                        border: urgente ? '2px solid rgba(239,68,68,0.4)' : `1.5px solid ${t.cardBorder}`,
+                                        boxShadow: t.darkMode ? '0 4px 14px rgba(0,0,0,0.4)' : 'var(--shadow-sm)',
                                         cursor: 'pointer',
                                         opacity: 0,
                                         transform: 'translateY(20px)',
@@ -110,13 +113,15 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     }}
                                     onMouseEnter={e => {
                                         e.currentTarget.style.transform = 'translateY(-6px)';
-                                        e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+                                        e.currentTarget.style.boxShadow = t.darkMode ? '0 10px 30px rgba(0,0,0,0.6)' : 'var(--shadow-lg)';
                                         if (urgente) e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)';
+                                        else e.currentTarget.style.borderColor = t.orange;
                                     }}
                                     onMouseLeave={e => {
                                         e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                                        e.currentTarget.style.boxShadow = t.darkMode ? '0 4px 14px rgba(0,0,0,0.4)' : 'var(--shadow-sm)';
                                         if (urgente) e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)';
+                                        else e.currentTarget.style.borderColor = t.cardBorder;
                                     }}
                                 >
                                     {urgente && (
@@ -137,12 +142,12 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
                                         <span style={{
                                             padding: '5px 12px',
-                                            background: 'var(--orange-50)',
-                                            border: '1px solid var(--orange-100)',
+                                            background: t.tagBg,
+                                            border: `1px solid ${t.tagBorder}`,
                                             borderRadius: '999px',
                                             fontSize: '0.75rem',
                                             fontWeight: 700,
-                                            color: 'var(--orange-600)',
+                                            color: t.tagColor,
                                         }}>
                                             {trabajo.categoria?.nombre || 'Sin categoría'}
                                         </span>
@@ -152,9 +157,9 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                             fontSize: '0.72rem',
                                             fontWeight: 700,
                                             textTransform: 'capitalize',
-                                            background: trabajo.estado === 'publicado' ? '#f0fdf4' : 'var(--slate-50)',
-                                            color: trabajo.estado === 'publicado' ? '#16a34a' : 'var(--slate-500)',
-                                            border: `1px solid ${trabajo.estado === 'publicado' ? '#dcfce7' : 'var(--slate-100)'}`,
+                                            background: trabajo.estado === 'publicado' ? t.greenBg : t.cardBg2,
+                                            color: trabajo.estado === 'publicado' ? t.greenColor : t.textMuted,
+                                            border: `1px solid ${trabajo.estado === 'publicado' ? t.greenBorder : t.cardBorder}`,
                                         }}>
                                             {trabajo.estado}
                                         </span>
@@ -162,19 +167,20 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                     <h3 style={{
                                         fontSize: '1.1rem',
                                         fontWeight: 800,
-                                        color: 'var(--slate-900)',
+                                        color: t.textPrimary,
                                         marginBottom: '8px',
                                         lineHeight: 1.35,
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,
                                         WebkitBoxOrient: 'vertical',
                                         overflow: 'hidden',
+                                        transition: 'color 0.3s'
                                     }}>
                                         {trabajo.titulo}
                                     </h3>
                                     <p style={{
                                         fontSize: '0.875rem',
-                                        color: 'var(--slate-600)',
+                                        color: t.textSecondary,
                                         lineHeight: 1.6,
                                         marginBottom: '16px',
                                         display: '-webkit-box',
@@ -185,12 +191,12 @@ function TrabajosDestacados({ trabajos, loading, titulo, esRecientes }) {
                                         {trabajo.descripcion}
                                     </p>
                                     <div style={{ marginBottom: '12px' }}>
-                                        <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', marginBottom: '2px' }}>Tipo de pago</p>
-                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--slate-900)' }}>
+                                        <p style={{ fontSize: '0.75rem', color: t.textSecondary, marginBottom: '2px' }}>Tipo de pago</p>
+                                        <p style={{ fontSize: '0.95rem', fontWeight: 700, color: t.textPrimary }}>
                                             {trabajo.tipo_pago === 'dinero' ? formatearPrecio(trabajo.monto_pago) : 'Trueque'}
                                         </p>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--slate-500)', marginBottom: '16px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: t.textSecondary, marginBottom: '16px' }}>
                                         <MapPin size={14} /> {trabajo.ubicacion}
                                     </div>
                                     <button

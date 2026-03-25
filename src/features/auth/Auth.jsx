@@ -42,6 +42,7 @@ function Auth() {
     const [passwordRegister, setPasswordRegister] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [ciudad, setCiudad] = useState("");
     const [rolNombre, setRolNombre] = useState("Trabajador");
     const [terminosAceptados, setTerminosAceptados] = useState(false);
     const [showRegisterPassword, setShowRegisterPassword] = useState(false);
@@ -138,7 +139,7 @@ function Auth() {
             const res = await fetch(`${API_URL}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nombre, apellido, correo: emailRegister, password: passwordRegister, telefono, rolNombre, terminosAceptados: true })
+                body: JSON.stringify({ nombre, apellido, correo: emailRegister, password: passwordRegister, telefono, ciudad, rolNombre, terminosAceptados: true })
             });
             const data = await res.json();
 
@@ -148,7 +149,7 @@ function Auth() {
                 if (data.requiereVerificacion) {
                     setPendingVerificationCorreo(data.usuario?.correo || emailRegister);
                     setNombre(''); setApellido(''); setEmailRegister(''); setPasswordRegister('');
-                    setConfirmPassword(''); setTelefono(''); setRolNombre('Trabajador'); setTerminosAceptados(false);
+                    setConfirmPassword(''); setTelefono(''); setCiudad(''); setRolNombre('Trabajador'); setTerminosAceptados(false);
                     return;
                 }
             } else {
@@ -216,12 +217,11 @@ function Auth() {
         }
     };
 
-    const handleFacialLogin = async (correo, selfieFile) => {
+    const handleFacialLogin = async (selfieFile) => {
         showMessage(null, null);
         try {
             setIsLoading(true);
             const formData = new FormData();
-            formData.append("correo", correo);
             formData.append("selfie", selfieFile);
 
             const res = await fetch(`${API_URL}/api/auth/login-facial`, {
@@ -403,6 +403,7 @@ function Auth() {
                                 passwordRegister={passwordRegister} setPasswordRegister={setPasswordRegister}
                                 confirmPassword={confirmPassword} setConfirmPassword={setConfirmPassword}
                                 telefono={telefono} setTelefono={setTelefono}
+                                ciudad={ciudad} setCiudad={setCiudad}
                                 rolNombre={rolNombre} setRolNombre={setRolNombre}
                                 terminosAceptados={terminosAceptados} setTerminosAceptados={setTerminosAceptados}
                                 showRegisterPassword={showRegisterPassword} setShowRegisterPassword={setShowRegisterPassword}

@@ -3,8 +3,10 @@ import API_URL from '../../config/api';
 import { Link } from "react-router-dom";
 import { Inbox, Calendar, Users, Eye, Trash2, XCircle, AlertCircle, Plus, LayoutDashboard } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useThemeTokens } from '../../hooks/useThemeTokens';
 
 function MisPublicaciones({ usuarioId }) {
+    const t = useThemeTokens();
     const [trabajos, setTrabajos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filtroTab, setFiltroTab] = useState('activas'); // 'activas' o 'historial'
@@ -87,15 +89,15 @@ function MisPublicaciones({ usuarioId }) {
             {/* Header / Tabs Row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
                 <div style={{
-                    display: 'flex', background: 'rgba(241,245,249,0.8)', padding: '5px', borderRadius: '18px',
-                    border: '1px solid rgba(0,0,0,0.05)', backdropFilter: 'blur(8px)',
+                    display: 'flex', background: t.darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(241,245,249,0.8)', padding: '5px', borderRadius: '18px',
+                    border: `1px solid ${t.cardBorder}`, backdropFilter: 'blur(8px)',
                 }}>
                     <button
                         onClick={() => setFiltroTab('activas')}
                         style={{
                             padding: '10px 24px', borderRadius: '14px', fontSize: '0.88rem', fontWeight: 800, border: 'none', cursor: 'pointer',
-                            background: filtroTab === 'activas' ? '#fff' : 'transparent',
-                            color: filtroTab === 'activas' ? '#ea580c' : '#64748b',
+                            background: filtroTab === 'activas' ? t.cardBg : 'transparent',
+                            color: filtroTab === 'activas' ? '#ea580c' : t.textSecondary,
                             boxShadow: filtroTab === 'activas' ? '0 8px 16px -4px rgba(0,0,0,0.08)' : 'none',
                             transition: 'all 0.2s',
                         }}
@@ -106,8 +108,8 @@ function MisPublicaciones({ usuarioId }) {
                         onClick={() => setFiltroTab('historial')}
                         style={{
                             padding: '10px 24px', borderRadius: '14px', fontSize: '0.88rem', fontWeight: 800, border: 'none', cursor: 'pointer',
-                            background: filtroTab === 'historial' ? '#fff' : 'transparent',
-                            color: filtroTab === 'historial' ? '#ea580c' : '#64748b',
+                            background: filtroTab === 'historial' ? t.cardBg : 'transparent',
+                            color: filtroTab === 'historial' ? '#ea580c' : t.textSecondary,
                             boxShadow: filtroTab === 'historial' ? '0 8px 16px -4px rgba(0,0,0,0.08)' : 'none',
                             transition: 'all 0.2s',
                         }}
@@ -135,43 +137,43 @@ function MisPublicaciones({ usuarioId }) {
                     <div style={{ width: '40px', height: '40px', border: '3px solid #fbd38d', borderTopColor: '#ea580c', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                 </div>
             ) : filtrados.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4.5rem 2rem', background: '#f8fafc', borderRadius: '24px', border: '2px dashed #e2e8f0' }}>
-                    <div style={{ width: '70px', height: '70px', borderRadius: '22px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1', margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                <div style={{ textAlign: 'center', padding: '4.5rem 2rem', background: t.cardBg2, borderRadius: '24px', border: `2px dashed ${t.cardBorder}` }}>
+                    <div style={{ width: '70px', height: '70px', borderRadius: '22px', background: t.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: t.textSecondary, margin: '0 auto 1.5rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: `1px solid ${t.cardBorder}` }}>
                         <Inbox size={34} />
                     </div>
-                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Catálogo de trabajos vacío</h4>
-                    <p style={{ color: '#64748b', fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto' }}>Gestiona tus proyectos publicados aquí. Empieza publicando un nuevo requerimiento.</p>
+                    <h4 style={{ fontSize: '1.2rem', fontWeight: 800, color: t.textPrimary, marginBottom: '8px' }}>Catálogo de trabajos vacío</h4>
+                    <p style={{ color: t.textSecondary, fontSize: '0.95rem', maxWidth: '400px', margin: '0 auto' }}>Gestiona tus proyectos publicados aquí. Empieza publicando un nuevo requerimiento.</p>
                 </div>
             ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
                     {filtrados.map((job) => (
                         <div key={job.id_trabajo} style={{
-                            background: '#fff', borderRadius: '24px', padding: '24px', position: 'relative', overflow: 'hidden',
-                            border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            background: t.cardBg, borderRadius: '24px', padding: '24px', position: 'relative', overflow: 'hidden',
+                            border: `1px solid ${t.cardBorder}`, display: 'flex', flexDirection: 'column', transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                             boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
                         }}
                             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 15px 35px -5px rgba(0,0,0,0.06), 0 5px 15px -5px rgba(249,115,22,0.1)'; e.currentTarget.style.borderColor = '#fed7aa'; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = '#f1f5f9'; }}>
+                            onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 10px rgba(0,0,0,0.02)'; e.currentTarget.style.borderColor = t.cardBorder; }}>
 
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '14px' }}>
-                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a', margin: 0, lineHeight: 1.3 }}>
+                                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: t.textPrimary, margin: 0, lineHeight: 1.3 }}>
                                         {job.titulo}
                                     </h3>
                                     <StatusBadge estado={job.estado} />
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '0.85rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: t.textSecondary, fontSize: '0.85rem' }}>
                                     <Calendar size={14} />
                                     <span>Publicado el {new Date(job.fecha_creacion).toLocaleDateString()}</span>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: '#f8fafc', borderRadius: '18px', marginBottom: '1.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: t.cardBg2, borderRadius: '18px', marginBottom: '1.5rem', border: `1px solid ${t.cardBorder}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fff', boxShadow: '0 4px 8px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ea580c' }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: t.cardBg, boxShadow: '0 4px 8px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ea580c', border: `1px solid ${t.cardBorder}` }}>
                                         <Users size={18} />
                                     </div>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Postulantes</span>
+                                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: t.textSecondary }}>Postulantes</span>
                                 </div>
                                 <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#ea580c' }}>
                                     {job.postulaciones ? job.postulaciones.length : 0}
@@ -182,12 +184,12 @@ function MisPublicaciones({ usuarioId }) {
                                 <Link
                                     to={`/detalles/${job.id_trabajo}`}
                                     style={{
-                                        padding: '12px', borderRadius: '14px', background: '#0f172a', color: '#fff', fontWeight: 800, fontSize: '0.9rem',
+                                        padding: '12px', borderRadius: '14px', background: t.darkMode ? '#1e293b' : '#0f172a', color: '#fff', fontWeight: 800, fontSize: '0.9rem',
                                         textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s', border: `1px solid ${t.darkMode ? '#334155' : 'transparent'}`
                                     }}
-                                    onMouseEnter={e => e.currentTarget.style.background = '#1e293b'}
-                                    onMouseLeave={e => e.currentTarget.style.background = '#0f172a'}
+                                    onMouseEnter={e => e.currentTarget.style.background = t.darkMode ? '#334155' : '#1e293b'}
+                                    onMouseLeave={e => e.currentTarget.style.background = t.darkMode ? '#1e293b' : '#0f172a'}
                                 >
                                     <LayoutDashboard size={18} color="#f97316" /> Gestionar Candidatos
                                 </Link>
@@ -197,22 +199,22 @@ function MisPublicaciones({ usuarioId }) {
                                         <button
                                             onClick={() => setActionModal({ isOpen: true, type: 'cancelar', job })}
                                             style={{
-                                                flex: 1, padding: '12px', borderRadius: '14px', background: '#fff', color: '#64748b', fontWeight: 700, fontSize: '0.85rem',
-                                                border: '1px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                                                flex: 1, padding: '12px', borderRadius: '14px', background: t.cardBg, color: t.textSecondary, fontWeight: 700, fontSize: '0.85rem',
+                                                border: `1px solid ${t.cardBorder}`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                                             }}
-                                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#0f172a'; e.currentTarget.style.color = '#0f172a'; }}
-                                            onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#64748b'; }}
+                                            onMouseEnter={e => { e.currentTarget.style.borderColor = '#ea580c'; e.currentTarget.style.color = '#ea580c'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.borderColor = t.cardBorder; e.currentTarget.style.color = t.textSecondary; }}
                                         >
                                             <XCircle size={16} /> Finalizar
                                         </button>
                                         <button
                                             onClick={() => setActionModal({ isOpen: true, type: 'eliminar', job })}
                                             style={{
-                                                width: '48px', height: '46px', borderRadius: '14px', background: '#fff1f2', color: '#e11d48',
+                                                width: '48px', height: '46px', borderRadius: '14px', background: t.darkMode ? '#4c1d95' : '#fff1f2', color: t.darkMode ? '#f43f5e' : '#e11d48',
                                                 border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                                             }}
-                                            onMouseEnter={e => e.currentTarget.style.background = '#ffe4e6'}
-                                            onMouseLeave={e => e.currentTarget.style.background = '#fff1f2'}
+                                            onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                                            onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                                             title="Eliminar permanentemente"
                                         >
                                             <Trash2 size={18} />
@@ -257,7 +259,7 @@ function MisPublicaciones({ usuarioId }) {
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <button
                                 onClick={() => setActionModal({ isOpen: false, type: null, job: null })}
-                                style={{ flex: 1, padding: '14px', borderRadius: '16px', background: '#f1f5f9', color: '#475569', fontWeight: 800, border: 'none', cursor: 'pointer' }}
+                                style={{ flex: 1, padding: '14px', borderRadius: '16px', background: t.cardBg2, color: t.textPrimary, fontWeight: 800, border: `1px solid ${t.cardBorder}`, cursor: 'pointer' }}
                             >
                                 Cancelar
                             </button>
@@ -266,7 +268,7 @@ function MisPublicaciones({ usuarioId }) {
                                 disabled={actionLoading}
                                 style={{
                                     flex: 1, padding: '14px', borderRadius: '16px',
-                                    background: actionModal.type === 'eliminar' ? '#e11d48' : '#0f172a',
+                                    background: actionModal.type === 'eliminar' ? '#e11d48' : '#ea580c',
                                     color: '#fff', fontWeight: 800, border: 'none', cursor: actionLoading ? 'not-allowed' : 'pointer'
                                 }}
                             >
