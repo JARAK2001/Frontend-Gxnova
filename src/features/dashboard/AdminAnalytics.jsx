@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Users, Award, MapPin } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, AreaChart, Area, ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { TrendingUp, Users, Award, MapPin, Lightbulb, AlertTriangle, Info, CheckCircle } from 'lucide-react';
 import API_URL from '../../config/api';
 
 const AdminAnalytics = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [rangoDias, setRangoDias] = useState(10);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,15 +53,15 @@ const AdminAnalytics = () => {
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
 
-    // Rellenar días vacíos para la gráfica de crecimiento
+    // Rellenar días vacíos para la gráfica de crecimiento (rango dinámico)
     let crecimientoDatos = [];
     if (data.crecimiento && data.crecimiento.length > 0) {
         const sortedData = [...data.crecimiento].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-        const firstDate = new Date(sortedData[0].fecha + 'T12:00:00'); 
         const today = new Date();
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(today.getDate() - rangoDias);
         
-        let current = new Date(firstDate);
-        current.setDate(current.getDate() - 3); // 3 días antes para contexto visual
+        let current = new Date(tenDaysAgo);
         
         while (current <= today) {
             const dateStr = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
@@ -76,6 +77,50 @@ const AdminAnalytics = () => {
         crecimientoDatos = data.crecimiento || [];
     }
 
+    // Preparar Tendencia de Trabajos (Rango dinámico)
+    let tendenciaTrabajosDatos = [];
+    if (data.tendenciaTrabajos && data.tendenciaTrabajos.length > 0) {
+        const sortedData = [...data.tendenciaTrabajos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        const today = new Date();
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(today.getDate() - rangoDias);
+        
+        let current = new Date(tenDaysAgo);
+        
+        while (current <= today) {
+            const dateStr = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+            const existing = sortedData.find(d => d.fecha === dateStr);
+            tendenciaTrabajosDatos.push({
+                fecha: dateStr.slice(5),
+                trabajos: existing ? existing.cantidad : 0
+            });
+            current.setDate(current.getDate() + 1);
+        }
+    }
+
+    const ofertaDemandaDatos = data.ofertaDemanda || [];
+    const recomendacionesDatos = data.recomendaciones || [];
+
+    const IconoRecomendacion = ({ tipo }) => {
+        switch (tipo) {
+            case 'alerta': return <AlertTriangle className="text-red-500" size={18} />;
+            case 'warning': return <Lightbulb className="text-amber-500" size={18} />;
+            case 'info': return <Info className="text-blue-500" size={18} />;
+            case 'success': return <CheckCircle className="text-emerald-500" size={18} />;
+            default: return <Lightbulb className="text-slate-500" size={18} />;
+        }
+    };
+
+    const getBgColor = (tipo) => {
+        switch (tipo) {
+            case 'alerta': return 'bg-red-50 border-red-200';
+            case 'warning': return 'bg-amber-50 border-amber-200';
+            case 'info': return 'bg-blue-50 border-blue-200';
+            case 'success': return 'bg-emerald-50 border-emerald-200';
+            default: return 'bg-slate-50 border-slate-200';
+        }
+    };
+
     return (
         <div className="space-y-5">
             <div>
@@ -83,13 +128,42 @@ const AdminAnalytics = () => {
                 <p className="text-sm text-slate-500 mt-0.5">Métricas detalladas de rendimiento y crecimiento</p>
             </div>
 
+            {/* Recomendaciones Inteligentes del Sistema */}
+            {recomendacionesDatos.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {recomendacionesDatos.map((rec, i) => (
+                        <div key={i} className={`p-4 rounded-xl border ${getBgColor(rec.tipo)} flex items-start gap-3 shadow-sm transition-transform hover:-translate-y-1`}>
+                            <div className="mt-0.5 bg-white p-1.5 rounded-full shadow-sm">
+                                <IconoRecomendacion tipo={rec.tipo} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-800 text-sm mb-1">{rec.titulo}</h4>
+                                <p className="text-xs text-slate-600 leading-relaxed">{rec.mensaje}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             {/* Crecimiento de Usuarios */}
             <div className="admin-card p-5">
-                <div className="flex items-center gap-2 mb-5">
-                    <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
-                        <TrendingUp size={14} className="text-white" />
-                    </span>
-                    <h3 className="text-sm font-bold text-slate-700">Crecimiento de Usuarios</h3>
+                <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#f97316,#ea580c)' }}>
+                            <TrendingUp size={14} className="text-white" />
+                        </span>
+                        <h3 className="text-sm font-bold text-slate-700">Crecimiento de Usuarios</h3>
+                    </div>
+                    <select 
+                        className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500/50 cursor-pointer"
+                        value={rangoDias}
+                        onChange={(e) => setRangoDias(Number(e.target.value))}
+                    >
+                        <option value={7}>Últimos 7 días</option>
+                        <option value={10}>Últimos 10 días</option>
+                        <option value={15}>Últimos 15 días</option>
+                        <option value={30}>Último mes</option>
+                    </select>
                 </div>
                 <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
@@ -160,6 +234,71 @@ const AdminAnalytics = () => {
                                 <Tooltip cursor={{ fill: 'rgba(249,115,22,0.06)' }} contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px' }} />
                                 <Bar dataKey="count" fill="#ea580c" radius={[0, 6, 6, 0]} barSize={18} />
                             </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-5">
+                {/* Oferta vs Demanda */}
+                <div className="admin-card p-5">
+                    <div className="flex items-center gap-2 mb-5">
+                        <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#64748b,#334155)' }}>
+                            <TrendingUp size={14} className="text-white" />
+                        </span>
+                        <h3 className="text-sm font-bold text-slate-700">Oferta vs Demanda por Categoría</h3>
+                    </div>
+                    <div className="h-72">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={ofertaDemandaDatos}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="categoria" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px' }} cursor={{ fill: 'rgba(249,115,22,0.06)' }} />
+                                <Legend wrapperStyle={{ fontSize: 12 }} />
+                                <Bar yAxisId="left" dataKey="trabajos" name="Trabajos Ofrecidos" fill="#f97316" radius={[4, 4, 0, 0]} barSize={20} />
+                                <Line yAxisId="right" type="monotone" dataKey="postulaciones" name="Postulaciones" stroke="#fbbf24" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Tendencia de Trabajos */}
+                <div className="admin-card p-5">
+                    <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#0ea5e9,#0369a1)' }}>
+                                <TrendingUp size={14} className="text-white" />
+                            </span>
+                            <h3 className="text-sm font-bold text-slate-700">Evolución de Ofertas de Trabajo</h3>
+                        </div>
+                        <select 
+                            className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-sky-500/50 cursor-pointer"
+                            value={rangoDias}
+                            onChange={(e) => setRangoDias(Number(e.target.value))}
+                        >
+                            <option value={7}>Últimos 7 días</option>
+                            <option value={10}>Últimos 10 días</option>
+                            <option value={15}>Últimos 15 días</option>
+                            <option value={30}>Último mes</option>
+                        </select>
+                    </div>
+                    <div className="h-72">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={tendenciaTrabajosDatos}>
+                                <defs>
+                                    <linearGradient id="colorTrabajos" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis dataKey="fecha" tick={{ fontSize: 11, fill: '#64748b' }} />
+                                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
+                                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '13px' }} />
+                                <Area type="monotone" dataKey="trabajos" stroke="#0ea5e9" strokeWidth={2} fillOpacity={1} fill="url(#colorTrabajos)" />
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>

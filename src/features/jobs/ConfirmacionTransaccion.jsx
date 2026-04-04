@@ -19,6 +19,7 @@ function ConfirmacionTransaccion({ transaccion, idUsuario, idEmpleador, idTrabaj
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState(null);
     const [evidenciaUrl, setEvidenciaUrl] = useState(transaccion?.evidencia_url || "");
+    const [evidenciaFile, setEvidenciaFile] = useState(null);
     const [mostrarEvidencia, setMostrarEvidencia] = useState(false);
 
     const token = localStorage.getItem("token");
@@ -49,20 +50,28 @@ function ConfirmacionTransaccion({ transaccion, idUsuario, idEmpleador, idTrabaj
 
     // Subir evidencia 
     const handleSubirEvidencia = async () => {
-        if (!evidenciaUrl.trim()) {
-            setError("Por favor ingresa una URL de evidencia válida.");
+        if (!evidenciaUrl.trim() && !evidenciaFile) {
+            setError("Por favor sube una foto o ingresa una URL de evidencia.");
             return;
         }
         setCargando(true);
         setError(null);
         try {
+            const formData = new FormData();
+            if (evidenciaFile) {
+                // Si existe un archivo adjunto, priorizarlo
+                formData.append("evidencia", evidenciaFile);
+            } else {
+                formData.append("evidencia_url", evidenciaUrl.trim());
+            }
+
             const res = await fetch(`${API_URL}/api/transacciones/${transaccion.id_transaccion}/subir-evidencia`, {
                 method: "PATCH",
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json"
+                    Authorization: `Bearer ${token}`
+                    // Nota: el explorador pondrá automáticamente 'Content-Type: multipart/form-data' al pasar un FormData
                 },
-                body: JSON.stringify({ evidencia_url: evidenciaUrl.trim() })
+                body: formData
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al subir evidencia");
@@ -276,21 +285,42 @@ function ConfirmacionTransaccion({ transaccion, idUsuario, idEmpleador, idTrabaj
                                 <Image className="w-4 h-4" /> Evidencia actual
                             </a>
                         )}
-                        <div className="flex gap-2">
-                            <input
-                                type="url"
-                                value={evidenciaUrl}
-                                onChange={(e) => setEvidenciaUrl(e.target.value)}
-                                placeholder="https://... (URL de foto del recibo o artículo)"
-                                className="flex-1 text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none"
+                        <div className="flex flex-col gap-3">
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                capture="environment" 
+                                onChange={(e) => {
+                                    setEvidenciaFile(e.target.files[0]);
+                                    setEvidenciaUrl("");
+                                }}
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-200 rounded-lg p-1"
                             />
-                            <button
-                                onClick={handleSubirEvidencia}
-                                disabled={cargando}
-                                className="px-4 py-2 bg-slate-700 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
-                            >
-                                Guardar
-                            </button>
+                            
+                            <div className="text-center relative">
+                                <hr className="border-slate-200 absolute w-full top-1/2 -z-10" />
+                                <span className="text-xs text-slate-400 font-bold bg-white px-2 tracking-widest">O PEGA UNA URL</span>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    value={evidenciaUrl}
+                                    onChange={(e) => {
+                                        setEvidenciaUrl(e.target.value);
+                                        setEvidenciaFile(null);
+                                    }}
+                                    placeholder="https://... (URL directa)"
+                                    className="flex-1 text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none"
+                                />
+                                <button
+                                    onClick={handleSubirEvidencia}
+                                    disabled={cargando}
+                                    className="px-5 py-2.5 bg-slate-800 text-white text-sm font-bold rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 flex shadow-sm"
+                                >
+                                    Guardar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
